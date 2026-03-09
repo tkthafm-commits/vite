@@ -213,18 +213,25 @@ export default function App(){
   useEffect(()=>{const p=new URLSearchParams(window.location.search);if(p.get("biz"))upd("name",p.get("biz"));if(p.get("city"))upd("city",p.get("city"));if(p.get("country"))upd("country",p.get("country"));},[]);
   useEffect(()=>{if(phase==="scanning"){const t=setInterval(()=>setScanMsgIdx(i=>(i+1)%SCAN_MSGS.length),3e3);return()=>clearInterval(t);}},[phase]);
 
-  // Google Places Autocomplete
+  // Google Places Autocomplete — waits for script to load
   useEffect(()=>{
-    if(!nameRef.current||!window.google?.maps?.places)return;
-    const ac=new window.google.maps.places.Autocomplete(nameRef.current,{types:["establishment"]});
-    ac.addListener("place_changed",()=>{
-      const p=ac.getPlace();if(!p?.name)return;
-      upd("name",p.name);
-      if(p.formatted_address){const parts=p.formatted_address.split(",");if(parts.length>=2)upd("city",parts.slice(0,-1).join(",").trim());}
-      if(p.address_components){const cc=p.address_components.find(c=>c.types.includes("country"));if(cc){const found=COUNTRIES.find(c=>c.code===cc.short_name);if(found)upd("country",cc.short_name);}}
-      if(p.website)upd("website",p.website.replace(/^https?:\/\//,""));
-    });
-  },[phase]);
+    let ac=null;
+    const init=()=>{
+      if(!nameRef.current||!window.google?.maps?.places)return;
+      ac=new window.google.maps.places.Autocomplete(nameRef.current,{types:["establishment"]});
+      ac.setFields(["name","formatted_address","address_components","website","url","geometry"]);
+      ac.addListener("place_changed",()=>{
+        const p=ac.getPlace();if(!p?.name)return;
+        upd("name",p.name);
+        if(p.formatted_address){const parts=p.formatted_address.split(",");if(parts.length>=2)upd("city",parts.slice(0,-1).join(",").trim());}
+        if(p.address_components){const cc=p.address_components.find(c=>c.types.includes("country"));if(cc){const found=COUNTRIES.find(c=>c.code===cc.short_name);if(found)upd("country",cc.short_name);}}
+        if(p.website)upd("website",p.website.replace(/^https?:\/\//,""));
+      });
+    };
+    if(window.__gmapsReady){init();}
+    else{window.addEventListener("google-places-ready",init);}
+    return()=>{window.removeEventListener("google-places-ready",init);};
+  },[]);
 
   const callAPI=async(prompt)=>{
     const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2000,tools:[{type:"web_search_20250305",name:"web_search"}],messages:[{role:"user",content:prompt}]})});
