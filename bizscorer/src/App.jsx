@@ -57,12 +57,44 @@ function buildPrompt(phase,inp,mkt,bType){
 }
 
 /* ═══ SCAN LIMITING ═══ */
-function getScanCount(){try{const d=JSON.parse(document.cookie.split(";").find(c=>c.trim().startsWith("bsScans="))?.split("=")?.[1]||"{}");if(Date.now()-d.ts>30*24*3600000)return 0;return d.count||0;}catch{return 0;}}
-function incScanCount(){try{const c=getScanCount();document.cookie=`bsScans=${JSON.stringify({count:c+1,ts:Date.now()})};path=/;max-age=${30*24*3600}`;}catch{}}
-function hasEmail(){try{return document.cookie.includes("bsEmail=1");}catch{return false;}}
-function setHasEmail(){try{document.cookie=`bsEmail=1;path=/;max-age=${365*24*3600}`;}catch{}}
-function getLastScore(){try{return JSON.parse(localStorage.getItem("bsLastScore")||"null");}catch{return null;}}
-function saveLastScore(r){try{localStorage.setItem("bsLastScore",JSON.stringify({biz:r.name,score:r.overall,date:new Date().toLocaleDateString()}));}catch{}}
+/* ═══ SCAN LIMITING (multi-layer: cookie + localStorage + indexedDB) ═══ */
+const SCAN_WINDOW=30*24*3600000; // 30 days
+const _ck=(k)=>{try{return JSON.parse(document.cookie.split(";").find(c=>c.trim().startsWith(k+"="))?.split("=")?.[1]||"null");}catch{return null;}};
+const _sk=(k,v,days=30)=>{try{document.cookie=`${k}=${JSON.stringify(v)};path=/;max-age=${days*24*3600};SameSite=Lax`;}catch{}};
+const _ls=(k)=>{try{return JSON.parse(localStorage.getItem(k)||"null");}catch{return null;}};
+const _ss=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}};
+// IndexedDB for persistence even after cookie/localStorage clear
+const _idb={
+  _db:null,
+  open(){return new Promise(r=>{try{const req=indexedDB.open("bsData",1);req.onupgradeneeded=e=>e.target.result.createObjectStore("kv");req.onsuccess=e=>{this._db=e.target.result;r(this._db);};req.onerror=()=>r(null);}catch{r(null);}});},
+  async get(k){const db=this._db||await this.open();if(!db)return null;return new Promise(r=>{try{const tx=db.transaction("kv","readonly");const req=tx.objectStore("kv").get(k);req.onsuccess=()=>r(req.result||null);req.onerror=()=>r(null);}catch{r(null);}});},
+  async set(k,v){const db=this._db||await this.open();if(!db)return;try{const tx=db.transaction("kv","readwrite");tx.objectStore("kv").put(v,k);}catch{}}
+};
+function getScanCount(){
+  // Read from all storage layers, take the highest count
+  const ck=_ck("bsS");
+  const ls=_ls("_bsc");
+  const now=Date.now();
+  let best=0;
+  if(ck&&now-ck.t<SCAN_WINDOW)best=Math.max(best,ck.c||0);
+  if(ls&&now-ls.t<SCAN_WINDOW)best=Math.max(best,ls.c||0);
+  return best;
+}
+async function getScanCountAsync(){
+  let best=getScanCount();
+  try{const idb=await _idb.get("sc");if(idb&&Date.now()-idb.t<SCAN_WINDOW)best=Math.max(best,idb.c||0);}catch{}
+  return best;
+}
+function incScanCount(){
+  const c=getScanCount()+1;const now=Date.now();const v={c,t:now};
+  _sk("bsS",v,30);
+  _ss("_bsc",v);
+  _idb.set("sc",v).catch(()=>{});
+}
+function hasEmail(){try{return!!(_ck("bsE")||_ls("_bse"));}catch{return false;}}
+function setHasEmail(){try{_sk("bsE",1,365);_ss("_bse",1);}catch{}}
+function getLastScore(){try{return _ls("bsLastScore");}catch{return null;}}
+function saveLastScore(r){try{_ss("bsLastScore",{biz:r.name,score:r.overall,date:new Date().toLocaleDateString()});}catch{}}
 
 
 /* ═══ ICONS (inline SVG) ═══ */
@@ -236,6 +268,7 @@ export default function App(){
   const[contactMsg,setContactMsg]=useState({name:"",email:"",msg:""});
   const[contactSent,setContactSent]=useState(false);
   const[showTerms,setShowTerms]=useState(false);
+  const[scanError,setScanError]=useState("");
   const upd=(k,v)=>setInputs(p=>({...p,[k]:v}));
   useEffect(()=>setMarket(detectMarket(inputs.country)),[inputs.country]);
   useEffect(()=>{const p=new URLSearchParams(window.location.search);if(p.get("biz"))upd("name",p.get("biz"));if(p.get("city"))upd("city",p.get("city"));if(p.get("country"))upd("country",p.get("country"));
@@ -292,6 +325,17 @@ export default function App(){
   },[]);
   useEffect(()=>{if(phase==="scanning"){const t=setInterval(()=>setScanMsgIdx(i=>(i+1)%SCAN_MSGS.length),3e3);return()=>clearInterval(t);}},[phase]);
 
+  // Load Google Maps script dynamically from env var
+  useEffect(()=>{
+    const key=import.meta.env.VITE_GOOGLE_MAPS_KEY;
+    if(key&&!window.__gmapsReady&&!document.querySelector('script[src*="maps.googleapis.com"]')){
+      const s=document.createElement("script");
+      s.async=true;s.defer=true;
+      s.src=`https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places&callback=__initGooglePlaces`;
+      document.head.appendChild(s);
+    }
+  },[]);
+
   // Google Places Autocomplete
   useEffect(()=>{
     const init=()=>{
@@ -317,9 +361,10 @@ export default function App(){
 
   const callAPI=async(prompt)=>{
     const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2000,tools:[{type:"web_search_20250305",name:"web_search"}],messages:[{role:"user",content:prompt}]})});
-    const d=await r.json();if(d.error)throw new Error(d.error.message||"API error");
+    if(!r.ok){const err=await r.json().catch(()=>({}));console.error("API error:",r.status,err);throw new Error(err.error?.message||err.error||`API returned ${r.status}`);}
+    const d=await r.json();if(d.error){console.error("API response error:",d.error);throw new Error(typeof d.error==="string"?d.error:d.error.message||"API error");}
     const t=d.content?.filter(b=>b.type==="text")?.map(b=>b.text)?.join("")||"";
-    try{return JSON.parse(t.replace(/```json|```/g,"").trim());}catch{return null;}
+    try{return JSON.parse(t.replace(/```json|```/g,"").trim());}catch{console.warn("JSON parse failed:",t.slice(0,200));return null;}
   };
 
   /* ═══ STEP 1: Detect business + find profiles ═══ */
@@ -349,9 +394,9 @@ export default function App(){
   };
 
   /* ═══ STEP 2: After confirm, check gate ═══ */
-  const afterConfirm=()=>{
+  const afterConfirm=async()=>{
     if(hasEmail()){
-      const sc=getScanCount();
+      const sc=await getScanCountAsync();
       if(sc>=2){setPhase("upgrade");return;}
       runFullScan(bizType||"other");
     }else{
@@ -360,18 +405,18 @@ export default function App(){
   };
 
   /* ═══ STEP 3: After email capture ═══ */
-  const handleGateCapture=(v)=>{
+  const handleGateCapture=async(v)=>{
     setHasEmail();setCaptured(true);setCaptureVal(v);
     fetch("https://formspree.io/f/mzdjddjj",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"lead",contact:v,business:inputs.name,city:inputs.city,country:inputs.country})}).catch(()=>{});
     console.log("Lead captured:",v);
-    const sc=getScanCount();
+    const sc=await getScanCountAsync();
     if(sc>=2){setPhase("upgrade");return;}
     runFullScan(bizType||"other");
   };
 
   /* ═══ STEP 4: Run full scan ═══ */
   const runFullScan=async(bType)=>{
-    setPhase("scanning");incScanCount();setScanMsgIdx(0);
+    setPhase("scanning");incScanCount();setScanMsgIdx(0);setScanError("");
     const w=market.weights;
     const phases=["google","website","social","competitive","recommendations"];
     let gs=0,ws=0,ss=0,cs=0;
@@ -389,6 +434,12 @@ export default function App(){
         results[pid]=null;
         setScanPhases(p=>p.map(x=>x.id===pid?{...x,status:"done",score:0,data:null}:x));
       }
+    }
+    // If all phases failed, show error and return to confirm
+    if(!results.google&&!results.website&&!results.social&&!results.competitive&&!results.recommendations){
+      setScanError("Our AI couldn't complete the scan. This may be a temporary issue — please try again in a moment.");
+      setPhase("confirm");
+      return;
     }
     const recData=results.recommendations;
     const overall=recData?.overallScore||Math.round((gs*w.google+ws*w.website+ss*w.social+Math.floor((ws+ss)/2)*w.responsive+cs*w.competitive+Math.floor((gs+ws)/2)*w.seo)/100);
@@ -848,6 +899,11 @@ export default function App(){
       {/* ═══ CONFIRM PHASE ═══ */}
       {phase==="confirm"&&(
         <section style={{maxWidth:560,margin:"0 auto",padding:"60px 24px"}}><FadeIn>
+          {scanError&&<div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:12,padding:"14px 20px",marginBottom:20,display:"flex",alignItems:"center",gap:10}}>
+            <span style={{fontSize:18}}>⚠️</span>
+            <div><p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#991b1b",fontWeight:600,marginBottom:2}}>Scan failed</p><p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#b91c1c"}}>{scanError}</p></div>
+            <button onClick={()=>setScanError("")} style={{marginLeft:"auto",background:"none",border:"none",color:"#991b1b",cursor:"pointer",fontSize:16}}>✕</button>
+          </div>}
           <div style={{textAlign:"center",marginBottom:24}}>
             <div style={{width:48,height:48,borderRadius:14,background:"#f0fdf4",display:"flex",alignItems:"center",justifyContent:"center",color:"#059669",margin:"0 auto 12px",fontSize:20}}>✓</div>
             <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:24,fontWeight:700,color:"#0f172a",marginBottom:6}}>We found your business!</h2>
