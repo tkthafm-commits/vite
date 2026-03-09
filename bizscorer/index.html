@@ -24,6 +24,11 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>" />
     <title>BizScorer — Free AI Business Audit | Score Your Online Presence in 30 Seconds</title>
     <!-- Google Places Autocomplete: replace YOUR_KEY with your Google Maps API key -->
+      <script>
+      window.__gmapsReady=false;
+      window.__initGooglePlaces=function(){window.__gmapsReady=true;window.dispatchEvent(new Event("google-places-ready"));};
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBURZSLnvSPffHFaugs2RUQQoMwsC3pdVo&libraries=places&callback=__initGooglePlaces"></script>
   </head>
   <body>
     <div id="root"></div>

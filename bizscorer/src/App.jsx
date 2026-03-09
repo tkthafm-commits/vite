@@ -201,6 +201,7 @@ export default function App(){
   const[lastScore]=useState(()=>getLastScore());
   const[animScore,setAnimScore]=useState(0);
   const auditCount=2847;
+  const nameRef=useRef(null);
   const[showPrivacy,setShowPrivacy]=useState(false);
   const[showContact,setShowContact]=useState(false);
   const[contactMsg,setContactMsg]=useState({name:"",email:"",msg:""});
@@ -210,6 +211,29 @@ export default function App(){
   useEffect(()=>setMarket(detectMarket(inputs.country)),[inputs.country]);
   useEffect(()=>{const p=new URLSearchParams(window.location.search);if(p.get("biz"))upd("name",p.get("biz"));if(p.get("city"))upd("city",p.get("city"));if(p.get("country"))upd("country",p.get("country"));},[]);
   useEffect(()=>{if(phase==="scanning"){const t=setInterval(()=>setScanMsgIdx(i=>(i+1)%SCAN_MSGS.length),3e3);return()=>clearInterval(t);}},[phase]);
+
+  // Google Places Autocomplete
+  useEffect(()=>{
+    const init=()=>{
+      try{
+        if(!nameRef.current||!window.google?.maps?.places)return;
+        const ac=new window.google.maps.places.Autocomplete(nameRef.current,{types:["establishment"]});
+        ac.setFields(["name","formatted_address","address_components","website"]);
+        ac.addListener("place_changed",()=>{
+          try{
+            const p=ac.getPlace();if(!p?.name)return;
+            upd("name",p.name);
+            if(p.formatted_address){const parts=p.formatted_address.split(",");if(parts.length>=2)upd("city",parts.slice(0,-1).join(",").trim());}
+            if(p.address_components){const cc=p.address_components.find(c=>c.types.includes("country"));if(cc){const found=COUNTRIES.find(c=>c.code===cc.short_name);if(found)upd("country",cc.short_name);}}
+            if(p.website)upd("website",p.website.replace(/^https?:\/\//,""));
+          }catch(e){console.log("Places error:",e);}
+        });
+      }catch(e){console.log("Google Places unavailable — manual entry works fine:",e);}
+    };
+    if(window.__gmapsReady)init();
+    else window.addEventListener("google-places-ready",init);
+    return()=>window.removeEventListener("google-places-ready",init);
+  },[]);
 
   const callAPI=async(prompt)=>{
     const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2000,tools:[{type:"web_search_20250305",name:"web_search"}],messages:[{role:"user",content:prompt}]})});
@@ -373,7 +397,7 @@ export default function App(){
           <FadeIn delay={0.1}>
             <div style={{maxWidth:800,margin:"0 auto",background:"white",border:"2px solid #e2e8f0",borderRadius:24,padding:"44px 40px",boxShadow:"0 8px 30px rgba(0,0,0,0.06)"}}>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
-                <div><label style={S.lbl}>Business Name *</label><input value={inputs.name} onChange={e=>upd("name",e.target.value)} placeholder="e.g. Midtown Dentistry" style={{...S.inp,fontSize:18,padding:"18px 20px"}}/></div>
+                <div><label style={S.lbl}>Business Name *</label><input ref={nameRef} value={inputs.name} onChange={e=>upd("name",e.target.value)} placeholder="Start typing your business name..." style={{...S.inp,fontSize:18,padding:"18px 20px"}}/></div>
                 <div><label style={S.lbl}>City *</label><input value={inputs.city} onChange={e=>upd("city",e.target.value)} placeholder="e.g. Houston, TX" style={{...S.inp,fontSize:18,padding:"18px 20px"}}/></div>
               </div>
               <div style={{marginBottom:20}}><label style={S.lbl}>Country *</label>
@@ -394,7 +418,7 @@ export default function App(){
                   ))}
                 </div>
               </details>
-              <button onClick={startScan} disabled={!inputs.name.trim()||!inputs.city.trim()} style={{...S.btn,width:"100%",justifyContent:"center",fontSize:22,padding:"22px 40px",borderRadius:16,opacity:inputs.name.trim()&&inputs.city.trim()?1:0.4}}>
+              <button onClick={startDetect} disabled={!inputs.name.trim()||!inputs.city.trim()} style={{...S.btn,width:"100%",justifyContent:"center",fontSize:22,padding:"22px 40px",borderRadius:16,opacity:inputs.name.trim()&&inputs.city.trim()?1:0.4}}>
                 {I.search} Get My Business Score
               </button>
               <p style={{textAlign:"center",fontFamily:"'DM Sans',sans-serif",fontSize:15,color:"#64748b",marginTop:12}}>About 60 seconds · <strong style={{color:"#059669"}}>100% free results</strong></p>
