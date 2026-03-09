@@ -219,15 +219,15 @@ export default function App(){
   const[lastScore]=useState(()=>getLastScore());
   const[animScore,setAnimScore]=useState(0);
   // Dynamic counters — auto-increment
-  const baseCount=28470;const launchDate=new Date("2025-03-09");
+  const baseCount=78257;const launchDate=new Date("2025-03-09");
   const daysSinceLaunch=Math.max(0,Math.floor((Date.now()-launchDate.getTime())/(1000*60*60*24)));
   const[auditCount,setAuditCount]=useState(baseCount+(daysSinceLaunch*1000));
-  const[hourlyCount,setHourlyCount]=useState(20);
+  const[hourlyCount,setHourlyCount]=useState(50);
   useEffect(()=>{
-    // Main counter: +1 roughly every 1.4 minutes (1000/day)
-    const mainT=setInterval(()=>setAuditCount(c=>c+1),86400);
-    // Hourly counter: +1 every 60 seconds
-    const hourT=setInterval(()=>setHourlyCount(c=>c+1),60000);
+    // Main counter: +3 every 90 seconds
+    const mainT=setInterval(()=>setAuditCount(c=>c+3),90000);
+    // Hourly counter: +2 every 60 seconds
+    const hourT=setInterval(()=>setHourlyCount(c=>c+2),60000);
     return()=>{clearInterval(mainT);clearInterval(hourT);};
   },[]);
   const nameRef=useRef(null);
@@ -581,7 +581,7 @@ export default function App(){
                   </div>
                 </div>
                 <details style={{marginBottom:18}}>
-                  <summary style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#059669",fontWeight:600,cursor:"pointer",padding:"6px 0"}}>+ Add social profiles <span style={{fontWeight:400,color:"#94a3b8"}}>— AI will also try to find them</span></summary>
+                  <summary style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#059669",fontWeight:600,cursor:"pointer",padding:"6px 0"}}>+ Add social profiles <span style={{fontWeight:400,color:"#94a3b8"}}>(optional)</span> <span style={{fontWeight:400,color:"#94a3b8",fontSize:12}}>— AI will automatically try to find them</span></summary>
                   <div className="social-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginTop:12}}>
                     {[["facebook","Facebook","facebook.com/","page"],["instagram","Instagram","instagram.com/","handle"],["tiktok","TikTok","tiktok.com/@","handle"],["youtube","YouTube","youtube.com/","@ch"]].map(([k,l,pre,ph])=>(
                       <div key={k}><label style={S.lbl}>{l}</label>
