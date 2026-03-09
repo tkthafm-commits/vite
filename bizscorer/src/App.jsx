@@ -354,7 +354,6 @@ export default function App(){
         select option{background:white;color:#1e293b}
         @media print{nav,.no-print{display:none!important}}
         @media(max-width:900px){.input-grid-3col{grid-template-columns:1fr!important}.sidebar-col{display:none!important}}
-        @media(max-width:768px){section>div[style*="0.7fr"]{grid-template-columns:1fr!important}section{padding-left:16px!important;padding-right:16px!important}section>div[style*="grid-template-columns: 1.2fr"]{grid-template-columns:1fr!important}section>div[style*="repeat(4"]{grid-template-columns:repeat(2,1fr)!important}section>div[style*="repeat(3"]{grid-template-columns:1fr!important}h1{font-size:clamp(28px,8vw,42px)!important}h2{font-size:28px!important}}
         .pac-container{border-radius:12px!important;border:1px solid #e2e8f0!important;box-shadow:0 8px 30px rgba(0,0,0,0.08)!important;margin-top:4px!important;font-family:'DM Sans',sans-serif!important;z-index:10000!important}
         .pac-item{padding:10px 16px!important;border-top:1px solid #f1f5f9!important;cursor:pointer!important;font-size:14px!important}
         .pac-item:hover{background:#f0fdf4!important}
@@ -362,7 +361,68 @@ export default function App(){
         .pac-icon,.pac-icon-marker{display:none!important}
         .pac-item::before{content:"📍";margin-right:8px;font-size:14px}
         .pac-matched{font-weight:700!important;color:#059669!important}
-        button:hover{transform:translateY(-1px)}button:active{transform:translateY(0)}
+        /* TABLET */
+        @media(max-width:1024px){
+          .hero-grid{grid-template-columns:1fr!important;gap:40px!important;max-width:600px!important}
+          .hero-grid>div:nth-child(1){order:2}
+          .hero-grid>div:nth-child(2){order:1}
+          .hero-grid>div:nth-child(3){order:3}
+          .industry-grid{grid-template-columns:1fr!important;gap:40px!important}
+          .report-grid{grid-template-columns:repeat(2,1fr)!important}
+          .cost-grid{grid-template-columns:1fr!important;gap:32px!important}
+          .steps-grid{grid-template-columns:1fr!important;gap:32px!important}
+        }
+        /* MOBILE — iPhone optimized */
+        @media(max-width:480px){
+          section{padding-left:18px!important;padding-right:18px!important;margin-top:64px!important}
+          .hero-grid{grid-template-columns:1fr!important;gap:32px!important;max-width:100%!important}
+          .hero-grid>div:nth-child(1){order:2}
+          .hero-grid>div:nth-child(2){order:1}
+          .hero-grid>div:nth-child(3){order:3}
+          .hero-grid>div>div{position:static!important}
+          h1{font-size:36px!important;letter-spacing:-0.03em!important}
+          h2{font-size:28px!important}
+          h3{font-size:20px!important}
+          .site-nav{padding:0 14px!important;height:52px!important}
+          .site-nav>div{gap:8px!important}
+          .site-nav a[href*="zidly"]{display:none!important}
+          .hero-counters{gap:16px!important}
+          .hero-counters>div p:first-child{font-size:24px!important}
+          .form-row{grid-template-columns:1fr!important}
+          .social-grid{grid-template-columns:1fr!important}
+          .stats-grid{grid-template-columns:repeat(2,1fr)!important;gap:24px!important}
+          .stats-grid>div p:first-child{font-size:36px!important}
+          .results-grid{grid-template-columns:repeat(2,1fr)!important;gap:20px!important}
+          .results-grid>div p:first-child{font-size:36px!important}
+          .report-grid{grid-template-columns:1fr!important;gap:14px!important}
+          .steps-grid{grid-template-columns:1fr!important;gap:28px!important}
+          .steps-grid>div p:first-child{font-size:48px!important}
+          .industry-grid{grid-template-columns:1fr!important;gap:32px!important}
+          .cost-grid{grid-template-columns:1fr!important;gap:28px!important}
+          .cost-grid>div:first-child h2{font-size:28px!important}
+          .cost-grid>div:last-child>div p:first-child{font-size:36px!important}
+          .before-after{gap:24px!important;margin-top:48px!important}
+          .before-after>div p:first-child{font-size:56px!important}
+          .compare-table-wrap{margin:0 -18px;padding:0 18px}
+          .compare-table-wrap table{min-width:520px!important}
+          .compare-table-wrap th,.compare-table-wrap td{padding:8px 10px!important;font-size:12px!important}
+          .reviews-grid{grid-template-columns:1fr!important;gap:24px!important}
+          .site-footer>div{flex-direction:column!important;align-items:flex-start!important;gap:12px!important}
+          .site-footer>div>div:nth-child(2){flex-wrap:wrap;gap:12px!important}
+          button{font-size:16px!important}
+          .pac-container{z-index:9999!important}
+        }
+        @supports(padding:max(0px)){
+          body{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
+          .site-nav{padding-top:env(safe-area-inset-top)!important}
+        }
+        @media(hover:none){
+          button:hover{transform:none}
+          input,select,textarea{font-size:16px!important}
+        }
+        @media(hover:hover){
+          button:hover{transform:translateY(-1px)}button:active{transform:translateY(0)}
+        }
       `}</style>
 
       {/* NAV */}
@@ -451,7 +511,7 @@ export default function App(){
                     ))}
                   </div>
                 </details>
-                <button onClick={startScan} disabled={!inputs.name.trim()||!inputs.city.trim()} style={{...S.btn,width:"100%",justifyContent:"center",fontSize:24,padding:"24px 40px",borderRadius:16,opacity:inputs.name.trim()&&inputs.city.trim()?1:0.4}}>
+                <button onClick={startDetect} disabled={!inputs.name.trim()||!inputs.city.trim()} style={{...S.btn,width:"100%",justifyContent:"center",fontSize:24,padding:"24px 40px",borderRadius:16,opacity:inputs.name.trim()&&inputs.city.trim()?1:0.4}}>
                   {I.search} Get My Business Score
                 </button>
                 <p style={{textAlign:"center",fontFamily:"'DM Sans',sans-serif",fontSize:15,color:"#64748b",marginTop:12}}>About 60 seconds · <strong style={{color:"#059669"}}>100% free results</strong></p>
