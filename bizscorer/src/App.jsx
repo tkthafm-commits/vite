@@ -355,6 +355,13 @@ export default function App(){
         @media print{nav,.no-print{display:none!important}}
         @media(max-width:900px){.input-grid-3col{grid-template-columns:1fr!important}.sidebar-col{display:none!important}}
         @media(max-width:768px){section>div[style*="0.7fr"]{grid-template-columns:1fr!important}section{padding-left:16px!important;padding-right:16px!important}section>div[style*="grid-template-columns: 1.2fr"]{grid-template-columns:1fr!important}section>div[style*="repeat(4"]{grid-template-columns:repeat(2,1fr)!important}section>div[style*="repeat(3"]{grid-template-columns:1fr!important}h1{font-size:clamp(28px,8vw,42px)!important}h2{font-size:28px!important}}
+        .pac-container{border-radius:12px!important;border:1px solid #e2e8f0!important;box-shadow:0 8px 30px rgba(0,0,0,0.08)!important;margin-top:4px!important;font-family:'DM Sans',sans-serif!important;z-index:10000!important}
+        .pac-item{padding:10px 16px!important;border-top:1px solid #f1f5f9!important;cursor:pointer!important;font-size:14px!important}
+        .pac-item:hover{background:#f0fdf4!important}
+        .pac-item-query{font-size:14px!important;font-weight:600!important;color:#0f172a!important}
+        .pac-icon,.pac-icon-marker{display:none!important}
+        .pac-item::before{content:"📍";margin-right:8px;font-size:14px}
+        .pac-matched{font-weight:700!important;color:#059669!important}
         button:hover{transform:translateY(-1px)}button:active{transform:translateY(0)}
       `}</style>
 
