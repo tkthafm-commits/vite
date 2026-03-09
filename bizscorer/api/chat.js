@@ -32,7 +32,7 @@ export default async function handler(req, res) {
     body.max_tokens = Math.min(body.max_tokens || 1500, 2500);
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "x-api-key": apiKey, "anthropic-version": "2025-01-01" },
+      headers: { "Content-Type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01", "anthropic-beta": "web-search-2025-03-05" },
       body: JSON.stringify(body),
     });
     const data = await response.json();
