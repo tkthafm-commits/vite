@@ -204,6 +204,9 @@ export default function App(){
   const auditCount=2847;
   const nameRef=useRef(null);
   const[showPrivacy,setShowPrivacy]=useState(false);
+  const[showContact,setShowContact]=useState(false);
+  const[contactMsg,setContactMsg]=useState({name:"",email:"",msg:""});
+  const[contactSent,setContactSent]=useState(false);
   const[showTerms,setShowTerms]=useState(false);
   const upd=(k,v)=>setInputs(p=>({...p,[k]:v}));
   useEffect(()=>setMarket(detectMarket(inputs.country)),[inputs.country]);
@@ -270,6 +273,7 @@ export default function App(){
   /* ═══ STEP 3: After email capture ═══ */
   const handleGateCapture=(v)=>{
     setHasEmail();setCaptured(true);setCaptureVal(v);
+    fetch("https://formspree.io/f/mzdjddjj",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"lead",contact:v,business:inputs.name,city:inputs.city,country:inputs.country})}).catch(()=>{});
     console.log("Lead captured:",v);
     const sc=getScanCount();
     if(sc>=2){setPhase("upgrade");return;}
@@ -315,7 +319,9 @@ export default function App(){
     setTimeout(()=>setPhase("report"),3000);
   };
 
-  const handleCapture=v=>{setCaptured(true);setHasEmail();setCaptureVal(v);setShowCapture(false);console.log("Captured:",v);};
+  const handleCapture=v=>{setCaptured(true);setHasEmail();setCaptureVal(v);setShowCapture(false);
+    fetch("https://formspree.io/f/mzdjddjj",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"lead",contact:v,business:inputs.name,city:inputs.city,country:inputs.country})}).catch(()=>{});
+    console.log("Captured:",v);};
   const shareUrl=`https://bizscorer.com?biz=${encodeURIComponent(inputs.name)}&city=${encodeURIComponent(inputs.city)}&country=${inputs.country}`;
   const zidlyUrl=`https://zidly.ai?from=bizscorer&biz=${encodeURIComponent(inputs.name)}&city=${encodeURIComponent(inputs.city)}&type=${bizType}`;
 
@@ -339,7 +345,7 @@ export default function App(){
         select option{background:white;color:#1e293b}
         @media print{nav,.no-print{display:none!important}}
         @media(max-width:900px){.input-grid-3col{grid-template-columns:1fr!important}.sidebar-col{display:none!important}}
-        @media(max-width:768px){section{padding-left:16px!important;padding-right:16px!important}section>div[style*="grid-template-columns: 1.2fr"]{grid-template-columns:1fr!important}section>div[style*="repeat(4"]{grid-template-columns:repeat(2,1fr)!important}section>div[style*="repeat(3"]{grid-template-columns:1fr!important}h1{font-size:clamp(28px,8vw,42px)!important}h2{font-size:28px!important}}
+        @media(max-width:768px){section>div[style*="0.7fr"]{grid-template-columns:1fr!important}section{padding-left:16px!important;padding-right:16px!important}section>div[style*="grid-template-columns: 1.2fr"]{grid-template-columns:1fr!important}section>div[style*="repeat(4"]{grid-template-columns:repeat(2,1fr)!important}section>div[style*="repeat(3"]{grid-template-columns:1fr!important}h1{font-size:clamp(28px,8vw,42px)!important}h2{font-size:28px!important}}
         button:hover{transform:translateY(-1px)}button:active{transform:translateY(0)}
       `}</style>
 
@@ -381,8 +387,34 @@ export default function App(){
             </div>
           </FadeIn>
 
-          {/* TWO COLUMN: Form + Reviews */}
-          <div style={{display:"grid",gridTemplateColumns:"1.2fr 0.8fr",gap:48,alignItems:"start",maxWidth:1000,margin:"0 auto"}}>
+          {/* THREE COLUMN: What We Scan + Form + Reviews */}
+          <div style={{display:"grid",gridTemplateColumns:"0.7fr 1.2fr 0.8fr",gap:36,alignItems:"start",maxWidth:1200,margin:"0 auto"}}>
+            {/* LEFT: What We Scan */}
+            <FadeIn delay={0.05}>
+              <div style={{position:"sticky",top:80}}>
+                <h3 style={{fontFamily:"'Outfit',sans-serif",fontSize:18,fontWeight:700,color:"#0f172a",marginBottom:20}}>What our AI scans</h3>
+                {[
+                  {icon:"⭐",title:"Google Business Profile",items:"Reviews, rating, response rate, photos, posts, Q&A, hours, categories"},
+                  {icon:"🌐",title:"Your Website",items:"Mobile speed, SSL, CTAs, booking, chatbot, forms, ADA compliance, blog"},
+                  {icon:"📱",title:"Social Media & YouTube",items:"Facebook, Instagram, TikTok, YouTube, LinkedIn — activity, followers, content"},
+                  {icon:"🏆",title:"Competitor Intelligence",items:"3-5 real named competitors, their reviews, ratings, features, after-hours presence"},
+                  {icon:"📋",title:"AI Action Plan",items:"Prioritized fixes, revenue math, free copy-paste content, DIY vs automated times"},
+                ].map((s,i)=>(
+                  <div key={i} style={{marginBottom:20}}>
+                    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
+                      <span style={{fontSize:18}}>{s.icon}</span>
+                      <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,fontWeight:700,color:"#0f172a"}}>{s.title}</p>
+                    </div>
+                    <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#64748b",lineHeight:1.5,paddingLeft:26}}>{s.items}</p>
+                  </div>
+                ))}
+                <div style={{marginTop:24,padding:"14px 16px",background:"#f0fdf4",borderRadius:12,border:"1px solid #bbf7d0"}}>
+                  <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:600,color:"#059669"}}>5 analysis phases</p>
+                  <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#166534"}}>More comprehensive than any free tool on the market</p>
+                </div>
+              </div>
+            </FadeIn>
+
             {/* LEFT: Form */}
             <FadeIn delay={0.1}>
               <div style={S.card}>
@@ -443,6 +475,19 @@ export default function App(){
                     ))}
                   </div>
                   <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#94a3b8",marginTop:8,fontStyle:"italic"}}>Most businesses score below 50/100</p>
+                <div style={{marginTop:24}}>
+                  <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#059669",fontWeight:600,marginBottom:10}}>Top performers by industry</p>
+                  {[{cat:"Dental",score:82,rev:"+$4,200/mo"},{cat:"Restaurant",score:76,rev:"+$2,800/mo"},{cat:"Salon",score:79,rev:"+$3,100/mo"},{cat:"Retail",score:71,rev:"+$1,900/mo"}].map((c,i)=>(
+                    <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"4px 0"}}>
+                      <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#475569"}}>{c.cat}</span>
+                      <div style={{display:"flex",alignItems:"center",gap:8}}>
+                        <span style={{fontFamily:"'Outfit',sans-serif",fontSize:15,fontWeight:700,color:"#059669"}}>{c.score}</span>
+                        <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:"#059669",fontWeight:600}}>{c.rev}</span>
+                      </div>
+                    </div>
+                  ))}
+                  <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:"#94a3b8",fontStyle:"italic",marginTop:6}}>Revenue estimates based on Zidly customer data</p>
+                </div>
                 </div>
               </div>
             </FadeIn>
@@ -569,7 +614,7 @@ export default function App(){
             <div style={{display:"flex",gap:20}}>
               <button onClick={()=>setShowPrivacy(true)} style={{background:"none",border:"none",fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#64748b",cursor:"pointer"}}>Privacy Policy</button>
               <button onClick={()=>setShowTerms(true)} style={{background:"none",border:"none",fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#64748b",cursor:"pointer"}}>Terms of Service</button>
-              <a href="mailto:hello@zidly.ai" style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#64748b",textDecoration:"none"}}>Contact</a>
+              <button onClick={()=>setShowContact(true)} style={{background:"none",border:"none",fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#64748b",cursor:"pointer"}}>Contact</button>
             </div>
             <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#94a3b8"}}>© 2025 Zidly. All rights reserved.</p>
           </div>
@@ -883,6 +928,23 @@ export default function App(){
           <button onClick={()=>setShowPrivacy(false)} style={{position:"absolute",top:12,right:12,background:"none",border:"none",color:"#94a3b8",cursor:"pointer",fontSize:18}}>{I.x}</button>
           <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:22,fontWeight:700,color:"#0f172a",marginBottom:16}}>Privacy Policy</h2>
           <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#475569",lineHeight:1.8,whiteSpace:"pre-wrap"}}>{PRIVACY_TEXT.trim()}</div>
+        </div>
+      </div>}
+
+      {/* Contact Modal */}
+      {showContact&&<div style={{position:"fixed",inset:0,zIndex:1e3,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,0.4)",backdropFilter:"blur(6px)"}} onClick={()=>setShowContact(false)}>
+        <div onClick={e=>e.stopPropagation()} style={{...S.card,maxWidth:440,width:"90%",position:"relative"}}>
+          <button onClick={()=>setShowContact(false)} style={{position:"absolute",top:12,right:12,background:"none",border:"none",color:"#94a3b8",cursor:"pointer",fontSize:18}}>{I.x}</button>
+          <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:22,fontWeight:700,color:"#0f172a",marginBottom:6}}>Send us a message</h2>
+          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#64748b",marginBottom:20}}>We typically respond within a few hours.</p>
+          {contactSent?<div style={{textAlign:"center",padding:"30px 0"}}><span style={{fontSize:40,display:"block",marginBottom:12}}>✓</span><p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,fontWeight:600,color:"#059669"}}>Message sent! We will get back to you soon.</p></div>:(
+            <div style={{display:"flex",flexDirection:"column",gap:12}}>
+              <div><label style={S.lbl}>Your Name</label><input value={contactMsg.name} onChange={e=>setContactMsg(p=>({...p,name:e.target.value}))} placeholder="John Smith" style={S.inp}/></div>
+              <div><label style={S.lbl}>Your Email</label><input type="email" value={contactMsg.email} onChange={e=>setContactMsg(p=>({...p,email:e.target.value}))} placeholder="you@email.com" style={S.inp}/></div>
+              <div><label style={S.lbl}>Message</label><textarea value={contactMsg.msg} onChange={e=>setContactMsg(p=>({...p,msg:e.target.value}))} placeholder="How can we help?" rows={4} style={{...S.inp,resize:"vertical",minHeight:100}}/></div>
+              <button onClick={()=>{if(contactMsg.name&&contactMsg.email&&contactMsg.msg){fetch("https://formspree.io/f/mzdjddjj",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"contact",name:contactMsg.name,email:contactMsg.email,message:contactMsg.msg})}).catch(()=>{});setContactSent(true);}}} disabled={!contactMsg.name||!contactMsg.email||!contactMsg.msg} style={{...S.btn,justifyContent:"center",opacity:contactMsg.name&&contactMsg.email&&contactMsg.msg?1:0.4}}>Send Message</button>
+            </div>
+          )}
         </div>
       </div>}
 
