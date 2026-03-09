@@ -227,7 +227,58 @@ export default function App(){
   const[showTerms,setShowTerms]=useState(false);
   const upd=(k,v)=>setInputs(p=>({...p,[k]:v}));
   useEffect(()=>setMarket(detectMarket(inputs.country)),[inputs.country]);
-  useEffect(()=>{const p=new URLSearchParams(window.location.search);if(p.get("biz"))upd("name",p.get("biz"));if(p.get("city"))upd("city",p.get("city"));if(p.get("country"))upd("country",p.get("country"));},[]);
+  useEffect(()=>{const p=new URLSearchParams(window.location.search);if(p.get("biz"))upd("name",p.get("biz"));if(p.get("city"))upd("city",p.get("city"));if(p.get("country"))upd("country",p.get("country"));
+    if(p.get("demo")==="1"){
+      const dn="Remote Midtown Dentistry";
+      setInputs(prev=>({...prev,name:dn,city:"Houston, TX",country:"US",website:"midtowndentistryhouston.com"}));
+      setBizType("dental");
+      setScanPhases([{id:"google",label:"Google Business Profile",status:"done",score:52,data:null},{id:"website",label:"Website & Ads Analysis",status:"done",score:61,data:null},{id:"social",label:"Social Media & YouTube",status:"done",score:28,data:null},{id:"competitive",label:"Competitive Intelligence",status:"done",score:44,data:null},{id:"recommendations",label:"AI Action Plan",status:"done",score:null,data:null}]);
+      setReport({name:dn,overall:43,potential:81,monthlyLossPercent:"18-28%",monthlyGainPercent:"25-45%",
+        revenueMath:"Average dental patient lifetime value: $3,000-5,000\nYour Google rating: 3.8 stars (competitor avg: 4.6)\nEstimated missed patients/month from lower rating: 8-12\nAt $3,500 avg LTV: $28,000-42,000/month in lost potential\nAfter-hours inquiries with no response: ~15/month\nAt 30% conversion rate: 4-5 lost patients = $14,000-17,500/month\n\nTotal estimated monthly opportunity loss: $42,000-59,500\nAs percentage of potential revenue: 18-28%",
+        google:{score:52,reviewCount:23,avgRating:3.8,ownerResponseRate:"12%",recentReviewDate:"6 weeks ago",photoCount:8,hasDescription:true,descriptionQuality:"POOR",hasGooglePosts:false,lastPostDate:"Never",hoursListed:true,categoriesSet:true,qAndACount:0,
+          findings:["Only 23 Google reviews — top competitor Smile Design Dental has 187","Average rating 3.8 stars — below the 4.2-4.5 trust sweet spot","Owner responded to only 12% of reviews — 97% of consumers read responses","No Google Posts in 12 months — weekly posting increases impressions 26%","Zero Q&A entries — competitors have 8-15 answered questions","Only 8 photos — top dental practices have 250+ on their profile"],
+          positives:["Business hours listed and accurate","Google Business Profile verified","Categories properly set","Description exists"]},
+        website:{score:61,exists:true,url:"midtowndentistryhouston.com",mobileFriendly:"YES",hasSSL:true,hasCTA:true,hasOnlineBooking:false,hasChatbot:false,hasContactForm:true,hasClickablePhone:true,hasBlog:false,hasTestimonials:false,hasVideo:false,loadSpeed:"MED",adaCompliance:"POOR",competitorsRunAds:true,competitorAdKeywords:["dentist houston","emergency dentist near me","dental implants houston"],
+          findings:["No online booking — patients want to take action immediately, 2/3 competitors have it","No chatbot — patients at 10pm have no way to get answers, competitor has AI chat","No blog — dental keyword blogs improve local SEO rankings significantly","No video content — office tour videos get 2x more engagement","No testimonials page — 88% trust reviews as much as personal recommendations","Competitors running Google Ads for 'dentist houston' and 'emergency dentist near me'","ADA compliance poor — missing alt text, low contrast"],
+          positives:["Website loads properly","SSL active","Mobile-friendly","Contact form present","Clickable phone number"]},
+        social:{score:28,
+          findings:["Facebook: no posts in 47 days — competitor posts 3x/week","Instagram: only 12 posts — competitors average 200+","No TikTok — dental TikTok gets massive organic reach","YouTube: 0 videos — competitors have tours and testimonials","No LinkedIn company page"],
+          positives:["Facebook page exists","Instagram account set up"]},
+        competitive:{score:44,
+          afterHoursComparison:{thisBusiness:"Visitor sees a contact form and phone number to voicemail. No instant response. No chat. No AI. No online booking. Patient waits until morning — if they don't call next dentist first.",competitorName:"Smile Design Dental",topCompetitor:"Instant AI chat: 'Hi! Welcome to Smile Design Dental. I can help schedule an appointment, check insurance, or answer questions.' Plus online booking, emergency number, and 4.7 stars with 187 reviews."},
+          competitors:[
+            {name:"Smile Design Dental",reviewCount:187,avgRating:4.7,estimatedScore:82,hasChatbot:true,hasBooking:true,hasWebsite:true},
+            {name:"Houston Family Dentistry",reviewCount:134,avgRating:4.5,estimatedScore:74,hasChatbot:false,hasBooking:true,hasWebsite:true},
+            {name:"Pearl Dentistry Midtown",reviewCount:96,avgRating:4.4,estimatedScore:68,hasChatbot:false,hasBooking:true,hasWebsite:true}],
+          findings:["Smile Design Dental: 8x more reviews (187 vs 23), 0.9 stars higher","2/3 competitors offer online booking","1 competitor has 24/7 AI chatbot","All 3 competitors run Google Ads","Competitors post on social 3-5x/week vs 0 in 47 days"],
+          positives:["Your website loads faster than 2/3 competitors","Contact form is clean and functional"]},
+        topFixes:[
+          {priority:1,title:"Launch Google Review Campaign",impact:"HIGH",difficulty:"EASY",diyTime:"2 hrs setup + ongoing",zidlyTime:"15 min, automated",
+            freeContent:"Hi [Patient Name],\n\nThank you for choosing Midtown Dentistry! We'd love to hear about your experience. Would you mind leaving a quick Google review? Takes less than 60 seconds and helps other patients find quality care.\n\n[YOUR GOOGLE REVIEW LINK]\n\nThank you!\n— The Midtown Dentistry Team",
+            zidlyModule:"Review Manager",zidlyDescription:"Automates review requests, routes happy patients to Google, catches unhappy ones privately.",
+            explanation:"23 reviews vs competitor's 187. Each review = ~80 more website visits (Birdeye). Getting to 50+ reviews = 266% more clicks. Highest ROI action available."},
+          {priority:2,title:"Install 24/7 AI Chat Assistant",impact:"HIGH",difficulty:"EASY",diyTime:"N/A",zidlyTime:"30 min setup",
+            freeContent:"NONE",zidlyModule:"Chat Assistant",zidlyDescription:"AI chatbot trained on your practice. Answers insurance, services, hours, captures leads 24/7.",
+            explanation:"67% of dental calls go unanswered after hours. Competitor has chatbot responding at 10pm while your patients hit voicemail. AI chat captures avg 18 leads/month."},
+          {priority:3,title:"Add Online Booking",impact:"HIGH",difficulty:"MEDIUM",diyTime:"4-6 hours",zidlyTime:"1 hr integration",
+            freeContent:"Free options: Google Reserve integration, Calendly free tier, or your PMS built-in booking (Dentrix, Eaglesoft, Open Dental all have it).",
+            zidlyModule:"NONE",zidlyDescription:"",
+            explanation:"2/3 competitors have online booking. Without it, 10pm patients can't schedule until morning — by then they've booked elsewhere."},
+          {priority:4,title:"Respond to ALL Reviews",impact:"MEDIUM",difficulty:"EASY",diyTime:"30 min/week",zidlyTime:"Automated",
+            freeContent:"5-star response:\n'Thank you so much, [Name]! We're thrilled you had a great experience. Your smile is our priority — see you next visit!'\n\n3-star response:\n'Thank you for the feedback, [Name]. We'd love to hear more about how we can improve. Please reach out to us at [PHONE].'",
+            zidlyModule:"Review Manager",zidlyDescription:"AI generates personalized responses to every review within hours.",
+            explanation:"Only 12% response rate. 97% of consumers read responses. Responding within 24hrs to negatives = 33% more likely to be updated. Free and immediate."},
+          {priority:5,title:"Start Weekly Social Posting",impact:"MEDIUM",difficulty:"MEDIUM",diyTime:"3-4 hrs/week",zidlyTime:"15 min/week review",
+            freeContent:"Monday: 'Did you know? Regular checkups can detect early signs of diabetes and heart disease. Book yours today! 🦷'\nWednesday: 'Meet our team! [Photo] has been with us X years and specializes in [specialty].'\nFriday: 'Replace your toothbrush every 3-4 months! Your teeth will thank you 😊'",
+            zidlyModule:"Content Engine",zidlyDescription:"AI generates weekly content calendar based on your practice.",
+            explanation:"Facebook silent 47 days. Competitor posts 3x/week. Weekly Google posting = 26% more impressions."}
+        ],
+        quickWins:["Respond to 3 most recent Google reviews today — 10 minutes, shows engagement to 97% of future readers","Add 10 photos to Google Business Profile — you have 8, top practices have 250+","Update Google description with keywords: 'Houston dentist', 'family dentistry', 'emergency dental care'","Add 5 Q&A to Google profile (insurance, hours, services, parking, emergencies)","Post one Google Business update today: 'Now accepting new patients!' — instant visibility boost"],
+        industryAvg:47,percentile:"Bottom 38% of dental practices in Houston",timestamp:new Date().toLocaleString()
+      });
+      setPhase("report");
+    }
+  },[]);
   useEffect(()=>{if(phase==="scanning"){const t=setInterval(()=>setScanMsgIdx(i=>(i+1)%SCAN_MSGS.length),3e3);return()=>clearInterval(t);}},[phase]);
 
   // Google Places Autocomplete
