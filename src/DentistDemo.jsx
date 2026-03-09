@@ -197,7 +197,7 @@ const AfterHoursComparison=({data})=>{
 /* ═══════════════════════════════════════════════════════════
    MAIN APP
    ═══════════════════════════════════════════════════════════ */
-export default function App(){
+export default function DentistDemo(){
   const[inputs,setInputs]=useState({name:"",city:"",country:"US",website:"",facebook:"",instagram:"",tiktok:"",twitter:"",youtube:"",linkedin:""});
   const[market,setMarket]=useState(MARKETS.US);
   const[phase,setPhase]=useState("input"); // input|detecting|confirm|emailGate|scanning|scoreReveal|report|upgrade
@@ -402,23 +402,15 @@ export default function App(){
       timestamp:new Date().toLocaleString()
     };
     setReport(rData);saveLastScore(rData);
-    // Email report if we have the user's email
-    if(captureVal&&captureVal.includes("@")){sendReportEmail(captureVal,rData);}
     setPhase("scoreReveal");
     let count=0;const target=rData.overall;
     const interval=setInterval(()=>{count+=2;if(count>=target){setAnimScore(target);clearInterval(interval);}else setAnimScore(count);},30);
     setTimeout(()=>setPhase("report"),3000);
   };
 
-  const handleCapture=v=>{setCaptured(true);setHasEmail();setCaptureVal(v);setShowCapture(false);if(report&&v.includes('@'))sendReportEmail(v,report);
+  const handleCapture=v=>{setCaptured(true);setHasEmail();setCaptureVal(v);setShowCapture(false);
     fetch("https://formspree.io/f/mzdjddjj",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"lead",contact:v,business:inputs.name,city:inputs.city,country:inputs.country})}).catch(()=>{});
     console.log("Captured:",v);};
-  const sendReportEmail=async(email,reportData)=>{
-    try{
-      await fetch("/api/send-report",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({to:email,report:reportData})});
-      console.log("Report emailed to:",email);
-    }catch(e){console.log("Email send failed:",e);}
-  };
   const shareUrl=`https://bizscorer.com?biz=${encodeURIComponent(inputs.name)}&city=${encodeURIComponent(inputs.city)}&country=${inputs.country}`;
   const zidlyUrl=`https://zidly.ai?from=bizscorer&biz=${encodeURIComponent(inputs.name)}&city=${encodeURIComponent(inputs.city)}&type=${bizType}`;
 
@@ -832,63 +824,10 @@ export default function App(){
         </footer>
       </>)}
       {/* ═══ EMAIL GATE ═══ */}
-      {/* ═══ DETECTING PHASE ═══ */}
-      {phase==="detecting"&&(
-        <section style={{maxWidth:520,margin:"0 auto",padding:"80px 24px",textAlign:"center"}}><FadeIn>
-          <div style={S.card}>
-            <div style={{width:56,height:56,borderRadius:16,background:"#f0fdf4",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 20px"}}>
-              <div style={{width:24,height:24,border:"3px solid #059669",borderTopColor:"transparent",borderRadius:"50%",animation:"spin 1s linear infinite"}}/>
-            </div>
-            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:24,fontWeight:700,color:"#0f172a",marginBottom:8}}>Finding your business...</h2>
-            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,color:"#475569"}}>AI is searching for <strong>{inputs.name}</strong> in {inputs.city}</p>
-            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#059669",marginTop:12,fontWeight:500}}>Scanning Google, social media, competitors...</p>
-          </div>
-        </FadeIn></section>
-      )}
-      {/* ═══ CONFIRM PHASE ═══ */}
-      {phase==="confirm"&&(
-        <section style={{maxWidth:560,margin:"0 auto",padding:"60px 24px"}}><FadeIn>
-          <div style={{textAlign:"center",marginBottom:24}}>
-            <div style={{width:48,height:48,borderRadius:14,background:"#f0fdf4",display:"flex",alignItems:"center",justifyContent:"center",color:"#059669",margin:"0 auto 12px",fontSize:20}}>✓</div>
-            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:24,fontWeight:700,color:"#0f172a",marginBottom:6}}>We found your business!</h2>
-            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,color:"#475569"}}>Confirm the details below, then we{"'"}ll run the full analysis.</p>
-          </div>
-          <div style={S.card}>
-            <div style={{marginBottom:14}}>
-              <label style={S.lbl}>Business Name</label>
-              <input value={inputs.name} onChange={e=>upd("name",e.target.value)} style={S.inp}/>
-            </div>
-            <div style={{marginBottom:14}}>
-              <label style={S.lbl}>Business Type</label>
-              <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-                {BIZ_TYPES.map(b=>(
-                  <button key={b.id} onClick={()=>setBizType(b.id)} style={{padding:"8px 14px",borderRadius:10,border:bizType===b.id?"2px solid #059669":"1px solid #e2e8f0",background:bizType===b.id?"#f0fdf4":"white",color:bizType===b.id?"#059669":"#64748b",fontSize:13,fontFamily:"'DM Sans',sans-serif",fontWeight:600,cursor:"pointer"}}>{b.icon} {b.label}</button>
-                ))}
-              </div>
-            </div>
-            <div style={{display:"flex",alignItems:"center",gap:10,margin:"18px 0 12px"}}>
-              <div style={{flex:1,height:1,background:"#e2e8f0"}}/>
-              <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:"#94a3b8",fontWeight:600}}>PROFILES FOUND</span>
-              <div style={{flex:1,height:1,background:"#e2e8f0"}}/>
-            </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-              {[["website","Website"],["facebook","Facebook"],["instagram","Instagram"],["tiktok","TikTok"],["youtube","YouTube"],["twitter","X / Twitter"],["linkedin","LinkedIn"]].map(([k,l])=>(
-                <div key={k}>
-                  <label style={S.lbl}>{l} {inputs[k]?<span style={{color:"#059669"}}>✓</span>:<span style={{color:"#94a3b8"}}>—</span>}</label>
-                  <input value={inputs[k]} onChange={e=>upd(k,e.target.value)} placeholder={l+" URL or handle"} style={{...S.inp,fontSize:14,padding:"12px 14px"}}/>
-                </div>
-              ))}
-            </div>
-            <button onClick={afterConfirm} style={{...S.btn,width:"100%",marginTop:20,justifyContent:"center",fontSize:18}}>
-              {I.spark} Run Full Analysis
-            </button>
-          </div>
-        </FadeIn></section>
-      )}
       {phase==="emailGate"&&(
         <section style={{maxWidth:440,margin:"0 auto",padding:"80px 24px",textAlign:"center"}}><FadeIn><div style={S.card}>
           <div style={{width:48,height:48,borderRadius:14,background:"#f0fdf4",display:"flex",alignItems:"center",justifyContent:"center",color:"#059669",margin:"0 auto 16px"}}>{I.mail}</div>
-          <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:22,fontWeight:700,color:"#1e293b",marginBottom:6}}>Where should we send your report?</h2>
+          <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:22,fontWeight:700,color:"#1e293b",marginBottom:6}}>Almost there! Enter your {market.captureLabel}</h2>
           <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#64748b",marginBottom:8}}>We{"'"}ll send your full report with competitor data, action plan, and free fix content.</p>
           <div style={{display:"flex",gap:8,marginBottom:12}}>
             <input type={market.captureType} value={captureVal} onChange={e=>setCaptureVal(e.target.value)} placeholder={market.capturePh} style={{...S.inp,flex:1}}/>
@@ -1132,8 +1071,8 @@ export default function App(){
         <div onClick={e=>e.stopPropagation()} style={{...S.card,maxWidth:380,width:"90%",textAlign:"center",position:"relative"}}>
           <button onClick={()=>setShowCapture(false)} style={{position:"absolute",top:12,right:12,background:"none",border:"none",color:"#94a3b8",cursor:"pointer"}}>{I.x}</button>
           <div style={{width:44,height:44,borderRadius:12,background:"#f0fdf4",display:"flex",alignItems:"center",justifyContent:"center",color:"#059669",margin:"0 auto 14px"}}>{I.mail}</div>
-          <h3 style={{fontFamily:"'Outfit',sans-serif",fontSize:18,fontWeight:700,color:"#1e293b",marginBottom:4}}>Email me this report</h3>
-          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#64748b",marginBottom:16}}>Full report with scores, issues, and action plan delivered to your inbox</p>
+          <h3 style={{fontFamily:"'Outfit',sans-serif",fontSize:18,fontWeight:700,color:"#1e293b",marginBottom:4}}>Get Your Full Report</h3>
+          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#64748b",marginBottom:16}}>Detailed report + 30-day recheck reminder</p>
           <div style={{display:"flex",gap:6}}><input type={market.captureType} value={captureVal} onChange={e=>setCaptureVal(e.target.value)} placeholder={market.capturePh} style={{...S.inp,flex:1}}/><button onClick={()=>{if(captureVal.trim())handleCapture(captureVal.trim())}} style={S.btn}>Send</button></div>
         </div>
       </div>}
