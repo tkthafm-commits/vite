@@ -501,6 +501,13 @@ export default function App(){
           </div>
         </div>
       </nav>
+      {/* ZIDLY BANNER */}
+      <div className="no-print" style={{background:"linear-gradient(135deg,#059669,#047857)",padding:"10px 32px",textAlign:"center"}}>
+        <a href="https://zidly.ai" target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",display:"inline-flex",flexDirection:"column",alignItems:"center",gap:2}}>
+          <span style={{fontFamily:"'Outfit',sans-serif",fontSize:16,fontWeight:700,color:"white"}}>Powered by <span style={{fontWeight:800,textDecoration:"underline",textUnderlineOffset:"3px"}}>Zidly.ai</span> — Get your score then supercharge your business with AI</span>
+          <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"rgba(255,255,255,0.7)"}}>or learn to DIY for free in your report</span>
+        </a>
+      </div>
 
       {/* ═══ INPUT PHASE ═══ */}
       {phase==="input"&&(<>
@@ -590,7 +597,7 @@ export default function App(){
             <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:40,textAlign:"center"}}>
               {HERO_STATS.map((s,i)=>(
                 <div key={i}>
-                  <p style={{fontFamily:"'Outfit',sans-serif",fontSize:60,fontWeight:800,color:i%2===0?"#dc2626":"#059669",lineHeight:1,marginBottom:10}}>{s.number}</p>
+                  <p style={{fontFamily:"'Outfit',sans-serif",fontSize:60,fontWeight:800,color:"#059669",lineHeight:1,marginBottom:10}}>{s.number}</p>
                   <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,color:"#334155",lineHeight:1.5,marginBottom:6}}>{s.text}</p>
                   <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:"#94a3b8",fontStyle:"italic"}}>{s.source}</p>
                 </div>
