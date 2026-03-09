@@ -5,14 +5,14 @@ import { useState, useEffect, useRef } from "react";
 
 /* ═══ ROTATING REVIEWS ═══ */
 export const REVIEWS = [
-  { name: "Dr. Sarah Mitchell", role: "Dentist", loc: "Houston, TX", text: "Found 6 issues I had no idea about. Fixed 3 in one hour. Phone started ringing more that same week.", stars: 5 },
-  { name: "Mike Romano", role: "Restaurant Owner", loc: "Chicago, IL", text: "Showed me my competitor had 4x my Google reviews. Two months later, I passed them. Incredible tool.", stars: 5 },
-  { name: "Jessica Chen", role: "Med Spa Owner", loc: "Los Angeles, CA", text: "We were invisible online. This audit showed exactly why. Our bookings are up 35% since fixing the issues.", stars: 5 },
-  { name: "David Hernandez", role: "Personal Injury Lawyer", loc: "Miami, FL", text: "I was spending $3K/mo on ads but my website had no chat. Patients were leaving at midnight. Not anymore.", stars: 5 },
-  { name: "Rachel Goldstein", role: "Veterinarian", loc: "Denver, CO", text: "The competitor comparison was eye-opening. I didn't realize how far behind we'd fallen on reviews.", stars: 5 },
-  { name: "Tom Bradley", role: "Real Estate Agent", loc: "Phoenix, AZ", text: "Ran the audit on a Monday. Had my chatbot answering questions by Friday. Best ROI decision this year.", stars: 5 },
-  { name: "Priya Patel", role: "Salon Owner", loc: "Atlanta, GA", text: "The after-hours comparison blew my mind. Customers were seeing a dead website while my competitor had live chat.", stars: 5 },
-  { name: "James Wilson", role: "Auto Repair Shop", loc: "Dallas, TX", text: "Went from 12 Google reviews to 67 in 60 days using the action plan. Revenue is up 28%.", stars: 5 },
+  { name: "Dr. Sarah M.", role: "Dentist", loc: "Houston, TX", text: "Found 6 issues I had no idea about. Fixed 3 in one hour. Phone started ringing more that same week.", stars: 5 },
+  { name: "Mike R.", role: "Restaurant Owner", loc: "Chicago, IL", text: "Showed me my competitor had 4x my Google reviews. Two months later, I passed them. Incredible tool.", stars: 5 },
+  { name: "Jessica C.", role: "Med Spa Owner", loc: "Los Angeles, CA", text: "We were invisible online. This audit showed exactly why. Our bookings are up 35% since fixing the issues.", stars: 5 },
+  { name: "David H.", role: "Personal Injury Lawyer", loc: "Miami, FL", text: "I was spending $3K/mo on ads but my website had no chat. Patients were leaving at midnight. Not anymore.", stars: 5 },
+  { name: "Rachel G.", role: "Veterinarian", loc: "Denver, CO", text: "The competitor comparison was eye-opening. I didn't realize how far behind we'd fallen on reviews.", stars: 5 },
+  { name: "Tom B.", role: "Real Estate Agent", loc: "Phoenix, AZ", text: "Ran the audit on a Monday. Had my chatbot answering questions by Friday. Best ROI decision this year.", stars: 5 },
+  { name: "Priya P.", role: "Salon Owner", loc: "Atlanta, GA", text: "The after-hours comparison blew my mind. Customers were seeing a dead website while my competitor had live chat.", stars: 5 },
+  { name: "James W.", role: "Auto Repair Shop", loc: "Dallas, TX", text: "Went from 12 Google reviews to 67 in 60 days using the action plan. Revenue is up 28%.", stars: 5 },
 ];
 
 /* ═══ FLOATING STATS ═══ */
