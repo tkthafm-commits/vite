@@ -41,22 +41,26 @@ export const FAQS = [
 
 /* ═══ ROTATING REVIEW COMPONENT ═══ */
 export const RotatingReviews = () => {
-  const [idx, setIdx] = useState(0);
+  const [startIdx, setStartIdx] = useState(0);
   const [fade, setFade] = useState(true);
   useEffect(() => {
     const t = setInterval(() => {
       setFade(false);
-      setTimeout(() => { setIdx(i => (i + 1) % REVIEWS.length); setFade(true); }, 300);
-    }, 4500);
+      setTimeout(() => { setStartIdx(i => (i + 3) % REVIEWS.length); setFade(true); }, 400);
+    }, 6000);
     return () => clearInterval(t);
   }, []);
-  const r = REVIEWS[idx];
+  const visible = [0,1,2].map(i => REVIEWS[(startIdx + i) % REVIEWS.length]);
   return (
-    <div style={{ transition: "opacity 0.3s", opacity: fade ? 1 : 0, minHeight: 120 }}>
-      <div style={{ display: "flex", gap: 3, marginBottom: 10 }}>{[1,2,3,4,5].map(i => <span key={i} style={{ color: "#facc15", fontSize: 18 }}>★</span>)}</div>
-      <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 17, color: "#334155", lineHeight: 1.6, fontStyle: "italic", marginBottom: 14 }}>"{r.text}"</p>
-      <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 14, fontWeight: 700, color: "#0f172a" }}>{r.name}</p>
-      <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 13, color: "#64748b" }}>{r.role} · {r.loc}</p>
+    <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:32, transition:"opacity 0.4s", opacity:fade?1:0 }}>
+      {visible.map((r,i) => (
+        <div key={startIdx+i}>
+          <div style={{ display:"flex", gap:2, marginBottom:10 }}>{[1,2,3,4,5].map(j => <span key={j} style={{ color:"#facc15", fontSize:18 }}>★</span>)}</div>
+          <p style={{ fontFamily:"'DM Sans',sans-serif", fontSize:17, color:"#334155", lineHeight:1.6, fontStyle:"italic", marginBottom:14 }}>"{r.text}"</p>
+          <p style={{ fontFamily:"'DM Sans',sans-serif", fontSize:15, fontWeight:700, color:"#0f172a" }}>{r.name}</p>
+          <p style={{ fontFamily:"'DM Sans',sans-serif", fontSize:13, color:"#64748b" }}>{r.role} · {r.loc}</p>
+        </div>
+      ))}
     </div>
   );
 };
