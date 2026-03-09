@@ -410,7 +410,7 @@ export default function App(){
                     </div>
                   ))}
                 </div>
-                <button onClick={startScan} disabled={!inputs.name.trim()||!inputs.city.trim()} style={{...S.btn,width:"100%",marginTop:22,justifyContent:"center",opacity:inputs.name.trim()&&inputs.city.trim()?1:0.4,fontSize:20,padding:"20px 36px"}}>
+                <button onClick={startDetect} disabled={!inputs.name.trim()||!inputs.city.trim()} style={{...S.btn,width:"100%",marginTop:22,justifyContent:"center",opacity:inputs.name.trim()&&inputs.city.trim()?1:0.4,fontSize:20,padding:"20px 36px"}}>
                   {I.search} Get My Business Score
                 </button>
                 <p style={{textAlign:"center",fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#64748b",marginTop:10}}>About 60 seconds · <strong style={{color:"#059669"}}>100% free results</strong></p>
@@ -575,6 +575,49 @@ export default function App(){
           </div>
         </footer>
       </>)}
+
+      {/* ═══ DETECTING PHASE ═══ */}
+      {phase==="detecting"&&(
+        <section style={{maxWidth:440,margin:"0 auto",padding:"80px 24px",textAlign:"center"}}><FadeIn><div style={S.card}>
+          <div style={{width:56,height:56,borderRadius:16,background:"#f0fdf4",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px"}}>
+            <div style={{width:24,height:24,border:"3px solid #059669",borderTopColor:"transparent",borderRadius:"50%",animation:"spin 1s linear infinite"}}/>
+          </div>
+          <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:22,fontWeight:700,color:"#1e293b",marginBottom:6}}>Finding {inputs.name}...</h2>
+          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#64748b"}}>Searching for your business profiles across the web</p>
+        </div></FadeIn></section>
+      )}
+
+      {/* ═══ CONFIRM PHASE ═══ */}
+      {phase==="confirm"&&(
+        <section style={{maxWidth:520,margin:"0 auto",padding:"60px 24px"}}><FadeIn><div style={S.card}>
+          <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:22,fontWeight:700,color:"#1e293b",marginBottom:6}}>We found your business</h2>
+          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#64748b",marginBottom:20}}>Confirm the details below, then we{"'"}ll run your full audit.</p>
+          <div style={{marginBottom:12}}>
+            <label style={S.lbl}>Business Name</label>
+            <input value={inputs.name} onChange={e=>upd("name",e.target.value)} style={S.inp}/>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:12}}>
+            <div><label style={S.lbl}>City</label><input value={inputs.city} onChange={e=>upd("city",e.target.value)} style={S.inp}/></div>
+            <div><label style={S.lbl}>Business Type</label>
+              <select value={bizType||"other"} onChange={e=>setBizType(e.target.value)} style={{...S.inp,appearance:"none"}}>
+                {BIZ_TYPES.map(t=><option key={t.id} value={t.id}>{t.icon} {t.label}</option>)}
+              </select>
+            </div>
+          </div>
+          {Object.entries(detectedProfiles).filter(([,v])=>v).length>0&&(
+            <div style={{background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:12,padding:"12px 16px",marginBottom:16}}>
+              <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:700,color:"#059669",textTransform:"uppercase",marginBottom:8}}>Profiles Found</p>
+              {Object.entries(detectedProfiles).filter(([,v])=>v).map(([k,v])=>(
+                <p key={k} style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#166534",marginBottom:3}}>{I.check} {k}: {v}</p>
+              ))}
+            </div>
+          )}
+          <QualityMeter inputs={inputs}/>
+          <button onClick={afterConfirm} style={{...S.btn,width:"100%",marginTop:18,justifyContent:"center",fontSize:18,padding:"18px 36px"}}>
+            {I.search} Run Full Audit
+          </button>
+        </div></FadeIn></section>
+      )}
 
       {/* ═══ EMAIL GATE ═══ */}
       {phase==="emailGate"&&(
