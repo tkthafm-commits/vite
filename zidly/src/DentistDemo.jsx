@@ -163,13 +163,12 @@ const LiveDemoBot = () => {
       });
       const data = await resp.json();
       if (data.error) {
-        console.error("API error:", data.error);
         setMessages(prev => [...prev, { from: "bot", text: "I'm having trouble connecting right now. Please try again in a moment!" }]);
       } else {
         const reply = data.content?.find(b => b.type === "text")?.text || "I couldn't generate a response. Please try again!";
         setMessages(prev => [...prev, { from: "bot", text: reply }]);
       }
-    } catch (err) { console.error("Chat error:", err); setMessages(prev => [...prev, { from: "bot", text: "I'm having a moment — please try again!" }]); }
+    } catch { setMessages(prev => [...prev, { from: "bot", text: "I'm having a moment — please try again!" }]); }
     setIsLoading(false);
   };
 
@@ -222,7 +221,7 @@ const LiveDemoBot = () => {
         </div>
         <button onClick={() => { setPhase("input"); setMessages([]); setUrl(""); }} style={{ background: "rgba(255,255,255,0.15)", border: "none", borderRadius: 8, padding: "6px 14px", color: "white", fontSize: 12, fontFamily: "'DM Sans', sans-serif", cursor: "pointer", fontWeight: 600 }}>New Demo</button>
       </div>
-      <div style={{ padding: 16, height: 340, overflowY: "auto", display: "flex", flexDirection: "column", gap: 10 }}>
+      <div className="zidly-chat-box" style={{ padding: 16, height: 340, overflowY: "auto", display: "flex", flexDirection: "column", gap: 10 }}>
         {messages.map((m, i) => (
           <div key={i} style={{
             alignSelf: m.from === "user" ? "flex-end" : "flex-start",
@@ -284,6 +283,13 @@ export default function DentistDemo() {
         ::selection{background:rgba(45,212,191,.3);color:#fff}
         input::placeholder{color:rgba(255,255,255,.25)}
         ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(45,212,191,.2);border-radius:4px}
+        @media(max-width:768px){
+          .zidly-nav-links{display:none!important}
+          .zidly-nav-cta{padding:8px 16px!important;font-size:13px!important}
+          .zidly-chat-box{height:260px!important}
+          .zidly-how-step{padding:24px 20px!important}
+          .zidly-how-step-num{font-size:40px!important}
+        }
       `}</style>
 
       {/* ═══ NAVBAR ═══ */}
@@ -294,8 +300,8 @@ export default function DentistDemo() {
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 800, fontSize: 20, letterSpacing: "-0.02em" }}>Zid<span style={{ color: "#2dd4bf" }}>ly</span></span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
-            {[["#demo","Try Demo"],["#features","Features"],["#pricing","Pricing"],["#roadmap","Roadmap"]].map(([h,l])=><a key={h} href={h} style={{ color: "#94a3b8", textDecoration: "none", fontSize: 14, fontFamily: "'DM Sans', sans-serif", fontWeight: 500 }}>{l}</a>)}
-            <a href="#cta" style={{ background: "linear-gradient(135deg, #2dd4bf, #0d9488)", color: "white", padding: "10px 22px", borderRadius: 12, fontSize: 14, fontWeight: 600, textDecoration: "none", fontFamily: "'DM Sans', sans-serif", boxShadow: "0 4px 15px rgba(45,212,191,0.25)" }}>Get Started</a>
+            <div className="zidly-nav-links" style={{ display: "flex", alignItems: "center", gap: 28 }}>{[["#demo","Try Demo"],["#features","Features"],["#pricing","Pricing"],["#roadmap","Roadmap"]].map(([h,l])=><a key={h} href={h} style={{ color: "#94a3b8", textDecoration: "none", fontSize: 14, fontFamily: "'DM Sans', sans-serif", fontWeight: 500 }}>{l}</a>)}</div>
+            <a className="zidly-nav-cta" href="#cta" style={{ background: "linear-gradient(135deg, #2dd4bf, #0d9488)", color: "white", padding: "10px 22px", borderRadius: 12, fontSize: 14, fontWeight: 600, textDecoration: "none", fontFamily: "'DM Sans', sans-serif", boxShadow: "0 4px 15px rgba(45,212,191,0.25)" }}>Get Started</a>
           </div>
         </div>
       </nav>
@@ -388,8 +394,8 @@ export default function DentistDemo() {
           </div></FadeIn>
           {[{n:"01",t:"Enter Your Website URL",d:"Just paste your practice's website link. Our AI scans your entire site in seconds — learning your services, hours, insurance, team, and specialties."},{n:"02",t:"Your AI Assistant Is Built Instantly",d:"Within 60 seconds, a custom chatbot is created — trained specifically on your practice. Review it, test it, ask it anything your patients would."},{n:"03",t:"Go Live & Start Capturing Patients",d:"A simple widget on your site — or a link to share anywhere. Start capturing after-hours leads from day one."}].map((s,i)=>(
             <FadeIn key={i} delay={i*.15}>
-              <div style={{ display: "flex", gap: 32, alignItems: "flex-start", padding: "36px 40px", borderRadius: 20, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", marginBottom: i<2?24:0 }}>
-                <span style={{ fontFamily: "'Instrument Serif', serif", fontSize: 56, color: "rgba(45,212,191,0.15)", lineHeight: 1, flexShrink: 0 }}>{s.n}</span>
+              <div className="zidly-how-step" style={{ display: "flex", gap: 32, alignItems: "flex-start", padding: "36px 40px", borderRadius: 20, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", marginBottom: i<2?24:0 }}>
+                <span className="zidly-how-step-num" style={{ fontFamily: "'Instrument Serif', serif", fontSize: 56, color: "rgba(45,212,191,0.15)", lineHeight: 1, flexShrink: 0 }}>{s.n}</span>
                 <div><h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 22, fontWeight: 700, color: "#e2e8f0", marginBottom: 8 }}>{s.t}</h3><p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 16, lineHeight: 1.7, color: "#64748b" }}>{s.d}</p></div>
               </div>
             </FadeIn>
@@ -453,7 +459,7 @@ export default function DentistDemo() {
               </FadeIn>
             ))}
           </div>
-          <FadeIn delay={0.3}><div style={{ textAlign: "center", marginTop: 40 }}><div style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "20px 32px", borderRadius: 16, background: "rgba(45,212,191,0.04)", border: "1px solid rgba(45,212,191,0.1)" }}><ShieldIcon/><span style={{ color: "#94a3b8", fontSize: 15, fontFamily: "'DM Sans', sans-serif" }}><strong style={{ color: "#2dd4bf" }}>30-day money-back guarantee.</strong> If your AI doesn't capture 10+ inquiries, full refund.</span></div></div></FadeIn>
+          <FadeIn delay={0.3}><div style={{ textAlign: "center", marginTop: 40 }}><div style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "20px 32px", borderRadius: 16, background: "rgba(45,212,191,0.04)", border: "1px solid rgba(45,212,191,0.1)" }}><ShieldIcon/><span style={{ color: "#94a3b8", fontSize: 15, fontFamily: "'DM Sans', sans-serif" }}><strong style={{ color: "#2dd4bf" }}>30-day money-back guarantee.</strong> If your AI doesn't capture 10+ inquiries in your first month, full refund.</span></div></div></FadeIn>
         </div>
       </section>
 
@@ -524,7 +530,7 @@ export default function DentistDemo() {
           <FadeIn delay={0.1}><h2 style={{ fontFamily: "'Instrument Serif', serif", fontSize: "clamp(32px, 4.5vw, 56px)", fontWeight: 400, lineHeight: 1.15, letterSpacing: "-0.02em", marginBottom: 20 }}>Ready to stop losing <span style={{ fontStyle: "italic", color: "#2dd4bf" }}>patients?</span></h2></FadeIn>
           <FadeIn delay={0.2}><p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, lineHeight: 1.7, color: "#94a3b8", maxWidth: 520, margin: "0 auto 40px" }}>Join dental practices across the country capturing more leads, collecting more reviews, and growing — on autopilot.</p></FadeIn>
           <FadeIn delay={0.3}>
-            <a href="mailto:alaa@zidly.ai" style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "linear-gradient(135deg, #2dd4bf, #0d9488)", color: "white", padding: "18px 40px", borderRadius: 16, fontSize: 18, fontWeight: 700, textDecoration: "none", fontFamily: "'DM Sans', sans-serif", boxShadow: "0 8px 30px rgba(45,212,191,0.3), inset 0 1px 0 rgba(255,255,255,0.15)" }}>Get Your AI Assistant Today <ArrowRight/></a>
+            <a href="mailto:hello@zidly.ai" style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "linear-gradient(135deg, #2dd4bf, #0d9488)", color: "white", padding: "18px 40px", borderRadius: 16, fontSize: 18, fontWeight: 700, textDecoration: "none", fontFamily: "'DM Sans', sans-serif", boxShadow: "0 8px 30px rgba(45,212,191,0.3), inset 0 1px 0 rgba(255,255,255,0.15)" }}>Get Your AI Assistant Today <ArrowRight/></a>
             <p style={{ color: "#64748b", fontSize: 14, fontFamily: "'DM Sans', sans-serif", marginTop: 16 }}>No credit card required — try the free demo above first</p>
           </FadeIn>
         </div>
@@ -536,7 +542,7 @@ export default function DentistDemo() {
           <div style={{ width: 28, height: 28, borderRadius: 8, background: "linear-gradient(135deg, #2dd4bf, #0d9488)", display: "flex", alignItems: "center", justifyContent: "center", color: "white" }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M7 3C4.5 3 3 5 3 7.5c0 2 .5 3.5 1 5.5.7 2.8 1.5 5.5 2 8 .3 1.2 1.5 1.2 1.8 0 .5-2 1.2-3.5 2.2-3.5s1.7 1.5 2.2 3.5c.3 1.2 1.5 1.2 1.8 0 .5-2.5 1.3-5.2 2-8 .5-2 1-3.5 1-5.5C17 5 15.5 3 13 3c-1.5 0-2.2.8-3 .8S8.5 3 7 3z"/></svg></div>
           <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 800, fontSize: 16 }}>Zid<span style={{ color: "#2dd4bf" }}>ly</span></span>
         </div>
-        <p style={{ color: "#475569", fontSize: 13, fontFamily: "'DM Sans', sans-serif" }}>&copy; 2025 Zidly. All rights reserved. AI-powered patient assistants for dental practices.</p>
+        <p style={{ color: "#475569", fontSize: 13, fontFamily: "'DM Sans', sans-serif" }}>&copy; 2025–2026 Zidly. All rights reserved. AI-powered patient assistants for dental practices.</p>
       </footer>
     </div>
   );

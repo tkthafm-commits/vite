@@ -361,10 +361,10 @@ export default function App(){
 
   const callAPI=async(prompt)=>{
     const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2000,tools:[{type:"web_search_20250305",name:"web_search"}],messages:[{role:"user",content:prompt}]})});
-    if(!r.ok){const err=await r.json().catch(()=>({}));console.error("API error:",r.status,err);throw new Error(err.error?.message||err.error||`API returned ${r.status}`);}
-    const d=await r.json();if(d.error){console.error("API response error:",d.error);throw new Error(typeof d.error==="string"?d.error:d.error.message||"API error");}
+    if(!r.ok){const err=await r.json().catch(()=>({}));throw new Error(err.error?.message||err.error||`API returned ${r.status}`);}
+    const d=await r.json();if(d.error){throw new Error(typeof d.error==="string"?d.error:d.error.message||"API error");}
     const t=d.content?.filter(b=>b.type==="text")?.map(b=>b.text)?.join("")||"";
-    try{return JSON.parse(t.replace(/```json|```/g,"").trim());}catch{console.warn("JSON parse failed:",t.slice(0,200));return null;}
+    try{return JSON.parse(t.replace(/```json|```/g,"").trim());}catch{return null;}
   };
 
   /* ═══ STEP 1: Detect business + find profiles ═══ */
@@ -408,7 +408,6 @@ export default function App(){
   const handleGateCapture=async(v)=>{
     setHasEmail();setCaptured(true);setCaptureVal(v);
     fetch("https://formspree.io/f/mzdjddjj",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"lead",contact:v,business:inputs.name,city:inputs.city,country:inputs.country})}).catch(()=>{});
-    console.log("Lead captured:",v);
     const sc=await getScanCountAsync();
     if(sc>=2){setPhase("upgrade");return;}
     runFullScan(bizType||"other");
@@ -463,12 +462,11 @@ export default function App(){
 
   const handleCapture=v=>{setCaptured(true);setHasEmail();setCaptureVal(v);setShowCapture(false);if(report&&v.includes('@'))sendReportEmail(v,report);
     fetch("https://formspree.io/f/mzdjddjj",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"lead",contact:v,business:inputs.name,city:inputs.city,country:inputs.country})}).catch(()=>{});
-    console.log("Captured:",v);};
+};
   const sendReportEmail=async(email,reportData)=>{
     try{
       await fetch("/api/send-report",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({to:email,report:reportData})});
-      console.log("Report emailed to:",email);
-    }catch(e){console.log("Email send failed:",e);}
+    }catch{}
   };
   const shareUrl=`https://bizscorer.com?biz=${encodeURIComponent(inputs.name)}&city=${encodeURIComponent(inputs.city)}&country=${inputs.country}`;
   const zidlyUrl=`https://zidly.ai?from=bizscorer&biz=${encodeURIComponent(inputs.name)}&city=${encodeURIComponent(inputs.city)}&type=${bizType}`;

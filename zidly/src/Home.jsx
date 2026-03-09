@@ -7,7 +7,7 @@ const REVIEWS=[
   {name:"Mike R.",role:"Restaurant Owner",loc:"Chicago, IL",text:"Went from 23 Google reviews to 89 in 60 days. The review manager is a game-changer."},
   {name:"Jessica C.",role:"Med Spa Owner",loc:"Los Angeles, CA",text:"Bookings up 35% since adding the chat assistant. It answers questions I didn't even know patients were asking."},
   {name:"David H.",role:"Personal Injury Lawyer",loc:"Miami, FL",text:"I was spending $3K/mo on ads but had no after-hours chat. Now every lead gets answered instantly."},
-  {name:"Rachel G.",role:"Veterinarian",loc:"Denver, CO",text:"The competitor comparison in BizScorer was eye-opening. Zidly fixed everything it found in one week."},
+  {name:"Rachel G.",role:"Veterinarian",loc:"Denver, CO",text:"The free business audit was eye-opening. Zidly fixed everything it found in one week."},
   {name:"Tom B.",role:"Real Estate Agent",loc:"Phoenix, AZ",text:"Chatbot answering property questions at midnight. Best ROI decision this year."},
   {name:"Priya P.",role:"Salon Owner",loc:"Atlanta, GA",text:"Went from invisible online to 4.8 stars with 120+ reviews. Clients say the chatbot feels like talking to a real person."},
   {name:"James W.",role:"Auto Repair Owner",loc:"Dallas, TX",text:"Revenue up 28% in 60 days. The content engine posts for us 3x a week — haven't touched social media myself."},

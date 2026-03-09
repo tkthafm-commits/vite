@@ -39,7 +39,7 @@ export default async function handler(req, res) {
     if (!response.ok) return res.status(response.status).json(data);
     return res.status(200).json(data);
   } catch (err) {
-    console.error("Proxy error:", err);
+    console.error("Proxy error");
     return res.status(500).json({ error: "Internal server error" });
   }
 }
