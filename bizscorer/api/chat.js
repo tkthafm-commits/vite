@@ -1,7 +1,7 @@
 export const maxDuration = 60;
 
 const ipMap = new Map();
-const MAX_REQ_PER_HOUR = 15;
+const MAX_REQ_PER_HOUR = 50;
 
 function rateLimit(ip) {
   const now = Date.now();

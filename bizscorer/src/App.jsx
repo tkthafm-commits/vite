@@ -236,6 +236,7 @@ export default function App(){
   const[contactMsg,setContactMsg]=useState({name:"",email:"",msg:""});
   const[contactSent,setContactSent]=useState(false);
   const[showTerms,setShowTerms]=useState(false);
+  const[scanError,setScanError]=useState("");
   const upd=(k,v)=>setInputs(p=>({...p,[k]:v}));
   useEffect(()=>setMarket(detectMarket(inputs.country)),[inputs.country]);
   useEffect(()=>{const p=new URLSearchParams(window.location.search);if(p.get("biz"))upd("name",p.get("biz"));if(p.get("city"))upd("city",p.get("city"));if(p.get("country"))upd("country",p.get("country"));
@@ -291,6 +292,17 @@ export default function App(){
     }
   },[]);
   useEffect(()=>{if(phase==="scanning"){const t=setInterval(()=>setScanMsgIdx(i=>(i+1)%SCAN_MSGS.length),3e3);return()=>clearInterval(t);}},[phase]);
+
+  // Load Google Maps script dynamically from env var
+  useEffect(()=>{
+    const key=import.meta.env.VITE_GOOGLE_MAPS_KEY;
+    if(key&&!window.__gmapsReady&&!document.querySelector('script[src*="maps.googleapis.com"]')){
+      const s=document.createElement("script");
+      s.async=true;s.defer=true;
+      s.src=`https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places&callback=__initGooglePlaces`;
+      document.head.appendChild(s);
+    }
+  },[]);
 
   // Google Places Autocomplete
   useEffect(()=>{
@@ -371,7 +383,7 @@ export default function App(){
 
   /* ═══ STEP 4: Run full scan ═══ */
   const runFullScan=async(bType)=>{
-    setPhase("scanning");incScanCount();setScanMsgIdx(0);
+    setPhase("scanning");incScanCount();setScanMsgIdx(0);setScanError("");
     const w=market.weights;
     const phases=["google","website","social","competitive","recommendations"];
     let gs=0,ws=0,ss=0,cs=0;
@@ -389,6 +401,12 @@ export default function App(){
         results[pid]=null;
         setScanPhases(p=>p.map(x=>x.id===pid?{...x,status:"done",score:0,data:null}:x));
       }
+    }
+    // If all phases failed, show error and return to confirm
+    if(!results.google&&!results.website&&!results.social&&!results.competitive&&!results.recommendations){
+      setScanError("Our AI couldn't complete the scan. This may be a temporary issue — please try again in a moment.");
+      setPhase("confirm");
+      return;
     }
     const recData=results.recommendations;
     const overall=recData?.overallScore||Math.round((gs*w.google+ws*w.website+ss*w.social+Math.floor((ws+ss)/2)*w.responsive+cs*w.competitive+Math.floor((gs+ws)/2)*w.seo)/100);
@@ -848,6 +866,11 @@ export default function App(){
       {/* ═══ CONFIRM PHASE ═══ */}
       {phase==="confirm"&&(
         <section style={{maxWidth:560,margin:"0 auto",padding:"60px 24px"}}><FadeIn>
+          {scanError&&<div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:12,padding:"14px 20px",marginBottom:20,display:"flex",alignItems:"center",gap:10}}>
+            <span style={{fontSize:18}}>⚠️</span>
+            <div><p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#991b1b",fontWeight:600,marginBottom:2}}>Scan failed</p><p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#b91c1c"}}>{scanError}</p></div>
+            <button onClick={()=>setScanError("")} style={{marginLeft:"auto",background:"none",border:"none",color:"#991b1b",cursor:"pointer",fontSize:16}}>✕</button>
+          </div>}
           <div style={{textAlign:"center",marginBottom:24}}>
             <div style={{width:48,height:48,borderRadius:14,background:"#f0fdf4",display:"flex",alignItems:"center",justifyContent:"center",color:"#059669",margin:"0 auto 12px",fontSize:20}}>✓</div>
             <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:24,fontWeight:700,color:"#0f172a",marginBottom:6}}>We found your business!</h2>

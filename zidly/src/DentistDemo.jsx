@@ -77,9 +77,20 @@ const LiveDemoBot = () => {
   const [userInput, setUserInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [practiceName, setPracticeName] = useState("");
+  const [leadCaptured, setLeadCaptured] = useState(false);
   const chatEndRef = useRef(null);
 
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, isLoading]);
+
+  const captureLead = (practiceUrl, name) => {
+    if (leadCaptured) return;
+    setLeadCaptured(true);
+    fetch("https://formspree.io/f/mzdjddjj", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "zidly-demo", practiceUrl: practiceUrl, practiceName: name, source: "zidly.ai/dentists", timestamp: new Date().toISOString() })
+    }).catch(() => {});
+  };
 
   const scanWebsite = async () => {
     if (!url.trim()) return;
@@ -121,6 +132,7 @@ const LiveDemoBot = () => {
       setScanStatus("Your AI assistant is ready!");
       await new Promise(r => setTimeout(r, 500));
       setPhase("ready");
+      captureLead(url, parsed.name || "Unknown");
       setMessages([{ from: "bot", text: `Hi! I'm the AI assistant for ${parsed.name || "your practice"}. I've been trained on your website and I'm ready to answer patient questions 24/7.\n\nTry asking me anything your patients would — like "What insurance do you accept?" or "Do you do Invisalign?"` }]);
     } catch {
       const fallback = url.replace(/https?:\/\/(www\.)?/, "").split(/[./]/)[0].replace(/[-_]/g, " ");
@@ -130,6 +142,7 @@ const LiveDemoBot = () => {
       setScanStatus("Ready!");
       await new Promise(r => setTimeout(r, 500));
       setPhase("ready");
+      captureLead(url, fallback);
       setMessages([{ from: "bot", text: `Hi! I'm the AI assistant for your dental practice. I've scanned your site and I'm ready to handle patient questions. Go ahead — ask me something!` }]);
     }
   };
