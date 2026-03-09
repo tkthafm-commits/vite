@@ -218,7 +218,18 @@ export default function App(){
   const[captureVal,setCaptureVal]=useState("");
   const[lastScore]=useState(()=>getLastScore());
   const[animScore,setAnimScore]=useState(0);
-  const auditCount=28470;
+  // Dynamic counters — auto-increment
+  const baseCount=28470;const launchDate=new Date("2025-03-09");
+  const daysSinceLaunch=Math.max(0,Math.floor((Date.now()-launchDate.getTime())/(1000*60*60*24)));
+  const[auditCount,setAuditCount]=useState(baseCount+(daysSinceLaunch*1000));
+  const[hourlyCount,setHourlyCount]=useState(20);
+  useEffect(()=>{
+    // Main counter: +1 roughly every 1.4 minutes (1000/day)
+    const mainT=setInterval(()=>setAuditCount(c=>c+1),86400);
+    // Hourly counter: +1 every 60 seconds
+    const hourT=setInterval(()=>setHourlyCount(c=>c+1),60000);
+    return()=>{clearInterval(mainT);clearInterval(hourT);};
+  },[]);
   const nameRef=useRef(null);
   const[showPrivacy,setShowPrivacy]=useState(false);
   const[showContact,setShowContact]=useState(false);
@@ -501,6 +512,22 @@ export default function App(){
           </div>
         </div>
       </nav>
+      {/* ZIDLY BANNER */}
+      <div className="no-print" style={{background:"linear-gradient(135deg,#059669,#047857)",padding:"10px 32px",textAlign:"center"}}>
+        <a href="https://zidly.ai" target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",display:"inline-flex",flexDirection:"column",alignItems:"center",gap:2}}>
+          <span style={{fontFamily:"'Outfit',sans-serif",fontSize:16,fontWeight:700,color:"white"}}>Powered by <span style={{fontWeight:800,textDecoration:"underline",textUnderlineOffset:"3px"}}>Zidly.ai</span> — Get your score then supercharge your business with AI</span>
+          <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"rgba(255,255,255,0.7)"}}>or learn to DIY for free in your report</span>
+        </a>
+      </div>
+
+      {/* LIVE COUNTER BAR */}
+      {phase==="input"&&(
+        <div style={{textAlign:"center",padding:"20px 32px 0"}}>
+          <p style={{fontFamily:"'Outfit',sans-serif",fontSize:48,fontWeight:800,color:"#059669",lineHeight:1}}>{auditCount.toLocaleString()}+</p>
+          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,color:"#475569"}}>businesses have already checked their score</p>
+          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#059669",fontWeight:500,marginTop:4}}>🔴 {hourlyCount} checked in the last hour</p>
+        </div>
+      )}
 
       {/* ═══ INPUT PHASE ═══ */}
       {phase==="input"&&(<>
@@ -533,7 +560,7 @@ export default function App(){
               <div style={{background:"white",border:"2px solid #e2e8f0",borderRadius:24,padding:"40px 36px",boxShadow:"0 12px 48px rgba(0,0,0,0.08)"}}>
                 <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:28,fontWeight:800,color:"#0f172a",marginBottom:4}}>What{"'"}s your score?</h2>
                 <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,color:"#64748b",marginBottom:8}}>See how you compare to competitors in ~60 seconds</p>
-                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#059669",marginBottom:20,fontWeight:500}}>🔴 {Math.floor(37+Math.random()*18)} businesses checked their score in the last hour</p>
+                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#059669",marginBottom:20,fontWeight:500}}>🔴 {hourlyCount} businesses checked their score in the last hour</p>
                 <div style={{marginBottom:14}}>
                   <label style={S.lbl}>Business Name *</label>
                   <input ref={nameRef} value={inputs.name} onChange={e=>upd("name",e.target.value)} placeholder="Start typing your business name..." style={{...S.inp,fontSize:19,padding:"18px 20px"}}/>
@@ -590,7 +617,7 @@ export default function App(){
             <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:40,textAlign:"center"}}>
               {HERO_STATS.map((s,i)=>(
                 <div key={i}>
-                  <p style={{fontFamily:"'Outfit',sans-serif",fontSize:60,fontWeight:800,color:i%2===0?"#dc2626":"#059669",lineHeight:1,marginBottom:10}}>{s.number}</p>
+                  <p style={{fontFamily:"'Outfit',sans-serif",fontSize:60,fontWeight:800,color:"#059669",lineHeight:1,marginBottom:10}}>{s.number}</p>
                   <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,color:"#334155",lineHeight:1.5,marginBottom:6}}>{s.text}</p>
                   <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:"#94a3b8",fontStyle:"italic"}}>{s.source}</p>
                 </div>
@@ -739,6 +766,25 @@ export default function App(){
             </div>
           </FadeIn>
         </section>
+        {/* ZIDLY BRIDGE */}
+        <section style={{maxWidth:900,margin:"100px auto 0",padding:"0 40px",textAlign:"center"}}>
+          <FadeIn delay={0.1}>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#059669",fontWeight:600,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:12}}>Every problem comes with a fix</p>
+            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:44,fontWeight:800,color:"#0f172a",marginBottom:16}}>Fix everything automatically<br/>with <a href="https://zidly.ai" target="_blank" rel="noopener noreferrer" style={{background:"linear-gradient(135deg,#059669,#0d9488)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",textDecoration:"none"}}>Zidly.ai</a></h2>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:18,color:"#475569",maxWidth:560,margin:"0 auto 32px",lineHeight:1.6}}>Your report includes free DIY fixes for every issue. But if you want to automate everything — AI reviews, 24/7 chat, social media, competitor monitoring — Zidly handles it all.</p>
+            <div style={{display:"flex",justifyContent:"center",gap:32,flexWrap:"wrap",marginBottom:32}}>
+              {[{icon:"⭐",name:"AI Review Manager",desc:"Automate review requests & responses"},{icon:"💬",name:"AI Chat Assistant",desc:"Answer customers 24/7 on your website"},{icon:"📱",name:"AI WhatsApp Responder",desc:"Handle inquiries automatically"},{icon:"📸",name:"AI Content Engine",desc:"Weekly social posts, generated for you"}].map((m,i)=>(
+                <div key={i} style={{textAlign:"center",width:180}}>
+                  <span style={{fontSize:32,display:"block",marginBottom:8}}>{m.icon}</span>
+                  <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,fontWeight:700,color:"#0f172a",marginBottom:4}}>{m.name}</p>
+                  <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#64748b"}}>{m.desc}</p>
+                </div>
+              ))}
+            </div>
+            <a href="https://zidly.ai" target="_blank" rel="noopener noreferrer" style={{...S.btn,textDecoration:"none",fontSize:18,padding:"18px 40px"}}>See Zidly in Action →</a>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#94a3b8",marginTop:12}}>Plans from $97/mo · 30-day money-back guarantee</p>
+          </FadeIn>
+        </section>
         {/* FAQ */}
         <section style={{maxWidth:700,margin:"100px auto 0",padding:"0 40px"}}>
           <FadeIn delay={0.1}>
@@ -752,7 +798,7 @@ export default function App(){
           <FadeIn delay={0.1}>
             <p style={{fontFamily:"'Outfit',sans-serif",fontSize:64,fontWeight:800,color:"#059669",lineHeight:1}}>{auditCount.toLocaleString()}+</p>
             <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:18,color:"#475569",marginBottom:4}}>businesses have already checked their score</p>
-            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#94a3b8"}}>Join them — it takes 60 seconds and it{"'"}s free</p>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#059669"}}>🔴 {hourlyCount} checked in the last hour — join them</p>
           </FadeIn>
         </section>
         <section style={{maxWidth:800,margin:"60px auto 0",padding:"0 40px",textAlign:"center"}}>
@@ -842,177 +888,185 @@ export default function App(){
 
       {/* ═══ REPORT ═══ */}
       {phase==="report"&&report&&(
-        <section style={{maxWidth:720,margin:"0 auto",padding:"30px 24px 60px"}}>
-          {/* Overall Score */}
-          <FadeIn><div style={{...S.card,textAlign:"center",marginBottom:20}}>
-            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:600,color:"#64748b",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:14}}>Overall Business Score</p>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:36,flexWrap:"wrap"}}>
-              <ScoreGauge score={report.overall} potential={report.potential} size={180} label="Current" market={market}/>
-              <div style={{color:"#cbd5e1"}}>{I.trend}</div>
-              <ScoreGauge score={report.potential} size={180} label="Potential" market={market}/>
+        <section style={{maxWidth:800,margin:"0 auto",padding:"30px 28px 60px"}}>
+          {/* SCORE HERO — the dopamine hit */}
+          <FadeIn><div style={{textAlign:"center",padding:"48px 32px",marginBottom:28,background:"linear-gradient(135deg,#f8fafc,#f0fdf4)",borderRadius:28,border:"1px solid #e2e8f0",position:"relative",overflow:"hidden"}}>
+            {/* Subtle animated bg */}
+            <div style={{position:"absolute",top:-40,right:-40,width:200,height:200,borderRadius:"50%",background:"rgba(5,150,105,0.06)",animation:"pulse 4s ease infinite"}}/>
+            <div style={{position:"absolute",bottom:-60,left:-60,width:240,height:240,borderRadius:"50%",background:"rgba(5,150,105,0.04)",animation:"pulse 4s ease infinite 1s"}}/>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#64748b",textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:8,position:"relative"}}>Your Business Score</p>
+            <div style={{position:"relative",display:"inline-block"}}>
+              <ScoreGauge score={report.overall} potential={report.potential} size={220} market={market}/>
             </div>
-            {report.percentile&&<p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#dc2626",fontWeight:600,marginTop:14}}>{report.percentile}</p>}
-            {report.industryAvg&&<p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#64748b",marginTop:6}}>Industry average: <strong style={{color:"#1e293b"}}>{report.industryAvg}/100</strong></p>}
-            <div style={{display:"flex",justifyContent:"center",gap:16,marginTop:20,flexWrap:"wrap"}}>
-              <div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:14,padding:"14px 22px",textAlign:"center"}}>
-                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:"#dc2626",fontWeight:700,textTransform:"uppercase",marginBottom:3}}>Estimated Revenue Loss</p>
-                <p style={{fontFamily:"'Outfit',sans-serif",fontSize:28,fontWeight:800,color:"#dc2626"}}>{report.monthlyLossPercent}</p>
-                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:"#991b1b"}}>of potential monthly revenue</p>
+            {report.percentile&&<p style={{fontFamily:"'DM Sans',sans-serif",fontSize:18,color:"#dc2626",fontWeight:700,marginTop:16,position:"relative"}}>{report.percentile}</p>}
+            {report.industryAvg&&<p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,color:"#475569",marginTop:4,position:"relative"}}>Industry average: <strong style={{color:"#0f172a",fontSize:18}}>{report.industryAvg}/100</strong></p>}
+            {/* Revenue impact — large, emotional */}
+            <div style={{display:"flex",justifyContent:"center",gap:24,marginTop:28,position:"relative",flexWrap:"wrap"}}>
+              <div style={{background:"white",borderRadius:16,padding:"18px 28px",border:"1px solid #fecaca",textAlign:"center",minWidth:200}}>
+                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:"#dc2626",fontWeight:700,textTransform:"uppercase",marginBottom:4}}>You{"'"}re Losing</p>
+                <p style={{fontFamily:"'Outfit',sans-serif",fontSize:36,fontWeight:800,color:"#dc2626"}}>{report.monthlyLossPercent}</p>
+                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#991b1b"}}>of potential revenue</p>
               </div>
-              <div style={{background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:14,padding:"14px 22px",textAlign:"center"}}>
-                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:"#059669",fontWeight:700,textTransform:"uppercase",marginBottom:3}}>Potential Gain</p>
-                <p style={{fontFamily:"'Outfit',sans-serif",fontSize:28,fontWeight:800,color:"#059669"}}>{report.monthlyGainPercent}</p>
-                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:"#166534"}}>revenue increase achievable</p>
+              <div style={{background:"white",borderRadius:16,padding:"18px 28px",border:"1px solid #bbf7d0",textAlign:"center",minWidth:200}}>
+                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:"#059669",fontWeight:700,textTransform:"uppercase",marginBottom:4}}>You Could Gain</p>
+                <p style={{fontFamily:"'Outfit',sans-serif",fontSize:36,fontWeight:800,color:"#059669"}}>{report.monthlyGainPercent}</p>
+                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#166534"}}>revenue increase</p>
               </div>
             </div>
-            {report.revenueMath&&<details style={{marginTop:14,textAlign:"left"}}><summary style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:"#64748b",cursor:"pointer",fontWeight:600}}>See the math ▾</summary><p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#475569",marginTop:6,lineHeight:1.6,whiteSpace:"pre-wrap"}}>{report.revenueMath}</p></details>}
+            {report.revenueMath&&<details style={{marginTop:16,textAlign:"left",position:"relative"}}><summary style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#64748b",cursor:"pointer",fontWeight:600}}>Show the math ▾</summary><p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#475569",marginTop:8,lineHeight:1.7,whiteSpace:"pre-wrap",background:"white",padding:16,borderRadius:12,border:"1px solid #e2e8f0"}}>{report.revenueMath}</p></details>}
           </div></FadeIn>
-
-          {/* Category Scores */}
-          <FadeIn delay={0.06}><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))",gap:10,marginBottom:20}}>
+          {/* POTENTIAL SCORE — the carrot + first Zidly CTA */}
+          <FadeIn delay={0.04}><div style={{textAlign:"center",padding:"36px 28px",marginBottom:28,background:"linear-gradient(135deg,#059669,#047857)",borderRadius:24,color:"white",position:"relative",overflow:"hidden"}}>
+            <div style={{position:"absolute",top:-30,right:-30,width:160,height:160,borderRadius:"50%",background:"rgba(255,255,255,0.05)"}}/>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:4,color:"rgba(255,255,255,0.7)",position:"relative"}}>Your Potential Score</p>
+            <p style={{fontFamily:"'Outfit',sans-serif",fontSize:88,fontWeight:800,lineHeight:1,position:"relative",marginBottom:4}}>{report.potential}</p>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:18,color:"rgba(255,255,255,0.8)",marginBottom:8,position:"relative"}}>You{"'"}re at {report.overall}. You could be at {report.potential}.</p>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,color:"rgba(255,255,255,0.6)",marginBottom:24,position:"relative"}}>Your top competitors are already there.</p>
+            <a href={zidlyUrl} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:8,background:"white",color:"#059669",border:"none",borderRadius:14,padding:"16px 36px",fontSize:18,fontWeight:700,fontFamily:"'DM Sans',sans-serif",textDecoration:"none",boxShadow:"0 4px 14px rgba(0,0,0,0.15)"}}>{I.zap} Close the Gap with Zidly →</a>
+          </div></FadeIn>
+          {/* CATEGORY SCORES — visual bars */}
+          <FadeIn delay={0.06}><div style={{marginBottom:28}}>
+            <h3 style={{fontFamily:"'Outfit',sans-serif",fontSize:22,fontWeight:800,color:"#0f172a",marginBottom:16}}>Score Breakdown</h3>
             {scanPhases.filter(p=>p.id!=="recommendations").map(sp=>(
-              <div key={sp.id} style={{textAlign:"center",padding:"18px 10px",...S.card}}>
-                <ScoreGauge score={sp.score||0} size={90} label={sp.label}/>
+              <div key={sp.id} style={{marginBottom:14}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+                  <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,fontWeight:600,color:"#1e293b"}}>{sp.label}</span>
+                  <span style={{fontFamily:"'Outfit',sans-serif",fontSize:24,fontWeight:800,color:scoreColor(sp.score||0)}}>{sp.score||0}<span style={{fontSize:13,color:"#94a3b8"}}>/100</span></span>
+                </div>
+                <div style={{width:"100%",height:12,borderRadius:100,background:"#f1f5f9",overflow:"hidden"}}>
+                  <div style={{height:"100%",borderRadius:100,background:scoreColor(sp.score||0),width:`${sp.score||0}%`,transition:"width 1.5s ease",boxShadow:`0 0 8px ${scoreColor(sp.score||0)}40`}}/>
+                </div>
               </div>
             ))}
           </div></FadeIn>
-
-          {/* After Hours */}
-          <FadeIn delay={0.08}><div style={{marginBottom:20}}><AfterHoursComparison data={report.competitive}/></div></FadeIn>
-
-          {/* Issues vs Working */}
-          <FadeIn delay={0.1}><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:20}}>
+          {/* AFTER HOURS — the wake-up call */}
+          <FadeIn delay={0.08}><div style={{marginBottom:28}}><AfterHoursComparison data={report.competitive}/></div></FadeIn>
+          {/* ISSUES vs WORKING — emoji-heavy, visual */}
+          <FadeIn delay={0.1}><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:28}}>
             <div>
-              <h3 style={{fontFamily:"'Outfit',sans-serif",fontSize:15,fontWeight:700,color:"#dc2626",marginBottom:8,display:"flex",alignItems:"center",gap:6}}>{I.alert} Issues Found</h3>
+              <h3 style={{fontFamily:"'Outfit',sans-serif",fontSize:20,fontWeight:800,color:"#dc2626",marginBottom:12,display:"flex",alignItems:"center",gap:8}}>🚨 Issues Found</h3>
               {[...(report.google?.findings||[]),...(report.website?.findings||[]),...(report.social?.findings||[]),...(report.competitive?.findings||[])].filter(Boolean).slice(0,10).map((f,i)=>
-                <div key={i} style={{display:"flex",gap:6,alignItems:"flex-start",padding:"8px 12px",borderRadius:10,background:"#fef2f2",border:"1px solid #fecaca",marginBottom:6}}>
-                  <span style={{color:"#dc2626",flexShrink:0,marginTop:1}}>{I.alert}</span>
-                  <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#991b1b",lineHeight:1.5}}>{f}</span>
+                <div key={i} style={{display:"flex",gap:8,alignItems:"flex-start",padding:"10px 14px",borderRadius:12,background:"#fef2f2",border:"1px solid #fecaca",marginBottom:8}}>
+                  <span style={{color:"#dc2626",flexShrink:0,fontSize:14,marginTop:1}}>✗</span>
+                  <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#991b1b",lineHeight:1.5}}>{f}</span>
                 </div>
               )}
             </div>
             <div>
-              <h3 style={{fontFamily:"'Outfit',sans-serif",fontSize:15,fontWeight:700,color:"#059669",marginBottom:8,display:"flex",alignItems:"center",gap:6}}>{I.check} What{"'"}s Working</h3>
+              <h3 style={{fontFamily:"'Outfit',sans-serif",fontSize:20,fontWeight:800,color:"#059669",marginBottom:12,display:"flex",alignItems:"center",gap:8}}>✅ What{"'"}s Working</h3>
               {[...(report.google?.positives||[]),...(report.website?.positives||[]),...(report.social?.positives||[]),...(report.competitive?.positives||[])].filter(Boolean).slice(0,8).map((f,i)=>
-                <div key={i} style={{display:"flex",gap:6,alignItems:"flex-start",padding:"8px 12px",borderRadius:10,background:"#f0fdf4",border:"1px solid #bbf7d0",marginBottom:6}}>
-                  <span style={{color:"#059669",flexShrink:0,marginTop:1}}>{I.check}</span>
-                  <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#166534",lineHeight:1.5}}>{f}</span>
+                <div key={i} style={{display:"flex",gap:8,alignItems:"flex-start",padding:"10px 14px",borderRadius:12,background:"#f0fdf4",border:"1px solid #bbf7d0",marginBottom:8}}>
+                  <span style={{color:"#059669",flexShrink:0,fontSize:14,marginTop:1}}>✓</span>
+                  <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#166534",lineHeight:1.5}}>{f}</span>
                 </div>
               )}
             </div>
           </div></FadeIn>
-
-          {/* Competitor Battle Cards */}
+          {/* COMPETITOR BATTLE — visual cards */}
           {report.competitive?.competitors?.length>0&&(
-            <FadeIn delay={0.12}><div style={{...S.card,marginBottom:20}}>
-              <h3 style={{fontFamily:"'Outfit',sans-serif",fontSize:16,fontWeight:700,color:"#1e293b",marginBottom:14}}>🏆 Competitor Comparison</h3>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))",gap:10}}>
-                <div style={{padding:16,borderRadius:14,background:"#f0fdf4",border:"2px solid #059669"}}>
-                  <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,fontWeight:700,color:"#059669",textTransform:"uppercase",marginBottom:6}}>You</p>
-                  <p style={{fontFamily:"'Outfit',sans-serif",fontSize:15,fontWeight:700,color:"#1e293b",marginBottom:4}}>{inputs.name}</p>
-                  <p style={{fontFamily:"'Outfit',sans-serif",fontSize:24,fontWeight:800,color:scoreColor(report.overall)}}>{report.overall}<span style={{fontSize:12,color:"#94a3b8"}}>/100</span></p>
-                  <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:"#64748b"}}>{report.google?.reviewCount||"?"} reviews · {report.google?.avgRating||"?"} ★</p>
+            <FadeIn delay={0.12}><div style={{marginBottom:28}}>
+              <h3 style={{fontFamily:"'Outfit',sans-serif",fontSize:22,fontWeight:800,color:"#0f172a",marginBottom:16}}>🏆 You vs Competitors</h3>
+              <div style={{display:"grid",gridTemplateColumns:`repeat(${Math.min(4,1+report.competitive.competitors.length)},1fr)`,gap:12}}>
+                <div style={{padding:20,borderRadius:16,background:"linear-gradient(135deg,#f0fdf4,#ecfdf5)",border:"2px solid #059669"}}>
+                  <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:700,color:"#059669",textTransform:"uppercase",marginBottom:8}}>📍 You</p>
+                  <p style={{fontFamily:"'Outfit',sans-serif",fontSize:16,fontWeight:700,color:"#0f172a",marginBottom:6}}>{inputs.name}</p>
+                  <p style={{fontFamily:"'Outfit',sans-serif",fontSize:32,fontWeight:800,color:scoreColor(report.overall)}}>{report.overall}<span style={{fontSize:13,color:"#94a3b8"}}>/100</span></p>
+                  <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#475569",marginTop:4}}>{report.google?.reviewCount||"?"} reviews · {report.google?.avgRating||"?"} ★</p>
                 </div>
                 {report.competitive.competitors.slice(0,3).map((c,i)=>(
-                  <div key={i} style={{padding:16,borderRadius:14,background:"white",border:"1px solid #e2e8f0"}}>
-                    <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,fontWeight:700,color:"#64748b",textTransform:"uppercase",marginBottom:6}}>Competitor #{i+1}</p>
-                    <p style={{fontFamily:"'Outfit',sans-serif",fontSize:14,fontWeight:700,color:"#1e293b",marginBottom:4}}>{c.name}</p>
-                    <p style={{fontFamily:"'Outfit',sans-serif",fontSize:24,fontWeight:800,color:scoreColor(c.estimatedScore||50)}}>{c.estimatedScore||"?"}<span style={{fontSize:12,color:"#94a3b8"}}>/100</span></p>
-                    <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:"#64748b"}}>{c.reviewCount} reviews · {c.avgRating} ★</p>
-                    <div style={{display:"flex",gap:4,marginTop:6,flexWrap:"wrap"}}>
-                      {c.hasChatbot&&<span style={{fontSize:9,padding:"2px 6px",borderRadius:4,background:"#f0fdf4",color:"#059669",fontWeight:600}}>Chatbot</span>}
-                      {c.hasBooking&&<span style={{fontSize:9,padding:"2px 6px",borderRadius:4,background:"#f0fdf4",color:"#059669",fontWeight:600}}>Booking</span>}
-                      {c.hasWebsite&&<span style={{fontSize:9,padding:"2px 6px",borderRadius:4,background:"#f0fdf4",color:"#059669",fontWeight:600}}>Website</span>}
+                  <div key={i} style={{padding:20,borderRadius:16,background:"white",border:"1px solid #e2e8f0"}}>
+                    <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:700,color:"#64748b",textTransform:"uppercase",marginBottom:8}}>Competitor #{i+1}</p>
+                    <p style={{fontFamily:"'Outfit',sans-serif",fontSize:15,fontWeight:700,color:"#0f172a",marginBottom:6}}>{c.name}</p>
+                    <p style={{fontFamily:"'Outfit',sans-serif",fontSize:32,fontWeight:800,color:scoreColor(c.estimatedScore||50)}}>{c.estimatedScore||"?"}<span style={{fontSize:13,color:"#94a3b8"}}>/100</span></p>
+                    <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#475569",marginTop:4}}>{c.reviewCount} reviews · {c.avgRating} ★</p>
+                    <div style={{display:"flex",gap:4,marginTop:8,flexWrap:"wrap"}}>
+                      {c.hasChatbot&&<span style={{fontSize:10,padding:"3px 8px",borderRadius:6,background:"#f0fdf4",color:"#059669",fontWeight:700}}>AI Chat</span>}
+                      {c.hasBooking&&<span style={{fontSize:10,padding:"3px 8px",borderRadius:6,background:"#f0fdf4",color:"#059669",fontWeight:700}}>Booking</span>}
+                      {c.hasWebsite&&<span style={{fontSize:10,padding:"3px 8px",borderRadius:6,background:"#f1f5f9",color:"#64748b",fontWeight:700}}>Website</span>}
                     </div>
                   </div>
                 ))}
               </div>
             </div></FadeIn>
           )}
-
-          {/* What-If */}
-          <FadeIn delay={0.14}><div className="no-print" style={{marginBottom:20}}><WhatIfSimulator currentScore={report.overall} market={market}/></div></FadeIn>
-
-          {/* Recommendations / Action Plan */}
-          <FadeIn delay={0.16}><div style={{marginBottom:20}}>
-            <h3 style={{fontFamily:"'Outfit',sans-serif",fontSize:18,fontWeight:800,color:"#1e293b",marginBottom:14,display:"flex",alignItems:"center",gap:8}}>{I.spark} Your Action Plan</h3>
+          {/* WHAT-IF SIMULATOR */}
+          <FadeIn delay={0.14}><div className="no-print" style={{marginBottom:28}}><WhatIfSimulator currentScore={report.overall} market={market}/></div></FadeIn>
+          {/* ACTION PLAN — bold cards */}
+          <FadeIn delay={0.16}><div style={{marginBottom:28}}>
+            <h3 style={{fontFamily:"'Outfit',sans-serif",fontSize:24,fontWeight:800,color:"#0f172a",marginBottom:16}}>🎯 Your Action Plan</h3>
             {(report.topFixes||[]).sort((a,b)=>(a.priority||99)-(b.priority||99)).map((fix,i)=>(
-              <div key={i} style={{...S.card,marginBottom:12}}>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8,flexWrap:"wrap",gap:6}}>
-                  <div style={{display:"flex",alignItems:"center",gap:8}}>
-                    <span style={{fontFamily:"'Outfit',sans-serif",fontSize:18,fontWeight:800,color:"#cbd5e1"}}>#{i+1}</span>
-                    <h4 style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,fontWeight:700,color:"#1e293b"}}>{fix.title}</h4>
+              <div key={i} style={{background:"white",border:"1px solid #e2e8f0",borderRadius:20,padding:"24px",marginBottom:14,boxShadow:"0 1px 3px rgba(0,0,0,0.03)"}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10,flexWrap:"wrap",gap:8}}>
+                  <div style={{display:"flex",alignItems:"center",gap:10}}>
+                    <span style={{fontFamily:"'Outfit',sans-serif",fontSize:24,fontWeight:800,color:"#059669"}}>#{i+1}</span>
+                    <h4 style={{fontFamily:"'DM Sans',sans-serif",fontSize:18,fontWeight:700,color:"#0f172a"}}>{fix.title}</h4>
                   </div>
-                  <div style={{display:"flex",gap:4}}>
-                    <span style={{fontSize:10,fontWeight:700,padding:"3px 8px",borderRadius:6,background:fix.impact==="HIGH"?"#fef2f2":"#fffbeb",color:fix.impact==="HIGH"?"#dc2626":"#d97706",fontFamily:"'DM Sans',sans-serif"}}>{fix.impact} impact</span>
-                    <span style={{fontSize:10,fontWeight:700,padding:"3px 8px",borderRadius:6,background:"#f1f5f9",color:"#64748b",fontFamily:"'DM Sans',sans-serif"}}>{fix.difficulty}</span>
+                  <div style={{display:"flex",gap:6}}>
+                    <span style={{fontSize:11,fontWeight:700,padding:"4px 10px",borderRadius:8,background:fix.impact==="HIGH"?"#fef2f2":"#fffbeb",color:fix.impact==="HIGH"?"#dc2626":"#d97706"}}>{fix.impact} impact</span>
+                    <span style={{fontSize:11,fontWeight:700,padding:"4px 10px",borderRadius:8,background:"#f1f5f9",color:"#64748b"}}>{fix.difficulty}</span>
                   </div>
                 </div>
-                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#475569",lineHeight:1.6,marginBottom:10}}>{fix.explanation}</p>
+                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,color:"#475569",lineHeight:1.6,marginBottom:12}}>{fix.explanation}</p>
                 {fix.diyTime&&fix.zidlyTime&&(
-                  <div style={{display:"flex",gap:14,marginBottom:10}}>
-                    <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:"#64748b",display:"flex",alignItems:"center",gap:4}}>{I.clock} DIY: <strong style={{color:"#1e293b"}}>{fix.diyTime}</strong></span>
-                    <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:"#059669",display:"flex",alignItems:"center",gap:4}}>{I.zap} With Zidly: <strong>{fix.zidlyTime}</strong></span>
+                  <div style={{display:"flex",gap:20,marginBottom:12,flexWrap:"wrap"}}>
+                    <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#64748b"}}>{I.clock} DIY: <strong style={{color:"#0f172a"}}>{fix.diyTime}</strong></span>
+                    <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#059669"}}>{I.zap} Zidly: <strong>{fix.zidlyTime}</strong></span>
                   </div>
                 )}
                 {fix.freeContent&&fix.freeContent.length>5&&fix.freeContent!=="NONE"&&(
-                  <div style={{background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:10,padding:"12px 14px",marginBottom:10}}>
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
-                      <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,fontWeight:700,color:"#059669",textTransform:"uppercase"}}>🎁 Free Fix — Copy & Use</span>
+                  <div style={{background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:14,padding:"14px 16px",marginBottom:12}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+                      <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:700,color:"#059669",textTransform:"uppercase"}}>🎁 Free Fix — Copy & Paste</span>
                       <CopyBtn text={fix.freeContent}/>
                     </div>
-                    <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#166534",lineHeight:1.5,whiteSpace:"pre-wrap"}}>{fix.freeContent}</p>
+                    <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#166534",lineHeight:1.6,whiteSpace:"pre-wrap"}}>{fix.freeContent}</p>
                   </div>
                 )}
                 {fix.zidlyModule&&fix.zidlyModule!=="NONE"&&(
-                  <div style={{background:"white",border:"1px solid #e2e8f0",borderRadius:10,padding:"10px 14px",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8}}>
+                  <div style={{background:"linear-gradient(135deg,#f0fdf4,#ecfdf5)",border:"1px solid #bbf7d0",borderRadius:14,padding:"12px 16px",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8}}>
                     <div>
-                      <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:700,color:"#059669"}}>Zidly {fix.zidlyModule}</p>
-                      <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:"#64748b"}}>{fix.zidlyDescription||""} · Plans from {market.pricing.starter}</p>
+                      <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,fontWeight:700,color:"#059669"}}>⚡ Automate with Zidly {fix.zidlyModule}</p>
+                      <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#475569"}}>{fix.zidlyDescription||""}</p>
                     </div>
-                    <a href={zidlyUrl} target="_blank" rel="noopener noreferrer" style={{...S.btn,padding:"8px 16px",fontSize:12,textDecoration:"none"}}>{I.zap} Try Free Demo</a>
+                    <a href={zidlyUrl} target="_blank" rel="noopener noreferrer" style={{background:"#059669",color:"white",border:"none",borderRadius:10,padding:"10px 20px",fontSize:13,fontWeight:700,fontFamily:"'DM Sans',sans-serif",textDecoration:"none"}}>{I.zap} Try Free</a>
                   </div>
                 )}
               </div>
             ))}
           </div></FadeIn>
-
-          {/* Quick Wins */}
+          {/* QUICK WINS */}
           {report.quickWins?.length>0&&(
-            <FadeIn delay={0.18}><div style={{...S.card,marginBottom:20,background:"#fffbeb",borderColor:"#fde68a"}}>
-              <h3 style={{fontFamily:"'Outfit',sans-serif",fontSize:15,fontWeight:700,color:"#92400e",marginBottom:10,display:"flex",alignItems:"center",gap:6}}>{I.zap} Quick Wins — Do These Today</h3>
-              {report.quickWins.map((w,i)=><p key={i} style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#78350f",lineHeight:1.6,marginBottom:4}}><span style={{fontWeight:800,color:"#b45309"}}>{i+1}.</span> {w}</p>)}
+            <FadeIn delay={0.18}><div style={{background:"#fffbeb",border:"1px solid #fde68a",borderRadius:20,padding:"24px",marginBottom:28}}>
+              <h3 style={{fontFamily:"'Outfit',sans-serif",fontSize:20,fontWeight:800,color:"#92400e",marginBottom:12}}>⚡ Quick Wins — Do These Right Now</h3>
+              {report.quickWins.map((w,i)=><p key={i} style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,color:"#78350f",lineHeight:1.7,marginBottom:6}}><span style={{fontWeight:800,color:"#b45309",fontSize:18}}>{i+1}.</span> {w}</p>)}
             </div></FadeIn>
           )}
-
-          {/* Main CTA */}
-          <FadeIn delay={0.2}><div className="no-print" style={{textAlign:"center",padding:"36px 24px",...S.card,background:"linear-gradient(135deg,#f0fdf4,#ecfdf5)",borderColor:"#bbf7d0"}}>
-            <h3 style={{fontFamily:"'Outfit',sans-serif",fontSize:24,fontWeight:800,color:"#1e293b",marginBottom:8}}>Fix <span style={{color:"#059669"}}>everything</span> — automatically</h3>
-            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#475569",marginBottom:6,maxWidth:400,margin:"0 auto 6px",lineHeight:1.6}}>Zidly{"'"}s AI handles reviews, customer questions, content & more. See it work on YOUR business.</p>
-            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#059669",fontWeight:600,marginBottom:20}}>💰 30-day money-back guarantee · Plans from {market.pricing.starter}</p>
-            <div style={{display:"flex",justifyContent:"center",gap:10,flexWrap:"wrap"}}>
-              <a href={zidlyUrl} target="_blank" rel="noopener noreferrer" style={{...S.btn,textDecoration:"none",fontSize:16,padding:"15px 32px"}}>See Your AI Demo {I.arrow}</a>
-              <button onClick={()=>setShowShare(true)} style={{...S.btn2,fontSize:13}}>{I.share} Share Report</button>
-            </div>
+          {/* FINAL CTA — dopamine close */}
+          <FadeIn delay={0.2}><div className="no-print" style={{textAlign:"center",padding:"44px 28px",background:"linear-gradient(135deg,#059669,#047857)",borderRadius:24,color:"white",marginBottom:28}}>
+            <p style={{fontFamily:"'Outfit',sans-serif",fontSize:20,marginBottom:4,color:"rgba(255,255,255,0.7)"}}>Your score right now</p>
+            <p style={{fontFamily:"'Outfit',sans-serif",fontSize:72,fontWeight:800,lineHeight:1}}>{report.overall}</p>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:18,marginTop:8,marginBottom:4,color:"rgba(255,255,255,0.8)"}}>Your potential with Zidly</p>
+            <p style={{fontFamily:"'Outfit',sans-serif",fontSize:72,fontWeight:800,lineHeight:1,marginBottom:20}}>{report.potential}</p>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,color:"rgba(255,255,255,0.7)",marginBottom:24}}>Your competitors are already closing this gap.</p>
+            <a href={zidlyUrl} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:8,background:"white",color:"#059669",border:"none",borderRadius:14,padding:"18px 40px",fontSize:20,fontWeight:800,fontFamily:"'DM Sans',sans-serif",textDecoration:"none",boxShadow:"0 4px 20px rgba(0,0,0,0.2)"}}>{I.zap} Fix My Score with Zidly</a>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"rgba(255,255,255,0.5)",marginTop:12}}>Plans from {market.pricing.starter} · 30-day guarantee</p>
           </div></FadeIn>
-
-          {/* Scan Competitor + Recheck */}
-          <FadeIn delay={0.22}><div className="no-print" style={{display:"flex",justifyContent:"center",gap:10,marginTop:20,flexWrap:"wrap"}}>
-            <button onClick={()=>{setPhase("input");setInputs(p=>({...p,name:"",website:"",facebook:"",instagram:"",tiktok:"",twitter:"",youtube:"",linkedin:""}));setScanPhases(sp=>sp.map(x=>({...x,status:"pending",score:null,data:null})));setReport(null);}} style={{...S.btn2,padding:"10px 18px",fontSize:13}}>🔍 Scan a Competitor</button>
-            <button onClick={()=>{window.print();}} style={{...S.btn2,padding:"10px 18px",fontSize:13}}>📄 Save as PDF</button>
+          {/* ACTIONS */}
+          <FadeIn delay={0.22}><div className="no-print" style={{display:"flex",justifyContent:"center",gap:12,marginTop:20,flexWrap:"wrap"}}>
+            <button onClick={()=>setShowShare(true)} style={{...S.btn2,padding:"12px 20px",fontSize:14}}>{I.share} Share Report</button>
+            <button onClick={()=>{window.print();}} style={{...S.btn2,padding:"12px 20px",fontSize:14}}>📄 Save as PDF</button>
+            <button onClick={()=>{setPhase("input");setInputs(p=>({...p,name:"",website:"",facebook:"",instagram:"",tiktok:"",twitter:"",youtube:"",linkedin:""}));setScanPhases(sp=>sp.map(x=>({...x,status:"pending",score:null,data:null})));setReport(null);}} style={{...S.btn2,padding:"12px 20px",fontSize:14}}>🔍 Scan a Competitor</button>
           </div></FadeIn>
-
-          {/* Footer */}
-          <div style={{textAlign:"center",marginTop:30}}>
+          {/* FOOTER */}
+          <div style={{textAlign:"center",marginTop:36}}>
             <a href="https://zidly.ai" target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:6,textDecoration:"none"}}>
-              <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#64748b"}}>Powered by</span>
-              <span style={{fontFamily:"'Outfit',sans-serif",fontWeight:800,fontSize:15}}>Zid<span style={{color:"#059669"}}>ly</span></span>
+              <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#64748b"}}>Powered by</span>
+              <span style={{fontFamily:"'Outfit',sans-serif",fontWeight:800,fontSize:16}}>Zid<span style={{color:"#059669"}}>ly</span></span>
             </a>
-            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:"#94a3b8",marginTop:5}}>© 2025 Zidly · Report generated {report.timestamp}</p>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:"#94a3b8",marginTop:5}}>Report generated {report.timestamp}</p>
           </div>
         </section>
       )}
-
       {/* ═══ MODALS ═══ */}
       {showCapture&&<div style={{position:"fixed",inset:0,zIndex:1e3,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,0.4)",backdropFilter:"blur(6px)"}} onClick={()=>setShowCapture(false)}>
         <div onClick={e=>e.stopPropagation()} style={{...S.card,maxWidth:380,width:"90%",textAlign:"center",position:"relative"}}>
