@@ -180,7 +180,6 @@ const AfterHoursComparison=({data})=>{
    MAIN APP
    ═══════════════════════════════════════════════════════════ */
 export default function App(){
-  const[lang,setLang]=useState("en");
   const[inputs,setInputs]=useState({name:"",city:"",country:"US",website:"",facebook:"",instagram:"",tiktok:"",twitter:"",youtube:"",linkedin:""});
   const[market,setMarket]=useState(MARKETS.US);
   const[phase,setPhase]=useState("input"); // input|detecting|confirm|emailGate|scanning|scoreReveal|report|upgrade
@@ -213,18 +212,29 @@ export default function App(){
   useEffect(()=>{const p=new URLSearchParams(window.location.search);if(p.get("biz"))upd("name",p.get("biz"));if(p.get("city"))upd("city",p.get("city"));if(p.get("country"))upd("country",p.get("country"));},[]);
   useEffect(()=>{if(phase==="scanning"){const t=setInterval(()=>setScanMsgIdx(i=>(i+1)%SCAN_MSGS.length),3e3);return()=>clearInterval(t);}},[phase]);
 
-  // Google Places Autocomplete
+  // Google Places Autocomplete — with error handling
   useEffect(()=>{
-    if(!nameRef.current||!window.google?.maps?.places)return;
-    const ac=new window.google.maps.places.Autocomplete(nameRef.current,{types:["establishment"]});
-    ac.addListener("place_changed",()=>{
-      const p=ac.getPlace();if(!p?.name)return;
-      upd("name",p.name);
-      if(p.formatted_address){const parts=p.formatted_address.split(",");if(parts.length>=2)upd("city",parts.slice(0,-1).join(",").trim());}
-      if(p.address_components){const cc=p.address_components.find(c=>c.types.includes("country"));if(cc){const found=COUNTRIES.find(c=>c.code===cc.short_name);if(found)upd("country",cc.short_name);}}
-      if(p.website)upd("website",p.website.replace(/^https?:\/\//,""));
-    });
-  },[phase]);
+    let ac=null;
+    const init=()=>{
+      try{
+        if(!nameRef.current||!window.google?.maps?.places)return;
+        ac=new window.google.maps.places.Autocomplete(nameRef.current,{types:["establishment"]});
+        ac.setFields(["name","formatted_address","address_components","website","url"]);
+        ac.addListener("place_changed",()=>{
+          try{
+            const p=ac.getPlace();if(!p?.name)return;
+            upd("name",p.name);
+            if(p.formatted_address){const parts=p.formatted_address.split(",");if(parts.length>=2)upd("city",parts.slice(0,-1).join(",").trim());}
+            if(p.address_components){const cc=p.address_components.find(c=>c.types.includes("country"));if(cc){const found=COUNTRIES.find(c=>c.code===cc.short_name);if(found)upd("country",cc.short_name);}}
+            if(p.website)upd("website",p.website.replace(/^https?:\/\//,""));
+          }catch(e){console.log("Places selection error:",e);}
+        });
+      }catch(e){console.log("Google Places init failed — typing manually still works:",e);}
+    };
+    if(window.__gmapsReady){init();}
+    else{window.addEventListener("google-places-ready",init);}
+    return()=>{window.removeEventListener("google-places-ready",init);};
+  },[]);
 
   const callAPI=async(prompt)=>{
     const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2000,tools:[{type:"web_search_20250305",name:"web_search"}],messages:[{role:"user",content:prompt}]})});
@@ -389,28 +399,37 @@ export default function App(){
 
           {/* THREE COLUMN: What We Scan + Form + Reviews */}
           <div style={{display:"grid",gridTemplateColumns:"0.7fr 1.2fr 0.8fr",gap:36,alignItems:"start",maxWidth:1200,margin:"0 auto"}}>
-            {/* LEFT: What We Scan */}
+            {/* LEFT: What We Scan — BOLD */}
             <FadeIn delay={0.05}>
               <div style={{position:"sticky",top:80}}>
-                <h3 style={{fontFamily:"'Outfit',sans-serif",fontSize:18,fontWeight:700,color:"#0f172a",marginBottom:20}}>What our AI scans</h3>
-                {[
-                  {icon:"⭐",title:"Google Business Profile",items:"Reviews, rating, response rate, photos, posts, Q&A, hours, categories"},
-                  {icon:"🌐",title:"Your Website",items:"Mobile speed, SSL, CTAs, booking, chatbot, forms, ADA compliance, blog"},
-                  {icon:"📱",title:"Social Media & YouTube",items:"Facebook, Instagram, TikTok, YouTube, LinkedIn — activity, followers, content"},
-                  {icon:"🏆",title:"Competitor Intelligence",items:"3-5 real named competitors, their reviews, ratings, features, after-hours presence"},
-                  {icon:"📋",title:"AI Action Plan",items:"Prioritized fixes, revenue math, free copy-paste content, DIY vs automated times"},
-                ].map((s,i)=>(
-                  <div key={i} style={{marginBottom:20}}>
-                    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
-                      <span style={{fontSize:18}}>{s.icon}</span>
-                      <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,fontWeight:700,color:"#0f172a"}}>{s.title}</p>
-                    </div>
-                    <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#64748b",lineHeight:1.5,paddingLeft:26}}>{s.items}</p>
+                <div style={{background:"linear-gradient(135deg,#0f172a,#1e293b)",borderRadius:20,padding:"28px 24px",color:"white"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+                    <span style={{fontSize:24}}>🔬</span>
+                    <h3 style={{fontFamily:"'Outfit',sans-serif",fontSize:24,fontWeight:800,color:"white",lineHeight:1.2}}>We scan <span style={{color:"#4ade80"}}>everything</span></h3>
                   </div>
-                ))}
-                <div style={{marginTop:24,padding:"14px 16px",background:"#f0fdf4",borderRadius:12,border:"1px solid #bbf7d0"}}>
-                  <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:600,color:"#059669"}}>5 analysis phases</p>
-                  <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#166534"}}>More comprehensive than any free tool on the market</p>
+                  <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#94a3b8",marginBottom:22}}>5 AI analysis phases running simultaneously</p>
+                  {[
+                    {icon:"⭐",title:"Google Profile",count:"12+ signals",items:"Reviews, rating, response rate, photos, posts, Q&A, hours, categories, description"},
+                    {icon:"🌐",title:"Website Deep Scan",count:"15+ checks",items:"Mobile speed, SSL, CTAs, booking, chatbot, forms, ADA compliance, blog, video, testimonials"},
+                    {icon:"📱",title:"All Social Media",count:"8 platforms",items:"Facebook, Instagram, TikTok, YouTube, LinkedIn, X, Snapchat — posting frequency, engagement"},
+                    {icon:"🏆",title:"Competitor Battle",count:"3-5 rivals",items:"Real named competitors with reviews, ratings, features, after-hours comparison vs yours"},
+                    {icon:"🎯",title:"Custom Action Plan",count:"Per fix",items:"Prioritized recommendations, revenue math, free copy-paste content, DIY vs automated time"},
+                  ].map((s,i)=>(
+                    <div key={i} style={{marginBottom:16,paddingBottom:16,borderBottom:i<4?"1px solid rgba(255,255,255,0.08)":"none"}}>
+                      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:5}}>
+                        <div style={{display:"flex",alignItems:"center",gap:8}}>
+                          <span style={{fontSize:18}}>{s.icon}</span>
+                          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,fontWeight:700,color:"white"}}>{s.title}</p>
+                        </div>
+                        <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:700,color:"#4ade80",background:"rgba(74,222,128,0.1)",padding:"3px 10px",borderRadius:6}}>{s.count}</span>
+                      </div>
+                      <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#94a3b8",lineHeight:1.5,paddingLeft:26}}>{s.items}</p>
+                    </div>
+                  ))}
+                  <div style={{background:"rgba(74,222,128,0.1)",border:"1px solid rgba(74,222,128,0.2)",borderRadius:14,padding:"14px 16px",textAlign:"center",marginTop:8}}>
+                    <p style={{fontFamily:"'Outfit',sans-serif",fontSize:20,fontWeight:800,color:"#4ade80"}}>50+ data points</p>
+                    <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#86efac"}}>More than any free audit tool on the market</p>
+                  </div>
                 </div>
               </div>
             </FadeIn>
@@ -526,6 +545,85 @@ export default function App(){
           </FadeIn>
         </section>
 
+        {/* WHAT YOUR REPORT INCLUDES */}
+        <section style={{maxWidth:1100,margin:"80px auto 0",padding:"0 32px"}}>
+          <FadeIn delay={0.15}>
+            <div style={{textAlign:"center",marginBottom:48}}>
+              <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:40,fontWeight:800,color:"#0f172a",marginBottom:14}}>What you get in your <span style={{color:"#059669"}}>free report</span></h2>
+              <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:18,color:"#475569",maxWidth:640,margin:"0 auto"}}>Most business audit tools charge $49–299/month and give you a generic PDF. Ours is free, instant, and packed with data you can act on today.</p>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:20,marginBottom:56}}>
+              {[
+                {icon:"📊",title:"Overall Score /100",desc:"One number showing exactly where you stand. Category breakdowns for Google, Website, Social, and Competitors."},
+                {icon:"🏆",title:"Real Competitor Names",desc:"Not generic advice. We find 3-5 actual competitors by name — their review counts, ratings, and what they do better than you."},
+                {icon:"🌙",title:"After-Hours Comparison",desc:'Side-by-side: what a customer sees on YOUR site at 10pm vs your top competitor. This is the wake-up call.'},
+                {icon:"💰",title:"Revenue Loss Estimate",desc:"Dollar amount you're losing monthly with step-by-step math. Not a guess — calculated from your actual data."},
+                {icon:"🎯",title:"Prioritized Action Plan",desc:'Not "improve your SEO." Specific fixes ranked by impact with free copy-paste content for each one.'},
+                {icon:"⚡",title:"What-If Simulator",desc:"Interactive toggles showing how each fix improves your score. See projected impact before you do anything."},
+                {icon:"📋",title:"Quick Wins List",desc:"3-5 things you can fix TODAY in under 30 minutes, completely free, no tools required."},
+                {icon:"🔍",title:"Evidence & Sources",desc:"Every finding includes actual data — review counts, URLs checked, features detected. Nothing vague or generic."},
+                {icon:"📈",title:"Industry Benchmarks",desc:"Where you rank vs the average in your industry and city. Percentile ranking included."},
+              ].map((f,i)=>(
+                <div key={i} style={{padding:"24px 22px",borderRadius:16,border:"1px solid #e2e8f0",background:"white",boxShadow:"0 1px 3px rgba(0,0,0,0.03)"}}>
+                  <span style={{fontSize:30,display:"block",marginBottom:12}}>{f.icon}</span>
+                  <h4 style={{fontFamily:"'Outfit',sans-serif",fontSize:17,fontWeight:700,color:"#0f172a",marginBottom:6}}>{f.title}</h4>
+                  <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#475569",lineHeight:1.6}}>{f.desc}</p>
+                </div>
+              ))}
+            </div>
+            {/* VS PAID TOOLS */}
+            <div style={{background:"linear-gradient(135deg,#0f172a,#1e293b)",borderRadius:24,padding:"44px 40px",color:"white",overflow:"hidden"}}>
+              <h3 style={{fontFamily:"'Outfit',sans-serif",fontSize:32,fontWeight:800,textAlign:"center",marginBottom:8}}>BizScorer vs paid alternatives</h3>
+              <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,color:"#94a3b8",textAlign:"center",marginBottom:36}}>We give you more — for free — than tools charging $49–299/month</p>
+              <div style={{overflowX:"auto"}}>
+                <table style={{width:"100%",borderCollapse:"collapse",fontFamily:"'DM Sans',sans-serif"}}>
+                  <thead>
+                    <tr>
+                      <th style={{textAlign:"left",padding:"12px 16px",fontSize:14,color:"#94a3b8",fontWeight:600,borderBottom:"1px solid rgba(255,255,255,0.1)"}}>Feature</th>
+                      <th style={{textAlign:"center",padding:"12px 16px",fontSize:14,fontWeight:800,color:"#4ade80",borderBottom:"1px solid rgba(255,255,255,0.1)",background:"rgba(74,222,128,0.06)",borderRadius:"12px 12px 0 0"}}>BizScorer<br/><span style={{fontSize:11,fontWeight:600,color:"#86efac"}}>FREE</span></th>
+                      <th style={{textAlign:"center",padding:"12px 16px",fontSize:14,color:"#94a3b8",fontWeight:600,borderBottom:"1px solid rgba(255,255,255,0.1)"}}>Typical Audit Tools<br/><span style={{fontSize:11}}>$49-149/mo</span></th>
+                      <th style={{textAlign:"center",padding:"12px 16px",fontSize:14,color:"#94a3b8",fontWeight:600,borderBottom:"1px solid rgba(255,255,255,0.1)"}}>SEO Agencies<br/><span style={{fontSize:11}}>$200-500/mo</span></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      {feature:"Overall score with breakdown",us:true,them:true,agency:true},
+                      {feature:"Real competitor names & data",us:true,them:false,agency:true},
+                      {feature:"After-hours experience comparison",us:true,them:false,agency:false},
+                      {feature:"Revenue loss calculation with math",us:true,them:false,agency:true},
+                      {feature:"Free copy-paste fix content",us:true,them:false,agency:false},
+                      {feature:"What-if score simulator",us:true,them:false,agency:false},
+                      {feature:"Social media deep scan (8 platforms)",us:true,them:false,agency:true},
+                      {feature:"YouTube channel analysis",us:true,them:false,agency:false},
+                      {feature:"Google Ads competitor detection",us:true,them:true,agency:true},
+                      {feature:"ADA/accessibility check",us:true,them:false,agency:false},
+                      {feature:"Instant results (no waiting)",us:true,them:true,agency:false},
+                      {feature:"No signup required",us:true,them:false,agency:false},
+                    ].map((r,i)=>(
+                      <tr key={i} style={{borderBottom:"1px solid rgba(255,255,255,0.05)"}}>
+                        <td style={{padding:"10px 16px",fontSize:13,color:"#e2e8f0"}}>{r.feature}</td>
+                        <td style={{textAlign:"center",padding:"10px 16px",background:"rgba(74,222,128,0.06)"}}><span style={{fontSize:16}}>{r.us?"✅":"—"}</span></td>
+                        <td style={{textAlign:"center",padding:"10px 16px"}}><span style={{fontSize:16}}>{r.them?"✅":"❌"}</span></td>
+                        <td style={{textAlign:"center",padding:"10px 16px"}}><span style={{fontSize:16}}>{r.agency?"✅":"❌"}</span></td>
+                      </tr>
+                    ))}
+                    <tr>
+                      <td style={{padding:"14px 16px",fontSize:14,fontWeight:700,color:"white"}}>Price</td>
+                      <td style={{textAlign:"center",padding:"14px 16px",background:"rgba(74,222,128,0.06)"}}><span style={{fontFamily:"'Outfit',sans-serif",fontSize:24,fontWeight:800,color:"#4ade80"}}>$0</span></td>
+                      <td style={{textAlign:"center",padding:"14px 16px"}}><span style={{fontFamily:"'Outfit',sans-serif",fontSize:18,fontWeight:700,color:"#ef4444"}}>$49-149/mo</span></td>
+                      <td style={{textAlign:"center",padding:"14px 16px"}}><span style={{fontFamily:"'Outfit',sans-serif",fontSize:18,fontWeight:700,color:"#ef4444"}}>$200-500/mo</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div style={{textAlign:"center",marginTop:32}}>
+                <button onClick={()=>window.scrollTo({top:0,behavior:"smooth"})} style={{background:"linear-gradient(135deg,#059669,#047857)",color:"white",border:"none",borderRadius:14,padding:"18px 40px",fontSize:18,fontWeight:700,fontFamily:"'DM Sans',sans-serif",cursor:"pointer",boxShadow:"0 4px 14px rgba(5,150,105,0.4)"}}>
+                  Get My Free Report Now
+                </button>
+              </div>
+            </div>
+          </FadeIn>
+        </section>
         {/* COST OF LOW SCORE */}
         <section style={{maxWidth:900,margin:"80px auto 0",padding:"0 32px"}}>
           <FadeIn delay={0.2}>
