@@ -824,6 +824,59 @@ export default function App(){
         </footer>
       </>)}
       {/* ═══ EMAIL GATE ═══ */}
+      {/* ═══ DETECTING PHASE ═══ */}
+      {phase==="detecting"&&(
+        <section style={{maxWidth:520,margin:"0 auto",padding:"80px 24px",textAlign:"center"}}><FadeIn>
+          <div style={S.card}>
+            <div style={{width:56,height:56,borderRadius:16,background:"#f0fdf4",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 20px"}}>
+              <div style={{width:24,height:24,border:"3px solid #059669",borderTopColor:"transparent",borderRadius:"50%",animation:"spin 1s linear infinite"}}/>
+            </div>
+            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:24,fontWeight:700,color:"#0f172a",marginBottom:8}}>Finding your business...</h2>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,color:"#475569"}}>AI is searching for <strong>{inputs.name}</strong> in {inputs.city}</p>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#059669",marginTop:12,fontWeight:500}}>Scanning Google, social media, competitors...</p>
+          </div>
+        </FadeIn></section>
+      )}
+      {/* ═══ CONFIRM PHASE ═══ */}
+      {phase==="confirm"&&(
+        <section style={{maxWidth:560,margin:"0 auto",padding:"60px 24px"}}><FadeIn>
+          <div style={{textAlign:"center",marginBottom:24}}>
+            <div style={{width:48,height:48,borderRadius:14,background:"#f0fdf4",display:"flex",alignItems:"center",justifyContent:"center",color:"#059669",margin:"0 auto 12px",fontSize:20}}>✓</div>
+            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:24,fontWeight:700,color:"#0f172a",marginBottom:6}}>We found your business!</h2>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,color:"#475569"}}>Confirm the details below, then we{"'"}ll run the full analysis.</p>
+          </div>
+          <div style={S.card}>
+            <div style={{marginBottom:14}}>
+              <label style={S.lbl}>Business Name</label>
+              <input value={inputs.name} onChange={e=>upd("name",e.target.value)} style={S.inp}/>
+            </div>
+            <div style={{marginBottom:14}}>
+              <label style={S.lbl}>Business Type</label>
+              <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                {BIZ_TYPES.map(b=>(
+                  <button key={b.id} onClick={()=>setBizType(b.id)} style={{padding:"8px 14px",borderRadius:10,border:bizType===b.id?"2px solid #059669":"1px solid #e2e8f0",background:bizType===b.id?"#f0fdf4":"white",color:bizType===b.id?"#059669":"#64748b",fontSize:13,fontFamily:"'DM Sans',sans-serif",fontWeight:600,cursor:"pointer"}}>{b.icon} {b.label}</button>
+                ))}
+              </div>
+            </div>
+            <div style={{display:"flex",alignItems:"center",gap:10,margin:"18px 0 12px"}}>
+              <div style={{flex:1,height:1,background:"#e2e8f0"}}/>
+              <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:"#94a3b8",fontWeight:600}}>PROFILES FOUND</span>
+              <div style={{flex:1,height:1,background:"#e2e8f0"}}/>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+              {[["website","Website"],["facebook","Facebook"],["instagram","Instagram"],["tiktok","TikTok"],["youtube","YouTube"],["twitter","X / Twitter"],["linkedin","LinkedIn"]].map(([k,l])=>(
+                <div key={k}>
+                  <label style={S.lbl}>{l} {inputs[k]?<span style={{color:"#059669"}}>✓</span>:<span style={{color:"#94a3b8"}}>—</span>}</label>
+                  <input value={inputs[k]} onChange={e=>upd(k,e.target.value)} placeholder={l+" URL or handle"} style={{...S.inp,fontSize:14,padding:"12px 14px"}}/>
+                </div>
+              ))}
+            </div>
+            <button onClick={afterConfirm} style={{...S.btn,width:"100%",marginTop:20,justifyContent:"center",fontSize:18}}>
+              {I.spark} Run Full Analysis
+            </button>
+          </div>
+        </FadeIn></section>
+      )}
       {phase==="emailGate"&&(
         <section style={{maxWidth:440,margin:"0 auto",padding:"80px 24px",textAlign:"center"}}><FadeIn><div style={S.card}>
           <div style={{width:48,height:48,borderRadius:14,background:"#f0fdf4",display:"flex",alignItems:"center",justifyContent:"center",color:"#059669",margin:"0 auto 16px"}}>{I.mail}</div>

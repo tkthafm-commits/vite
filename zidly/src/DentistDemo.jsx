@@ -197,7 +197,7 @@ const AfterHoursComparison=({data})=>{
 /* ═══════════════════════════════════════════════════════════
    MAIN APP
    ═══════════════════════════════════════════════════════════ */
-export default function App(){
+export default function DentistDemo(){
   const[inputs,setInputs]=useState({name:"",city:"",country:"US",website:"",facebook:"",instagram:"",tiktok:"",twitter:"",youtube:"",linkedin:""});
   const[market,setMarket]=useState(MARKETS.US);
   const[phase,setPhase]=useState("input"); // input|detecting|confirm|emailGate|scanning|scoreReveal|report|upgrade
