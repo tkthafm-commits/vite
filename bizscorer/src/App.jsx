@@ -525,7 +525,6 @@ export default function App(){
         <div style={{textAlign:"center",padding:"20px 32px 0"}}>
           <p style={{fontFamily:"'Outfit',sans-serif",fontSize:48,fontWeight:800,color:"#059669",lineHeight:1}}>{auditCount.toLocaleString()}+</p>
           <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,color:"#475569"}}>businesses have already checked their score</p>
-          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#059669",fontWeight:500,marginTop:4}}>🔴 {hourlyCount} checked in the last hour</p>
         </div>
       )}
 
