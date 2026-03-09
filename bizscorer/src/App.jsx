@@ -219,7 +219,7 @@ export default function App(){
   const[lastScore]=useState(()=>getLastScore());
   const[animScore,setAnimScore]=useState(0);
   // Dynamic counters — auto-increment
-  const baseCount=78257;const launchDate=new Date("2025-03-09");
+  const baseCount=78257;const launchDate=new Date("2026-03-09");
   const daysSinceLaunch=Math.max(0,Math.floor((Date.now()-launchDate.getTime())/(1000*60*60*24)));
   const[auditCount,setAuditCount]=useState(baseCount+(daysSinceLaunch*1000));
   const[hourlyCount,setHourlyCount]=useState(50);
