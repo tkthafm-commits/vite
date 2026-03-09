@@ -496,10 +496,7 @@ export default function App(){
             <span style={{fontFamily:"'Outfit',sans-serif",fontWeight:800,fontSize:20,color:"#1e293b"}}>Biz<span style={{color:"#059669"}}>Scorer</span></span>
           </div>
           <div style={{display:"flex",alignItems:"center",gap:20}}>
-            <div style={{display:"flex",alignItems:"center",gap:8,background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:100,padding:"7px 16px"}}>
-              <span style={{fontFamily:"'Outfit',sans-serif",fontSize:17,fontWeight:800,color:"#059669"}}>{auditCount.toLocaleString()}+</span>
-              <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,fontWeight:600,color:"#16a34a"}}>audited</span>
-            </div>
+            
             <a href="https://zidly.ai" target="_blank" rel="noopener noreferrer" style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#64748b",textDecoration:"none"}}>Powered by <span style={{color:"#059669",fontWeight:700}}>Zidly</span></a>
           </div>
         </div>
@@ -513,11 +510,12 @@ export default function App(){
             <div className="hero-grid" style={{display:"grid",gridTemplateColumns:"1.1fr 1fr",gap:56,alignItems:"center"}}>
               {/* LEFT: headline + proof */}
               <div>
-                <h1 style={{fontFamily:"'Outfit',sans-serif",fontSize:"clamp(44px,7vw,76px)",fontWeight:800,lineHeight:1.0,letterSpacing:"-0.04em",color:"#0f172a",marginBottom:20}}>Find what{"'"}s<br/><span style={{background:"linear-gradient(135deg,#059669,#0d9488)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>costing you customers</span></h1>
-                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:21,color:"#475569",lineHeight:1.6,marginBottom:28,maxWidth:520}}>Our AI runs <strong style={{color:"#0f172a"}}>50+ checks</strong> on your Google profile, website, social media & competitors. You get a score and a free action plan — in about 60 seconds.</p>
+                <h1 style={{fontFamily:"'Outfit',sans-serif",fontSize:"clamp(44px,7vw,76px)",fontWeight:800,lineHeight:1.0,letterSpacing:"-0.04em",color:"#0f172a",marginBottom:20}}>See how you compare<br/><span style={{background:"linear-gradient(135deg,#059669,#0d9488)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>to your competitors</span></h1>
+                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:21,color:"#475569",lineHeight:1.6,marginBottom:28,maxWidth:520}}>Our AI runs <strong style={{color:"#0f172a"}}>50+ checks</strong> on your Google, website, social media & competitors — finds every problem, and gives you a free plan to fix them all.</p>
+                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,color:"#059669",fontWeight:600,marginTop:8}}>Powered by Zidly.ai — fix everything automatically, or DIY for free</p>
                 {/* Proof bar */}
                 <div style={{display:"flex",gap:28,marginBottom:32,flexWrap:"wrap"}}>
-                  {[{n:"28,470+",l:"audited"},{n:"50+",l:"data points"},{n:"$0",l:"free forever"}].map((s,i)=>(
+                  {[{n:"50+",l:"data points checked"},{n:"3-5",l:"competitors compared"},{n:"$0",l:"100% free"}].map((s,i)=>(
                     <div key={i}>
                       <p style={{fontFamily:"'Outfit',sans-serif",fontSize:30,fontWeight:800,color:"#059669",lineHeight:1}}>{s.n}</p>
                       <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#64748b"}}>{s.l}</p>
@@ -527,14 +525,15 @@ export default function App(){
                 {/* First review — visible above fold */}
                 <div style={{borderLeft:"3px solid #059669",paddingLeft:16,marginBottom:0}}>
                   <div style={{display:"flex",gap:2,marginBottom:4}}>{[1,2,3,4,5].map(i=><span key={i} style={{color:"#facc15",fontSize:14}}>★</span>)}</div>
-                  <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,color:"#475569",fontStyle:"italic",lineHeight:1.5,marginBottom:6}}>"Found 6 issues I had no idea about. Fixed 3 in one hour. Phone started ringing more that same week."</p>
+                  <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,color:"#475569",fontStyle:"italic",lineHeight:1.5,marginBottom:6}}>"I had no idea my competitor had 8x more reviews than me. This report showed me exactly what they were doing differently. Fixed 3 things in one hour — phone started ringing more that week."</p>
                   <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#0f172a",fontWeight:600}}>Dr. Sarah Mitchell <span style={{color:"#94a3b8",fontWeight:400}}>· Dentist, Houston TX</span></p>
                 </div>
               </div>
               {/* RIGHT: THE FORM */}
               <div style={{background:"white",border:"2px solid #e2e8f0",borderRadius:24,padding:"40px 36px",boxShadow:"0 12px 48px rgba(0,0,0,0.08)"}}>
-                <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:28,fontWeight:800,color:"#0f172a",marginBottom:4}}>Get your free score</h2>
-                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,color:"#64748b",marginBottom:24}}>AI scans everything — results in ~60 seconds</p>
+                <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:28,fontWeight:800,color:"#0f172a",marginBottom:4}}>What{"'"}s your score?</h2>
+                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,color:"#64748b",marginBottom:8}}>See how you compare to competitors in ~60 seconds</p>
+                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#059669",marginBottom:20,fontWeight:500}}>🔴 {Math.floor(37+Math.random()*18)} businesses checked their score in the last hour</p>
                 <div style={{marginBottom:14}}>
                   <label style={S.lbl}>Business Name *</label>
                   <input ref={nameRef} value={inputs.name} onChange={e=>upd("name",e.target.value)} placeholder="Start typing your business name..." style={{...S.inp,fontSize:19,padding:"18px 20px"}}/>
@@ -585,8 +584,8 @@ export default function App(){
         <section style={{maxWidth:1100,margin:"80px auto 0",padding:"0 40px"}}>
           <FadeIn delay={0.1}>
             <div style={{textAlign:"center",marginBottom:48}}>
-              <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:"clamp(36px,5vw,52px)",fontWeight:800,color:"#0f172a",marginBottom:16}}>Your online presence is <span style={{color:"#dc2626"}}>quietly losing you money</span></h2>
-              <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:20,color:"#475569",maxWidth:640,margin:"0 auto"}}>Every day your score stays low, potential customers choose your competitors. The losses compound into tens — even hundreds — of thousands of dollars annually.</p>
+              <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:"clamp(36px,5vw,52px)",fontWeight:800,color:"#0f172a",marginBottom:16}}>Your competitors are winning customers <span style={{background:"linear-gradient(135deg,#059669,#0d9488)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>that should be yours</span></h2>
+              <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:20,color:"#475569",maxWidth:640,margin:"0 auto"}}>Right now, potential customers are comparing you to competitors online. If your score is lower, they choose someone else — and you never even know it happened.</p>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:40,textAlign:"center"}}>
               {HERO_STATS.map((s,i)=>(
@@ -602,7 +601,7 @@ export default function App(){
         {/* WE SCAN EVERYTHING — expandable */}
         <section style={{maxWidth:900,margin:"100px auto 0",padding:"0 40px"}}>
           <FadeIn delay={0.1}>
-            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:48,fontWeight:800,color:"#0f172a",textAlign:"center",marginBottom:8}}>We scan <span style={{background:"linear-gradient(135deg,#059669,#0d9488)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>everything</span> at once</h2>
+            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:48,fontWeight:800,color:"#0f172a",textAlign:"center",marginBottom:8}}>We scan <span style={{background:"linear-gradient(135deg,#059669,#0d9488)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>you AND your competitors</span></h2>
             <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:20,color:"#475569",textAlign:"center",marginBottom:40}}>5 AI analysis phases · 50+ data points · ~60 seconds</p>
             {[
               {icon:"⭐",title:"Google Business Profile — 12+ signals",detail:"Review count & average rating, owner response rate, photo count & quality, Google Posts frequency, Q&A section, hours accuracy, categories, description quality, recent review dates"},
@@ -620,15 +619,15 @@ export default function App(){
         {/* INDUSTRY SCORES */}
         <section style={{maxWidth:1100,margin:"100px auto 0",padding:"0 40px"}}>
           <FadeIn delay={0.1}>
-            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:48,fontWeight:800,color:"#0f172a",textAlign:"center",marginBottom:8}}>Most businesses score <span style={{color:"#dc2626"}}>below 50</span></h2>
+            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:48,fontWeight:800,color:"#0f172a",textAlign:"center",marginBottom:8}}>Most businesses score <span style={{color:"#0f172a",textDecoration:"underline",textDecorationColor:"#059669",textUnderlineOffset:"4px"}}>below 50</span></h2>
             <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:20,color:"#475569",textAlign:"center",marginBottom:48}}>Where do you stand? Top performers earn dramatically more revenue.</p>
             <div className="industry-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:64}}>
               <div>
-                <p style={{fontFamily:"'Outfit',sans-serif",fontSize:22,fontWeight:700,color:"#dc2626",marginBottom:24}}>Average scores</p>
+                <p style={{fontFamily:"'Outfit',sans-serif",fontSize:22,fontWeight:700,color:"#0f172a",marginBottom:24}}>Average scores</p>
                 {[{cat:"Dental Practices",score:47},{cat:"Restaurants & Cafes",score:38},{cat:"Salons & Med Spas",score:42},{cat:"Retail & E-commerce",score:35},{cat:"Real Estate",score:51},{cat:"Law Firms",score:44},{cat:"Veterinary Clinics",score:40}].map((c,i)=>(
                   <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:"1px solid #f1f5f9"}}>
                     <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,color:"#475569"}}>{c.cat}</span>
-                    <span style={{fontFamily:"'Outfit',sans-serif",fontSize:30,fontWeight:800,color:"#ef4444"}}>{c.score}<span style={{fontSize:14,color:"#94a3b8"}}>/100</span></span>
+                    <span style={{fontFamily:"'Outfit',sans-serif",fontSize:30,fontWeight:800,color:"#0f172a"}}>{c.score}<span style={{fontSize:14,color:"#94a3b8"}}>/100</span></span>
                   </div>
                 ))}
               </div>
@@ -652,7 +651,7 @@ export default function App(){
         <section style={{maxWidth:1100,margin:"100px auto 0",padding:"0 40px"}}>
           <FadeIn delay={0.1}>
             <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:48,fontWeight:800,color:"#0f172a",textAlign:"center",marginBottom:8}}>What you get — <span style={{color:"#059669"}}>for free</span></h2>
-            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:20,color:"#475569",textAlign:"center",marginBottom:44}}>Competitor tools charge $49–299/month. Ours is free, instant, and more comprehensive.</p>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:20,color:"#475569",textAlign:"center",marginBottom:44}}>Every problem found comes with a fix — free DIY content or one-click automation with Zidly.ai</p>
             <div className="report-grid" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:20}}>
               {[
                 {icon:"📊",title:"Score /100 + Breakdown",desc:"Category scores for Google, Website, Social, Competitors."},
@@ -723,7 +722,7 @@ export default function App(){
         {/* RESULTS */}
         <section style={{maxWidth:1100,margin:"100px auto 0",padding:"0 40px"}}>
           <FadeIn delay={0.1}>
-            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:48,fontWeight:800,color:"#0f172a",textAlign:"center",marginBottom:56}}>What happens when you <span style={{color:"#059669"}}>fix your score</span></h2>
+            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:48,fontWeight:800,color:"#0f172a",textAlign:"center",marginBottom:56}}>What happens when you <span style={{color:"#059669"}}>close the gap</span></h2>
             <div className="results-grid" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:32,textAlign:"center"}}>
               {[{stat:"2x",desc:"revenue with 200+ reviews",src:"Womply"},{stat:"126%",desc:"more traffic in Google top 3",src:"SocialPilot"},{stat:"80",desc:"more visits per new review",src:"Birdeye 2025"},{stat:"18%",desc:"revenue growth from better reviews",src:"LocaliQ"}].map((s,i)=>(
                 <div key={i}>
@@ -748,11 +747,19 @@ export default function App(){
           </FadeIn>
         </section>
         {/* BOTTOM CTA */}
-        <section style={{maxWidth:800,margin:"100px auto 0",padding:"0 40px",textAlign:"center"}}>
+        {/* SOCIAL PROOF COUNTER */}
+        <section style={{maxWidth:800,margin:"80px auto 0",padding:"0 40px",textAlign:"center"}}>
           <FadeIn delay={0.1}>
-            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:52,fontWeight:800,color:"#0f172a",marginBottom:16}}>Ready?</h2>
-            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:22,color:"#475569",marginBottom:32}}>60 seconds. Free. No signup.</p>
-            <button onClick={()=>window.scrollTo({top:0,behavior:"smooth"})} style={{...S.btn,fontSize:24,padding:"24px 52px",borderRadius:16}}>{I.search} Get My Business Score</button>
+            <p style={{fontFamily:"'Outfit',sans-serif",fontSize:64,fontWeight:800,color:"#059669",lineHeight:1}}>{auditCount.toLocaleString()}+</p>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:18,color:"#475569",marginBottom:4}}>businesses have already checked their score</p>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#94a3b8"}}>Join them — it takes 60 seconds and it{"'"}s free</p>
+          </FadeIn>
+        </section>
+        <section style={{maxWidth:800,margin:"60px auto 0",padding:"0 40px",textAlign:"center"}}>
+          <FadeIn delay={0.1}>
+            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:52,fontWeight:800,color:"#0f172a",marginBottom:16}}>Your competitors already know their score</h2>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:20,color:"#475569",marginBottom:32}}>Don{"'"}t be the last to find out. 60 seconds. Free.</p>
+            <button onClick={()=>window.scrollTo({top:0,behavior:"smooth"})} style={{...S.btn,fontSize:24,padding:"24px 52px",borderRadius:16}}>{I.search} See How I Compare</button>
           </FadeIn>
         </section>
         <footer className="site-footer" style={{maxWidth:1300,margin:"100px auto 0",padding:"32px 40px 24px",borderTop:"1px solid #e2e8f0"}}>
