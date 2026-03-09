@@ -57,12 +57,44 @@ function buildPrompt(phase,inp,mkt,bType){
 }
 
 /* ═══ SCAN LIMITING ═══ */
-function getScanCount(){try{const d=JSON.parse(document.cookie.split(";").find(c=>c.trim().startsWith("bsScans="))?.split("=")?.[1]||"{}");if(Date.now()-d.ts>30*24*3600000)return 0;return d.count||0;}catch{return 0;}}
-function incScanCount(){try{const c=getScanCount();document.cookie=`bsScans=${JSON.stringify({count:c+1,ts:Date.now()})};path=/;max-age=${30*24*3600}`;}catch{}}
-function hasEmail(){try{return document.cookie.includes("bsEmail=1");}catch{return false;}}
-function setHasEmail(){try{document.cookie=`bsEmail=1;path=/;max-age=${365*24*3600}`;}catch{}}
-function getLastScore(){try{return JSON.parse(localStorage.getItem("bsLastScore")||"null");}catch{return null;}}
-function saveLastScore(r){try{localStorage.setItem("bsLastScore",JSON.stringify({biz:r.name,score:r.overall,date:new Date().toLocaleDateString()}));}catch{}}
+/* ═══ SCAN LIMITING (multi-layer: cookie + localStorage + indexedDB) ═══ */
+const SCAN_WINDOW=30*24*3600000; // 30 days
+const _ck=(k)=>{try{return JSON.parse(document.cookie.split(";").find(c=>c.trim().startsWith(k+"="))?.split("=")?.[1]||"null");}catch{return null;}};
+const _sk=(k,v,days=30)=>{try{document.cookie=`${k}=${JSON.stringify(v)};path=/;max-age=${days*24*3600};SameSite=Lax`;}catch{}};
+const _ls=(k)=>{try{return JSON.parse(localStorage.getItem(k)||"null");}catch{return null;}};
+const _ss=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}};
+// IndexedDB for persistence even after cookie/localStorage clear
+const _idb={
+  _db:null,
+  open(){return new Promise(r=>{try{const req=indexedDB.open("bsData",1);req.onupgradeneeded=e=>e.target.result.createObjectStore("kv");req.onsuccess=e=>{this._db=e.target.result;r(this._db);};req.onerror=()=>r(null);}catch{r(null);}});},
+  async get(k){const db=this._db||await this.open();if(!db)return null;return new Promise(r=>{try{const tx=db.transaction("kv","readonly");const req=tx.objectStore("kv").get(k);req.onsuccess=()=>r(req.result||null);req.onerror=()=>r(null);}catch{r(null);}});},
+  async set(k,v){const db=this._db||await this.open();if(!db)return;try{const tx=db.transaction("kv","readwrite");tx.objectStore("kv").put(v,k);}catch{}}
+};
+function getScanCount(){
+  // Read from all storage layers, take the highest count
+  const ck=_ck("bsS");
+  const ls=_ls("_bsc");
+  const now=Date.now();
+  let best=0;
+  if(ck&&now-ck.t<SCAN_WINDOW)best=Math.max(best,ck.c||0);
+  if(ls&&now-ls.t<SCAN_WINDOW)best=Math.max(best,ls.c||0);
+  return best;
+}
+async function getScanCountAsync(){
+  let best=getScanCount();
+  try{const idb=await _idb.get("sc");if(idb&&Date.now()-idb.t<SCAN_WINDOW)best=Math.max(best,idb.c||0);}catch{}
+  return best;
+}
+function incScanCount(){
+  const c=getScanCount()+1;const now=Date.now();const v={c,t:now};
+  _sk("bsS",v,30);
+  _ss("_bsc",v);
+  _idb.set("sc",v).catch(()=>{});
+}
+function hasEmail(){try{return!!(_ck("bsE")||_ls("_bse"));}catch{return false;}}
+function setHasEmail(){try{_sk("bsE",1,365);_ss("_bse",1);}catch{}}
+function getLastScore(){try{return _ls("bsLastScore");}catch{return null;}}
+function saveLastScore(r){try{_ss("bsLastScore",{biz:r.name,score:r.overall,date:new Date().toLocaleDateString()});}catch{}}
 
 
 /* ═══ ICONS (inline SVG) ═══ */
@@ -362,9 +394,9 @@ export default function App(){
   };
 
   /* ═══ STEP 2: After confirm, check gate ═══ */
-  const afterConfirm=()=>{
+  const afterConfirm=async()=>{
     if(hasEmail()){
-      const sc=getScanCount();
+      const sc=await getScanCountAsync();
       if(sc>=2){setPhase("upgrade");return;}
       runFullScan(bizType||"other");
     }else{
@@ -373,11 +405,11 @@ export default function App(){
   };
 
   /* ═══ STEP 3: After email capture ═══ */
-  const handleGateCapture=(v)=>{
+  const handleGateCapture=async(v)=>{
     setHasEmail();setCaptured(true);setCaptureVal(v);
     fetch("https://formspree.io/f/mzdjddjj",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"lead",contact:v,business:inputs.name,city:inputs.city,country:inputs.country})}).catch(()=>{});
     console.log("Lead captured:",v);
-    const sc=getScanCount();
+    const sc=await getScanCountAsync();
     if(sc>=2){setPhase("upgrade");return;}
     runFullScan(bizType||"other");
   };
