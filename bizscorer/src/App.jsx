@@ -402,15 +402,23 @@ export default function App(){
       timestamp:new Date().toLocaleString()
     };
     setReport(rData);saveLastScore(rData);
+    // Email report if we have the user's email
+    if(captureVal&&captureVal.includes("@")){sendReportEmail(captureVal,rData);}
     setPhase("scoreReveal");
     let count=0;const target=rData.overall;
     const interval=setInterval(()=>{count+=2;if(count>=target){setAnimScore(target);clearInterval(interval);}else setAnimScore(count);},30);
     setTimeout(()=>setPhase("report"),3000);
   };
 
-  const handleCapture=v=>{setCaptured(true);setHasEmail();setCaptureVal(v);setShowCapture(false);
+  const handleCapture=v=>{setCaptured(true);setHasEmail();setCaptureVal(v);setShowCapture(false);if(report&&v.includes('@'))sendReportEmail(v,report);
     fetch("https://formspree.io/f/mzdjddjj",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"lead",contact:v,business:inputs.name,city:inputs.city,country:inputs.country})}).catch(()=>{});
     console.log("Captured:",v);};
+  const sendReportEmail=async(email,reportData)=>{
+    try{
+      await fetch("/api/send-report",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({to:email,report:reportData})});
+      console.log("Report emailed to:",email);
+    }catch(e){console.log("Email send failed:",e);}
+  };
   const shareUrl=`https://bizscorer.com?biz=${encodeURIComponent(inputs.name)}&city=${encodeURIComponent(inputs.city)}&country=${inputs.country}`;
   const zidlyUrl=`https://zidly.ai?from=bizscorer&biz=${encodeURIComponent(inputs.name)}&city=${encodeURIComponent(inputs.city)}&type=${bizType}`;
 
@@ -880,7 +888,7 @@ export default function App(){
       {phase==="emailGate"&&(
         <section style={{maxWidth:440,margin:"0 auto",padding:"80px 24px",textAlign:"center"}}><FadeIn><div style={S.card}>
           <div style={{width:48,height:48,borderRadius:14,background:"#f0fdf4",display:"flex",alignItems:"center",justifyContent:"center",color:"#059669",margin:"0 auto 16px"}}>{I.mail}</div>
-          <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:22,fontWeight:700,color:"#1e293b",marginBottom:6}}>Almost there! Enter your {market.captureLabel}</h2>
+          <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:22,fontWeight:700,color:"#1e293b",marginBottom:6}}>Where should we send your report?</h2>
           <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#64748b",marginBottom:8}}>We{"'"}ll send your full report with competitor data, action plan, and free fix content.</p>
           <div style={{display:"flex",gap:8,marginBottom:12}}>
             <input type={market.captureType} value={captureVal} onChange={e=>setCaptureVal(e.target.value)} placeholder={market.capturePh} style={{...S.inp,flex:1}}/>
@@ -1124,8 +1132,8 @@ export default function App(){
         <div onClick={e=>e.stopPropagation()} style={{...S.card,maxWidth:380,width:"90%",textAlign:"center",position:"relative"}}>
           <button onClick={()=>setShowCapture(false)} style={{position:"absolute",top:12,right:12,background:"none",border:"none",color:"#94a3b8",cursor:"pointer"}}>{I.x}</button>
           <div style={{width:44,height:44,borderRadius:12,background:"#f0fdf4",display:"flex",alignItems:"center",justifyContent:"center",color:"#059669",margin:"0 auto 14px"}}>{I.mail}</div>
-          <h3 style={{fontFamily:"'Outfit',sans-serif",fontSize:18,fontWeight:700,color:"#1e293b",marginBottom:4}}>Get Your Full Report</h3>
-          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#64748b",marginBottom:16}}>Detailed report + 30-day recheck reminder</p>
+          <h3 style={{fontFamily:"'Outfit',sans-serif",fontSize:18,fontWeight:700,color:"#1e293b",marginBottom:4}}>Email me this report</h3>
+          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#64748b",marginBottom:16}}>Full report with scores, issues, and action plan delivered to your inbox</p>
           <div style={{display:"flex",gap:6}}><input type={market.captureType} value={captureVal} onChange={e=>setCaptureVal(e.target.value)} placeholder={market.capturePh} style={{...S.inp,flex:1}}/><button onClick={()=>{if(captureVal.trim())handleCapture(captureVal.trim())}} style={S.btn}>Send</button></div>
         </div>
       </div>}
