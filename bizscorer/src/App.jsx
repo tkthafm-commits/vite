@@ -525,7 +525,6 @@ export default function App(){
         <div style={{textAlign:"center",padding:"20px 32px 0"}}>
           <p style={{fontFamily:"'Outfit',sans-serif",fontSize:48,fontWeight:800,color:"#059669",lineHeight:1}}>{auditCount.toLocaleString()}+</p>
           <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,color:"#475569"}}>businesses have already checked their score</p>
-          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#059669",fontWeight:500,marginTop:4}}>🔴 {hourlyCount} checked in the last hour</p>
         </div>
       )}
 
@@ -539,7 +538,7 @@ export default function App(){
               <div>
                 <h1 style={{fontFamily:"'Outfit',sans-serif",fontSize:"clamp(44px,7vw,76px)",fontWeight:800,lineHeight:1.0,letterSpacing:"-0.04em",color:"#0f172a",marginBottom:20}}>See how you compare<br/><span style={{background:"linear-gradient(135deg,#059669,#0d9488)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>to your competitors</span></h1>
                 <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:21,color:"#475569",lineHeight:1.6,marginBottom:28,maxWidth:520}}>Our AI runs <strong style={{color:"#0f172a"}}>50+ checks</strong> on your Google, website, social media & competitors — finds every problem, and gives you a free plan to fix them all.</p>
-                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,color:"#059669",fontWeight:600,marginTop:8}}>Powered by Zidly.ai — fix everything automatically, or DIY for free</p>
+                <div style={{marginTop:8,textAlign:"center"}}><a href="https://zidly.ai" target="_blank" rel="noopener noreferrer" style={{fontFamily:"'DM Sans',sans-serif",fontSize:17,color:"#059669",fontWeight:700,textDecoration:"none",display:"block"}}>Powered by Zidly.ai — fix everything automatically</a><p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#94a3b8",fontWeight:400,marginTop:4}}>or DIY for free</p></div>
                 {/* Proof bar */}
                 <div style={{display:"flex",gap:28,marginBottom:32,flexWrap:"wrap"}}>
                   {[{n:"50+",l:"data points checked"},{n:"3-5",l:"competitors compared"},{n:"$0",l:"100% free"}].map((s,i)=>(
