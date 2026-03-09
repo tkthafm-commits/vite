@@ -329,9 +329,10 @@ export default function App(){
 
   const callAPI=async(prompt)=>{
     const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2000,tools:[{type:"web_search_20250305",name:"web_search"}],messages:[{role:"user",content:prompt}]})});
-    const d=await r.json();if(d.error)throw new Error(d.error.message||"API error");
+    if(!r.ok){const err=await r.json().catch(()=>({}));console.error("API error:",r.status,err);throw new Error(err.error?.message||err.error||`API returned ${r.status}`);}
+    const d=await r.json();if(d.error){console.error("API response error:",d.error);throw new Error(typeof d.error==="string"?d.error:d.error.message||"API error");}
     const t=d.content?.filter(b=>b.type==="text")?.map(b=>b.text)?.join("")||"";
-    try{return JSON.parse(t.replace(/```json|```/g,"").trim());}catch{return null;}
+    try{return JSON.parse(t.replace(/```json|```/g,"").trim());}catch{console.warn("JSON parse failed:",t.slice(0,200));return null;}
   };
 
   /* ═══ STEP 1: Detect business + find profiles ═══ */
