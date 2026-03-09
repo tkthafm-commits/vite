@@ -14,7 +14,15 @@ const MARKETS = {
 const GULF_CODES=["AE","SA","QA","KW","BH","OM"];
 const WEST_CODES=["CA","GB","AU","NZ","DE","FR","ES","IT","NL","BE","AT","CH","SE","NO","DK","FI","IE","PT","PL","CZ","GR"];
 const detectMarket=c=>c==="US"?MARKETS.US:c==="EG"?MARKETS.EG:GULF_CODES.includes(c)?MARKETS.GULF:WEST_CODES.includes(c)?MARKETS.WEST:MARKETS.OTHER;
-const BIZ_TYPES=[{id:"dental",label:"Dental / Medical Practice",icon:"🦷"},{id:"restaurant",label:"Restaurant / Cafe",icon:"🍽️"},{id:"salon",label:"Salon / Med Spa / Beauty",icon:"💇"},{id:"realestate",label:"Real Estate",icon:"🏠"},{id:"retail",label:"Retail / E-commerce",icon:"🛍️"},{id:"legal",label:"Legal Services",icon:"⚖️"},{id:"auto",label:"Automotive",icon:"🚗"},{id:"homeservice",label:"Home Services",icon:"🔧"},{id:"fitness",label:"Fitness / Gym",icon:"💪"},{id:"education",label:"Education / Tutoring",icon:"📚"},{id:"other",label:"Other",icon:"🏢"}];
+const BIZ_TYPES=[
+  {id:"restaurant",label:"Restaurant / Cafe",icon:"🍽️"},{id:"dental",label:"Dental Practice",icon:"🦷"},{id:"medical",label:"Doctor / Medical Clinic",icon:"🩺"},{id:"pharmacy",label:"Pharmacy",icon:"💊"},{id:"optician",label:"Optician / Eye Care",icon:"👓"},{id:"veterinary",label:"Veterinary Clinic",icon:"🐾"},
+  {id:"salon",label:"Salon / Barbershop",icon:"💇"},{id:"medspa",label:"Med Spa / Aesthetics",icon:"✨"},{id:"spa",label:"Spa / Massage",icon:"🧖"},{id:"fitness",label:"Fitness / Gym",icon:"💪"},{id:"yoga",label:"Yoga / Pilates Studio",icon:"🧘"},
+  {id:"realestate",label:"Real Estate",icon:"🏠"},{id:"mortgage",label:"Mortgage / Lending",icon:"🏦"},{id:"insurance",label:"Insurance",icon:"🛡️"},{id:"accounting",label:"Accounting / Tax",icon:"📊"},{id:"financial",label:"Financial Advisor",icon:"💰"},{id:"legal",label:"Legal Services",icon:"⚖️"},
+  {id:"retail",label:"Retail / E-commerce",icon:"🛍️"},{id:"grocery",label:"Grocery / Supermarket",icon:"🛒"},{id:"bakery",label:"Bakery / Pastry",icon:"🧁"},{id:"florist",label:"Florist",icon:"💐"},{id:"jewelry",label:"Jewelry Store",icon:"💎"},{id:"clothing",label:"Clothing / Fashion",icon:"👗"},
+  {id:"auto",label:"Auto Repair / Dealer",icon:"🚗"},{id:"autodetail",label:"Auto Detailing",icon:"🧽"},{id:"homeservice",label:"Home Services / HVAC",icon:"🔧"},{id:"plumbing",label:"Plumbing",icon:"🚿"},{id:"electrical",label:"Electrician",icon:"⚡"},{id:"cleaning",label:"Cleaning Services",icon:"🧹"},{id:"landscaping",label:"Landscaping / Lawn",icon:"🌿"},{id:"roofing",label:"Roofing / Construction",icon:"🏗️"},{id:"pest",label:"Pest Control",icon:"🐛"},
+  {id:"hotel",label:"Hotel / B&B",icon:"🏨"},{id:"travel",label:"Travel Agency",icon:"✈️"},{id:"education",label:"Education / Tutoring",icon:"📚"},{id:"daycare",label:"Daycare / Childcare",icon:"👶"},{id:"petcare",label:"Pet Grooming / Boarding",icon:"🐕"},{id:"photography",label:"Photography / Video",icon:"📸"},{id:"printing",label:"Printing / Signs",icon:"🖨️"},{id:"it",label:"IT / Tech Services",icon:"💻"},{id:"marketing",label:"Marketing Agency",icon:"📣"},{id:"consulting",label:"Consulting",icon:"🤝"},{id:"therapy",label:"Therapy / Counseling",icon:"🧠"},{id:"chiropractic",label:"Chiropractor",icon:"🦴"},{id:"physio",label:"Physiotherapy",icon:"🏃"},{id:"funeral",label:"Funeral Services",icon:"🕊️"},{id:"laundry",label:"Laundry / Dry Cleaning",icon:"👔"},{id:"storage",label:"Storage Facility",icon:"📦"},
+  {id:"other",label:"Other",icon:"🏢"}
+];
 const COUNTRIES=[{code:"US",name:"United States"},{code:"CA",name:"Canada"},{code:"GB",name:"United Kingdom"},{code:"AU",name:"Australia"},{code:"NZ",name:"New Zealand"},{code:"IE",name:"Ireland"},{code:"ZA",name:"South Africa"},{code:"SG",name:"Singapore"},{code:"PH",name:"Philippines"},{code:"IN",name:"India"}];
 const SCAN_MSGS=["Initializing advanced AI analysis...","Scanning Google Business Profile...","Analyzing website structure & performance...","Checking social media presence across platforms...","Running competitive intelligence algorithms...","Cross-referencing 50+ data points...","Identifying revenue opportunities...","Generating your personalized action plan...","Finalizing your business score..."];
 
@@ -233,7 +241,7 @@ export default function App(){
   const[inputs,setInputs]=useState({name:"",city:"",country:"US",website:"",facebook:"",instagram:"",tiktok:"",twitter:"",youtube:"",linkedin:""});
   const[market,setMarket]=useState(MARKETS.US);
   const[phase,setPhase]=useState("input"); // input|detecting|confirm|emailGate|scanning|scoreReveal|report|upgrade
-  const[bizType,setBizType]=useState(null);
+  const[bizType,setBizType]=useState(null);const[bizFilter,setBizFilter]=useState("");
   const[detectedProfiles,setDetectedProfiles]=useState({});
   const[scanPhases,setScanPhases]=useState([
     {id:"google",label:"Google Business Profile",status:"pending",score:null,data:null},
@@ -395,10 +403,10 @@ export default function App(){
   };
 
   /* ═══ STEP 2: After confirm, check gate ═══ */
+  const devMode=new URLSearchParams(window.location.search).has("dev");
   const afterConfirm=async()=>{
-    if(hasEmail()){
-      const sc=await getScanCountAsync();
-      if(sc>=2){setPhase("upgrade");return;}
+    if(devMode||hasEmail()){
+      if(!devMode){const sc=await getScanCountAsync();if(sc>=2){setPhase("upgrade");return;}}
       runFullScan(bizType||"other");
     }else{
       setPhase("emailGate");
@@ -409,8 +417,7 @@ export default function App(){
   const handleGateCapture=async(v)=>{
     setHasEmail();setCaptured(true);setCaptureVal(v);
     fetch("https://formspree.io/f/mzdjddjj",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"lead",contact:v,business:inputs.name,city:inputs.city,country:inputs.country})}).catch(()=>{});
-    const sc=await getScanCountAsync();
-    if(sc>=2){setPhase("upgrade");return;}
+    if(!devMode){const sc=await getScanCountAsync();if(sc>=2){setPhase("upgrade");return;}}
     runFullScan(bizType||"other");
   };
 
@@ -915,9 +922,10 @@ export default function App(){
             </div>
             <div style={{marginBottom:14}}>
               <label style={S.lbl}>Business Type</label>
-              <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-                {BIZ_TYPES.map(b=>(
-                  <button key={b.id} onClick={()=>setBizType(b.id)} style={{padding:"8px 14px",borderRadius:10,border:bizType===b.id?"2px solid #059669":"1px solid #e2e8f0",background:bizType===b.id?"#f0fdf4":"white",color:bizType===b.id?"#059669":"#64748b",fontSize:13,fontFamily:"'DM Sans',sans-serif",fontWeight:600,cursor:"pointer"}}>{b.icon} {b.label}</button>
+              <input placeholder="Search business types..." onChange={e=>setBizFilter(e.target.value)} style={{...S.inp,fontSize:13,padding:"8px 12px",marginBottom:8}}/>
+              <div style={{display:"flex",flexWrap:"wrap",gap:6,maxHeight:180,overflowY:"auto",padding:2}}>
+                {BIZ_TYPES.filter(b=>!bizFilter||b.label.toLowerCase().includes(bizFilter.toLowerCase())).map(b=>(
+                  <button key={b.id} onClick={()=>setBizType(b.id)} style={{padding:"8px 14px",borderRadius:10,border:bizType===b.id?"2px solid #059669":"1px solid #e2e8f0",background:bizType===b.id?"#f0fdf4":"white",color:bizType===b.id?"#059669":"#64748b",fontSize:13,fontFamily:"'DM Sans',sans-serif",fontWeight:600,cursor:"pointer",whiteSpace:"nowrap"}}>{b.icon} {b.label}</button>
                 ))}
               </div>
             </div>
