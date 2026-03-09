@@ -52,7 +52,7 @@ export const RotatingReviews = () => {
   }, []);
   const visible = [0,1,2].map(i => REVIEWS[(startIdx + i) % REVIEWS.length]);
   return (
-    <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:32, transition:"opacity 0.4s", opacity:fade?1:0 }}>
+    <div className="reviews-grid" style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:32, transition:"opacity 0.4s", opacity:fade?1:0 }}>
       {visible.map((r,i) => (
         <div key={startIdx+i}>
           <div style={{ display:"flex", gap:2, marginBottom:10 }}>{[1,2,3,4,5].map(j => <span key={j} style={{ color:"#facc15", fontSize:18 }}>★</span>)}</div>

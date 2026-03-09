@@ -366,7 +366,7 @@ export default function App(){
       `}</style>
 
       {/* NAV */}
-      <nav className="no-print" style={{padding:"0 32px",height:64,display:"flex",alignItems:"center",justifyContent:"center",borderBottom:"1px solid #e2e8f0",background:"white",position:"sticky",top:0,zIndex:100}}>
+      <nav className="no-print site-nav" style={{padding:"0 32px",height:64,display:"flex",alignItems:"center",justifyContent:"center",borderBottom:"1px solid #e2e8f0",background:"white",position:"sticky",top:0,zIndex:100}}>
         <div style={{maxWidth:1200,width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
           <div style={{display:"flex",alignItems:"center",gap:10}}>
             <span style={{fontSize:22}}>📊</span>
@@ -393,7 +393,7 @@ export default function App(){
             </div>
           </FadeIn>
           {/* THREE COLUMNS: Social proof | Form | Live stats */}
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1.6fr 1fr",gap:40,alignItems:"start",maxWidth:1260,margin:"0 auto"}}>
+          <div className="hero-grid" style={{display:"grid",gridTemplateColumns:"1fr 1.6fr 1fr",gap:40,alignItems:"start",maxWidth:1260,margin:"0 auto"}}>
             {/* LEFT PANEL — Why it matters */}
             <FadeIn delay={0.05}>
               <div style={{position:"sticky",top:80}}>
@@ -423,7 +423,7 @@ export default function App(){
                   <label style={S.lbl}>Business Name *</label>
                   <input ref={nameRef} value={inputs.name} onChange={e=>upd("name",e.target.value)} placeholder="Start typing your business name..." style={{...S.inp,fontSize:20,padding:"20px 22px"}}/>
                 </div>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:16}}>
+                <div className="form-row" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:16}}>
                   <div><label style={S.lbl}>City *</label><input value={inputs.city} onChange={e=>upd("city",e.target.value)} placeholder="e.g. Houston, TX" style={{...S.inp,fontSize:18,padding:"18px 20px"}}/></div>
                   <div><label style={S.lbl}>Country *</label>
                     <select value={inputs.country} onChange={e=>upd("country",e.target.value)} style={{...S.inp,fontSize:18,padding:"18px 20px",appearance:"none"}}>
@@ -440,7 +440,7 @@ export default function App(){
                 </div>
                 <details style={{marginBottom:22}}>
                   <summary style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#059669",fontWeight:600,cursor:"pointer",padding:"8px 0"}}>+ Add social media profiles <span style={{fontWeight:400,color:"#94a3b8"}}> — or our AI will try to find them automatically</span></summary>
-                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginTop:14}}>
+                  <div className="social-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginTop:14}}>
                     {[["facebook","Facebook","facebook.com/","yourpage"],["instagram","Instagram","instagram.com/","handle"],["tiktok","TikTok","tiktok.com/@","handle"],["youtube","YouTube","youtube.com/","@channel"]].map(([k,l,pre,ph])=>(
                       <div key={k}><label style={S.lbl}>{l}</label>
                         <div style={{display:"flex",alignItems:"center",background:"#fff",border:"1px solid #e2e8f0",borderRadius:12,overflow:"hidden"}}>
@@ -498,7 +498,7 @@ export default function App(){
           <FadeIn delay={0.15}>
             <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:48,fontWeight:800,color:"#0f172a",textAlign:"center",marginBottom:16}}>Most businesses score <span style={{color:"#dc2626"}}>below 50</span></h2>
             <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:20,color:"#475569",textAlign:"center",marginBottom:48,maxWidth:600,margin:"0 auto 48px"}}>Where do you stand? And what are top performers doing differently?</p>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:64}}>
+            <div className="industry-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:64}}>
               <div>
                 <p style={{fontFamily:"'Outfit',sans-serif",fontSize:20,fontWeight:700,color:"#dc2626",marginBottom:24}}>Average scores — most businesses fail</p>
                 {[{cat:"Dental Practices",score:47},{cat:"Restaurants & Cafes",score:38},{cat:"Salons & Med Spas",score:42},{cat:"Retail & E-commerce",score:35},{cat:"Real Estate Agencies",score:51},{cat:"Law Firms",score:44},{cat:"Veterinary Clinics",score:40}].map((c,i)=>(
@@ -531,7 +531,7 @@ export default function App(){
               <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:"clamp(36px,6vw,52px)",fontWeight:800,color:"#0f172a",marginBottom:14}}>What you get in your <span style={{color:"#059669"}}>free report</span></h2>
               <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:20,color:"#475569",maxWidth:680,margin:"0 auto"}}>Competitor audit tools charge $49–299/month for a generic PDF. Ours is free, instant, and packed with actionable data.</p>
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:24}}>
+            <div className="report-grid" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:24}}>
               {[
                 {icon:"📊",title:"Overall Score /100",desc:"One number. Category breakdowns for Google, Website, Social, Competitors. Know exactly where you stand."},
                 {icon:"🏆",title:"Real Competitor Names",desc:"3-5 actual local competitors by name with their review counts, ratings, and what they do better than you."},
@@ -557,7 +557,7 @@ export default function App(){
           <FadeIn delay={0.15}>
             <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:44,fontWeight:800,color:"#0f172a",textAlign:"center",marginBottom:12}}>BizScorer vs paid alternatives</h2>
             <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:18,color:"#475569",textAlign:"center",marginBottom:40}}>We give you more — for free — than tools charging $49–299/month</p>
-            <table style={{width:"100%",borderCollapse:"collapse",fontFamily:"'DM Sans',sans-serif"}}>
+            <div className="compare-table-wrap" style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}><table style={{width:"100%",borderCollapse:"collapse",fontFamily:"'DM Sans',sans-serif",minWidth:600}}>
               <thead><tr>
                 <th style={{textAlign:"left",padding:"14px 18px",fontSize:15,color:"#64748b",borderBottom:"2px solid #e2e8f0"}}></th>
                 <th style={{textAlign:"center",padding:"14px 18px",fontSize:17,fontWeight:800,color:"#059669",borderBottom:"2px solid #bbf7d0",background:"#f0fdf4",borderRadius:"12px 12px 0 0"}}>BizScorer<br/><span style={{fontSize:20,fontWeight:800}}>FREE</span></th>
@@ -593,14 +593,14 @@ export default function App(){
                   <td style={{textAlign:"center",padding:"16px"}}><span style={{fontSize:18,fontWeight:700,color:"#ef4444"}}>$200-500/mo</span></td>
                 </tr>
               </tbody>
-            </table>
+            </table></div>
           </FadeIn>
         </section>
         {/* HOW IT WORKS */}
         <section style={{maxWidth:900,margin:"100px auto 0",padding:"0 40px"}}>
           <FadeIn delay={0.15}>
             <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:48,fontWeight:800,color:"#0f172a",textAlign:"center",marginBottom:56}}>How it works</h2>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:48}}>
+            <div className="steps-grid" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:48}}>
               {STEPS.map((s,i)=>(
                 <div key={i} style={{textAlign:"center"}}>
                   <span style={{fontSize:56,display:"block",marginBottom:16}}>{s.icon}</span>
@@ -617,7 +617,7 @@ export default function App(){
           <FadeIn delay={0.15}>
             <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:48,fontWeight:800,color:"#0f172a",textAlign:"center",marginBottom:16}}>What happens when you <span style={{color:"#059669"}}>fix your score</span></h2>
             <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:20,color:"#475569",textAlign:"center",marginBottom:56,maxWidth:600,margin:"0 auto 56px"}}>Real results from businesses that took action on their BizScorer report</p>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:32,textAlign:"center"}}>
+            <div className="results-grid" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:32,textAlign:"center"}}>
               {[
                 {stat:"2x",desc:"revenue for businesses reaching 200+ reviews",src:"Womply Research"},
                 {stat:"126%",desc:"more traffic in Google's top 3 map positions",src:"SocialPilot / Google"},
@@ -631,7 +631,7 @@ export default function App(){
                 </div>
               ))}
             </div>
-            <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:48,marginTop:72}}>
+            <div className="before-after" style={{display:"flex",justifyContent:"center",alignItems:"center",gap:48,marginTop:72}}>
               <div style={{textAlign:"center"}}><p style={{fontFamily:"'Outfit',sans-serif",fontSize:88,fontWeight:800,color:"#ef4444",lineHeight:1}}>31</p><p style={{fontFamily:"'DM Sans',sans-serif",fontSize:17,color:"#64748b"}}>Average score before</p></div>
               <span style={{fontSize:40,color:"#cbd5e1"}}>→</span>
               <div style={{textAlign:"center"}}><p style={{fontFamily:"'Outfit',sans-serif",fontSize:88,fontWeight:800,color:"#059669",lineHeight:1}}>78</p><p style={{fontFamily:"'DM Sans',sans-serif",fontSize:17,color:"#64748b"}}>After 60 days</p></div>
@@ -654,7 +654,7 @@ export default function App(){
           </FadeIn>
         </section>
         {/* FOOTER */}
-        <footer style={{maxWidth:1300,margin:"100px auto 0",padding:"32px 40px 24px",borderTop:"1px solid #e2e8f0"}}>
+        <footer className="site-footer" style={{maxWidth:1300,margin:"100px auto 0",padding:"32px 40px 24px",borderTop:"1px solid #e2e8f0"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:16}}>
             <div style={{display:"flex",alignItems:"center",gap:8}}>
               <span style={{fontSize:18}}>📊</span>
