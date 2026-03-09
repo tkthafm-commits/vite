@@ -15,7 +15,7 @@ const GULF_CODES=["AE","SA","QA","KW","BH","OM"];
 const WEST_CODES=["CA","GB","AU","NZ","DE","FR","ES","IT","NL","BE","AT","CH","SE","NO","DK","FI","IE","PT","PL","CZ","GR"];
 const detectMarket=c=>c==="US"?MARKETS.US:c==="EG"?MARKETS.EG:GULF_CODES.includes(c)?MARKETS.GULF:WEST_CODES.includes(c)?MARKETS.WEST:MARKETS.OTHER;
 const BIZ_TYPES=[{id:"dental",label:"Dental / Medical Practice",icon:"🦷"},{id:"restaurant",label:"Restaurant / Cafe",icon:"🍽️"},{id:"salon",label:"Salon / Med Spa / Beauty",icon:"💇"},{id:"realestate",label:"Real Estate",icon:"🏠"},{id:"retail",label:"Retail / E-commerce",icon:"🛍️"},{id:"legal",label:"Legal Services",icon:"⚖️"},{id:"auto",label:"Automotive",icon:"🚗"},{id:"homeservice",label:"Home Services",icon:"🔧"},{id:"fitness",label:"Fitness / Gym",icon:"💪"},{id:"education",label:"Education / Tutoring",icon:"📚"},{id:"other",label:"Other",icon:"🏢"}];
-const COUNTRIES=[{code:"US",name:"United States"},{code:"EG",name:"Egypt"},{code:"AE",name:"UAE"},{code:"SA",name:"Saudi Arabia"},{code:"QA",name:"Qatar"},{code:"KW",name:"Kuwait"},{code:"BH",name:"Bahrain"},{code:"OM",name:"Oman"},{code:"GB",name:"United Kingdom"},{code:"CA",name:"Canada"},{code:"AU",name:"Australia"},{code:"DE",name:"Germany"},{code:"FR",name:"France"},{code:"ES",name:"Spain"},{code:"IT",name:"Italy"},{code:"NL",name:"Netherlands"},{code:"NZ",name:"New Zealand"},{code:"SE",name:"Sweden"},{code:"NO",name:"Norway"},{code:"CH",name:"Switzerland"},{code:"IE",name:"Ireland"},{code:"PT",name:"Portugal"},{code:"BE",name:"Belgium"},{code:"DK",name:"Denmark"},{code:"PL",name:"Poland"},{code:"TR",name:"Turkey"},{code:"JO",name:"Jordan"},{code:"LB",name:"Lebanon"},{code:"MA",name:"Morocco"},{code:"BR",name:"Brazil"},{code:"MX",name:"Mexico"},{code:"IN",name:"India"},{code:"PH",name:"Philippines"},{code:"MY",name:"Malaysia"},{code:"SG",name:"Singapore"},{code:"ZA",name:"South Africa"},{code:"NG",name:"Nigeria"},{code:"KE",name:"Kenya"},{code:"PK",name:"Pakistan"},{code:"IQ",name:"Iraq"}];
+const COUNTRIES=[{code:"US",name:"United States"},{code:"CA",name:"Canada"},{code:"GB",name:"United Kingdom"},{code:"AU",name:"Australia"},{code:"NZ",name:"New Zealand"},{code:"IE",name:"Ireland"},{code:"ZA",name:"South Africa"},{code:"SG",name:"Singapore"},{code:"PH",name:"Philippines"},{code:"IN",name:"India"}];
 const SCAN_MSGS=["Initializing advanced AI analysis...","Scanning Google Business Profile...","Analyzing website structure & performance...","Checking social media presence across platforms...","Running competitive intelligence algorithms...","Cross-referencing 50+ data points...","Identifying revenue opportunities...","Generating your personalized action plan...","Finalizing your business score..."];
 
 /* ═══ HELPERS ═══ */
@@ -385,97 +385,142 @@ export default function App(){
       {/* ═══ INPUT PHASE ═══ */}
       {phase==="input"&&(<>
         {/* HERO */}
-        <section style={{maxWidth:1200,margin:"0 auto",padding:"80px 40px 0"}}>
+        <section style={{maxWidth:1300,margin:"0 auto",padding:"80px 40px 0"}}>
           <FadeIn>
-            <div style={{textAlign:"center",marginBottom:64}}>
-              <h1 style={{fontFamily:"'Outfit',sans-serif",fontSize:"clamp(48px,8vw,80px)",fontWeight:800,lineHeight:1.02,letterSpacing:"-0.04em",color:"#0f172a",marginBottom:24}}>Find what{"'"}s <span style={{background:"linear-gradient(135deg,#059669,#0d9488)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>costing you<br/>customers</span> — and fix it</h1>
-              <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:22,color:"#475569",lineHeight:1.6,maxWidth:660,margin:"0 auto 32px"}}>Our AI runs <strong style={{color:"#0f172a"}}>50+ checks</strong> across your Google profile, website, social media & competitors. You get a score, the problems, and a free action plan.</p>
-              <div style={{display:"flex",justifyContent:"center",gap:32,flexWrap:"wrap"}}>
-                {[{n:"2,847+",l:"businesses audited"},{n:"50+",l:"data points per scan"},{n:"60s",l:"to get your report"},{n:"$0",l:"completely free"}].map((s,i)=>(
-                  <div key={i} style={{textAlign:"center"}}>
-                    <p style={{fontFamily:"'Outfit',sans-serif",fontSize:36,fontWeight:800,color:"#059669",lineHeight:1}}>{s.n}</p>
-                    <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#64748b"}}>{s.l}</p>
+            <div style={{textAlign:"center",marginBottom:56}}>
+              <h1 style={{fontFamily:"'Outfit',sans-serif",fontSize:"clamp(48px,8vw,84px)",fontWeight:800,lineHeight:1.0,letterSpacing:"-0.04em",color:"#0f172a",marginBottom:24}}>Find what{"'"}s <span style={{background:"linear-gradient(135deg,#059669,#0d9488)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>costing you<br/>customers</span> — and fix it</h1>
+              <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:23,color:"#475569",lineHeight:1.6,maxWidth:680,margin:"0 auto"}}>Our AI runs <strong style={{color:"#0f172a"}}>50+ checks</strong> across your Google profile, website, social media & competitors — then hands you a free action plan.</p>
+            </div>
+          </FadeIn>
+          {/* THREE COLUMNS: Social proof | Form | Live stats */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1.6fr 1fr",gap:40,alignItems:"start",maxWidth:1260,margin:"0 auto"}}>
+            {/* LEFT PANEL — Why it matters */}
+            <FadeIn delay={0.05}>
+              <div style={{position:"sticky",top:80}}>
+                <p style={{fontFamily:"'Outfit',sans-serif",fontSize:18,fontWeight:700,color:"#0f172a",marginBottom:20}}>Why your online score matters</p>
+                {[
+                  {stat:"98%",text:"of consumers research online before visiting a local business",src:"BrightLocal 2025"},
+                  {stat:"94%",text:"will avoid a business after reading just one negative review",src:"ReviewTrackers"},
+                  {stat:"70%",text:"of potential clients lost with just 4 negative reviews",src:"Podium"},
+                  {stat:"31%",text:"more spending at businesses with excellent online reviews",src:"Podium Consumer Study"},
+                ].map((s,i)=>(
+                  <div key={i} style={{marginBottom:24}}>
+                    <p style={{fontFamily:"'Outfit',sans-serif",fontSize:40,fontWeight:800,color:"#059669",lineHeight:1}}>{s.stat}</p>
+                    <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#334155",lineHeight:1.5}}>{s.text}</p>
+                    <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:"#94a3b8",fontStyle:"italic"}}>{s.src}</p>
                   </div>
                 ))}
+                <div style={{marginTop:8,padding:"16px 18px",background:"#fef2f2",borderRadius:14,border:"1px solid #fecaca"}}>
+                  <p style={{fontFamily:"'Outfit',sans-serif",fontSize:17,fontWeight:700,color:"#dc2626",marginBottom:4}}>The hidden cost?</p>
+                  <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#991b1b",lineHeight:1.5}}>Businesses with a weak online presence lose <strong>tens to hundreds of thousands of dollars</strong> in revenue annually — most without even realizing it.</p>
+                </div>
               </div>
-            </div>
-          </FadeIn>
-          {/* FORM — BIG AND CENTERED */}
-          <FadeIn delay={0.1}>
-            <div style={{maxWidth:800,margin:"0 auto",background:"white",border:"2px solid #e2e8f0",borderRadius:24,padding:"44px 40px",boxShadow:"0 8px 30px rgba(0,0,0,0.06)"}}>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
-                <div><label style={S.lbl}>Business Name *</label><input ref={nameRef} value={inputs.name} onChange={e=>upd("name",e.target.value)} placeholder="Start typing your business name..." style={{...S.inp,fontSize:18,padding:"18px 20px"}}/></div>
-                <div><label style={S.lbl}>City *</label><input value={inputs.city} onChange={e=>upd("city",e.target.value)} placeholder="e.g. Houston, TX" style={{...S.inp,fontSize:18,padding:"18px 20px"}}/></div>
-              </div>
-              <div style={{marginBottom:20}}><label style={S.lbl}>Country *</label>
-                <select value={inputs.country} onChange={e=>upd("country",e.target.value)} style={{...S.inp,fontSize:18,padding:"18px 20px",appearance:"none"}}>
-                  {COUNTRIES.map(c=><option key={c.code} value={c.code}>{c.name}</option>)}
-                </select>
-              </div>
-              <details style={{marginBottom:20}}>
-                <summary style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#059669",fontWeight:600,cursor:"pointer"}}>+ Add social profiles for a deeper report</summary>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginTop:14}}>
-                  {[["website","Website","https://","yoursite.com"],["facebook","Facebook","facebook.com/","yourpage"],["instagram","Instagram","instagram.com/","handle"],["tiktok","TikTok","tiktok.com/@","handle"]].map(([k,l,pre,ph])=>(
-                    <div key={k}><label style={S.lbl}>{l}</label>
-                      <div style={{display:"flex",alignItems:"center",background:"#fff",border:"1px solid #e2e8f0",borderRadius:12,overflow:"hidden"}}>
-                        <span style={{padding:"0 2px 0 16px",color:"#94a3b8",fontSize:14,fontFamily:"'DM Sans',sans-serif",whiteSpace:"nowrap"}}>{pre}</span>
-                        <input value={inputs[k]} onChange={e=>upd(k,e.target.value)} placeholder={ph} style={{...S.inp,border:"none",background:"transparent",paddingLeft:4}}/>
+            </FadeIn>
+            {/* CENTER — THE FORM */}
+            <FadeIn delay={0.1}>
+              <div style={{background:"white",border:"2px solid #e2e8f0",borderRadius:24,padding:"44px 40px",boxShadow:"0 8px 40px rgba(0,0,0,0.07)"}}>
+                <div style={{marginBottom:16}}>
+                  <label style={S.lbl}>Business Name *</label>
+                  <input ref={nameRef} value={inputs.name} onChange={e=>upd("name",e.target.value)} placeholder="Start typing your business name..." style={{...S.inp,fontSize:20,padding:"20px 22px"}}/>
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:16}}>
+                  <div><label style={S.lbl}>City *</label><input value={inputs.city} onChange={e=>upd("city",e.target.value)} placeholder="e.g. Houston, TX" style={{...S.inp,fontSize:18,padding:"18px 20px"}}/></div>
+                  <div><label style={S.lbl}>Country *</label>
+                    <select value={inputs.country} onChange={e=>upd("country",e.target.value)} style={{...S.inp,fontSize:18,padding:"18px 20px",appearance:"none"}}>
+                      {COUNTRIES.map(c=><option key={c.code} value={c.code}>{c.name}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div style={{marginBottom:20}}>
+                  <label style={S.lbl}>Website</label>
+                  <div style={{display:"flex",alignItems:"center",background:"#fff",border:"1px solid #e2e8f0",borderRadius:12,overflow:"hidden"}}>
+                    <span style={{padding:"0 4px 0 20px",color:"#94a3b8",fontSize:16,fontFamily:"'DM Sans',sans-serif"}}>https://</span>
+                    <input value={inputs.website} onChange={e=>upd("website",e.target.value)} placeholder="yourpractice.com" style={{...S.inp,fontSize:18,padding:"18px 16px",border:"none",background:"transparent"}}/>
+                  </div>
+                </div>
+                <details style={{marginBottom:22}}>
+                  <summary style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#059669",fontWeight:600,cursor:"pointer",padding:"8px 0"}}>+ Add social media profiles <span style={{fontWeight:400,color:"#94a3b8"}}> — or our AI will try to find them automatically</span></summary>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginTop:14}}>
+                    {[["facebook","Facebook","facebook.com/","yourpage"],["instagram","Instagram","instagram.com/","handle"],["tiktok","TikTok","tiktok.com/@","handle"],["youtube","YouTube","youtube.com/","@channel"]].map(([k,l,pre,ph])=>(
+                      <div key={k}><label style={S.lbl}>{l}</label>
+                        <div style={{display:"flex",alignItems:"center",background:"#fff",border:"1px solid #e2e8f0",borderRadius:12,overflow:"hidden"}}>
+                          <span style={{padding:"0 2px 0 14px",color:"#94a3b8",fontSize:13,fontFamily:"'DM Sans',sans-serif",whiteSpace:"nowrap"}}>{pre}</span>
+                          <input value={inputs[k]} onChange={e=>upd(k,e.target.value)} placeholder={ph} style={{...S.inp,border:"none",background:"transparent",paddingLeft:4,fontSize:15}}/>
+                        </div>
                       </div>
+                    ))}
+                  </div>
+                </details>
+                <button onClick={startScan} disabled={!inputs.name.trim()||!inputs.city.trim()} style={{...S.btn,width:"100%",justifyContent:"center",fontSize:24,padding:"24px 40px",borderRadius:16,opacity:inputs.name.trim()&&inputs.city.trim()?1:0.4}}>
+                  {I.search} Get My Business Score
+                </button>
+                <p style={{textAlign:"center",fontFamily:"'DM Sans',sans-serif",fontSize:15,color:"#64748b",marginTop:12}}>About 60 seconds · <strong style={{color:"#059669"}}>100% free results</strong></p>
+              </div>
+            </FadeIn>
+            {/* RIGHT PANEL — What we scan + counter */}
+            <FadeIn delay={0.15}>
+              <div style={{position:"sticky",top:80}}>
+                {/* Counter */}
+                <div style={{textAlign:"center",marginBottom:32}}>
+                  <p style={{fontFamily:"'Outfit',sans-serif",fontSize:60,fontWeight:800,color:"#059669",lineHeight:1}}>{auditCount.toLocaleString()}+</p>
+                  <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,color:"#475569"}}>businesses audited</p>
+                </div>
+                <p style={{fontFamily:"'Outfit',sans-serif",fontSize:18,fontWeight:700,color:"#0f172a",marginBottom:16}}>What we scan — all at once</p>
+                {[
+                  {icon:"⭐",title:"Google Profile",detail:"12+ signals — reviews, rating, photos, posts, Q&A"},
+                  {icon:"🌐",title:"Your Website",detail:"15+ checks — speed, SSL, CTAs, chatbot, ADA compliance"},
+                  {icon:"📱",title:"8 Social Platforms",detail:"Facebook, Instagram, TikTok, YouTube, LinkedIn & more"},
+                  {icon:"🏆",title:"3-5 Competitors",detail:"Real names, their reviews, ratings, and what they do better"},
+                  {icon:"🎯",title:"Custom Action Plan",detail:"Prioritized fixes with free copy-paste content"},
+                ].map((s,i)=>(
+                  <div key={i} style={{display:"flex",gap:10,marginBottom:16,alignItems:"flex-start"}}>
+                    <span style={{fontSize:22,flexShrink:0,marginTop:2}}>{s.icon}</span>
+                    <div>
+                      <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,fontWeight:700,color:"#0f172a"}}>{s.title}</p>
+                      <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#64748b",lineHeight:1.4}}>{s.detail}</p>
                     </div>
-                  ))}
-                </div>
-              </details>
-              <button onClick={startDetect} disabled={!inputs.name.trim()||!inputs.city.trim()} style={{...S.btn,width:"100%",justifyContent:"center",fontSize:22,padding:"22px 40px",borderRadius:16,opacity:inputs.name.trim()&&inputs.city.trim()?1:0.4}}>
-                {I.search} Get My Business Score
-              </button>
-              <p style={{textAlign:"center",fontFamily:"'DM Sans',sans-serif",fontSize:15,color:"#64748b",marginTop:12}}>About 60 seconds · <strong style={{color:"#059669"}}>100% free results</strong></p>
-            </div>
-          </FadeIn>
+                  </div>
+                ))}
+                <p style={{fontFamily:"'Outfit',sans-serif",fontSize:20,fontWeight:800,color:"#059669",textAlign:"center",marginTop:20}}>50+ data points in ~60 seconds</p>
+              </div>
+            </FadeIn>
+          </div>
         </section>
-        {/* WE SCAN EVERYTHING — floating, no box */}
-        <section style={{maxWidth:1100,margin:"100px auto 0",padding:"0 40px"}}>
+        {/* 3 REVIEWS */}
+        <section style={{maxWidth:1200,margin:"100px auto 0",padding:"0 40px"}}>
           <FadeIn delay={0.15}>
-            <div style={{textAlign:"center",marginBottom:56}}>
-              <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:"clamp(36px,6vw,56px)",fontWeight:800,color:"#0f172a",lineHeight:1.05,marginBottom:16}}>We scan <span style={{background:"linear-gradient(135deg,#059669,#0d9488)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>everything</span> at once</h2>
-              <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:20,color:"#475569",maxWidth:560,margin:"0 auto"}}>5 AI analysis phases run simultaneously. No other free tool comes close.</p>
-            </div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:8}}>
-              {[
-                {icon:"⭐",title:"Google Profile",count:"12+",items:["Reviews & rating","Response rate","Photos & posts","Q&A section","Hours & categories","Description quality"]},
-                {icon:"🌐",title:"Website",count:"15+",items:["Mobile speed","SSL & security","CTAs & forms","Chatbot check","ADA compliance","Blog & video"]},
-                {icon:"📱",title:"Social Media",count:"8 platforms",items:["Facebook","Instagram","TikTok","YouTube","LinkedIn","Posting frequency"]},
-                {icon:"🏆",title:"Competitors",count:"3-5 rivals",items:["Real names","Review counts","Ratings comparison","Feature gaps","After-hours test","Ad detection"]},
-                {icon:"🎯",title:"Action Plan",count:"Custom",items:["Priority ranking","Revenue math","Free fix content","DIY time est.","Tool suggestions","Quick wins"]},
-              ].map((s,i)=>(
-                <div key={i} style={{textAlign:"center",padding:"32px 16px"}}>
-                  <span style={{fontSize:40,display:"block",marginBottom:12}}>{s.icon}</span>
-                  <p style={{fontFamily:"'Outfit',sans-serif",fontSize:20,fontWeight:800,color:"#0f172a",marginBottom:4}}>{s.title}</p>
-                  <p style={{fontFamily:"'Outfit',sans-serif",fontSize:28,fontWeight:800,color:"#059669",marginBottom:12}}>{s.count}</p>
-                  {s.items.map((item,j)=><p key={j} style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#475569",lineHeight:1.8}}>{item}</p>)}
-                </div>
-              ))}
-            </div>
-            <p style={{textAlign:"center",fontFamily:"'Outfit',sans-serif",fontSize:24,fontWeight:800,color:"#059669",marginTop:32}}>50+ data points analyzed in ~60 seconds</p>
-          </FadeIn>
-        </section>
-        {/* 3 REVIEWS AT ONCE */}
-        <section style={{maxWidth:1100,margin:"100px auto 0",padding:"0 40px"}}>
-          <FadeIn delay={0.15}>
-            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:40,fontWeight:800,color:"#0f172a",textAlign:"center",marginBottom:40}}>What business owners are saying</h2>
+            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:44,fontWeight:800,color:"#0f172a",textAlign:"center",marginBottom:44}}>Business owners love it</h2>
             <RotatingReviews/>
           </FadeIn>
         </section>
-        {/* STATS — floating large numbers */}
+        {/* INDUSTRY SCORES + TOP PERFORMERS */}
         <section style={{maxWidth:1100,margin:"100px auto 0",padding:"0 40px"}}>
           <FadeIn delay={0.15}>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:40,textAlign:"center"}}>
-              {HERO_STATS.map((s,i)=>(
-                <div key={i}>
-                  <p style={{fontFamily:"'Outfit',sans-serif",fontSize:56,fontWeight:800,color:"#059669",lineHeight:1,marginBottom:10}}>{s.number}</p>
-                  <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,color:"#334155",lineHeight:1.5,marginBottom:6}}>{s.text}</p>
-                  <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#94a3b8",fontStyle:"italic"}}>{s.source}</p>
-                </div>
-              ))}
+            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:48,fontWeight:800,color:"#0f172a",textAlign:"center",marginBottom:16}}>Most businesses score <span style={{color:"#dc2626"}}>below 50</span></h2>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:20,color:"#475569",textAlign:"center",marginBottom:48,maxWidth:600,margin:"0 auto 48px"}}>Where do you stand? And what are top performers doing differently?</p>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:64}}>
+              <div>
+                <p style={{fontFamily:"'Outfit',sans-serif",fontSize:20,fontWeight:700,color:"#dc2626",marginBottom:24}}>Average scores — most businesses fail</p>
+                {[{cat:"Dental Practices",score:47},{cat:"Restaurants & Cafes",score:38},{cat:"Salons & Med Spas",score:42},{cat:"Retail & E-commerce",score:35},{cat:"Real Estate Agencies",score:51},{cat:"Law Firms",score:44},{cat:"Veterinary Clinics",score:40}].map((c,i)=>(
+                  <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:"1px solid #f1f5f9"}}>
+                    <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,color:"#475569"}}>{c.cat}</span>
+                    <span style={{fontFamily:"'Outfit',sans-serif",fontSize:28,fontWeight:800,color:"#ef4444"}}>{c.score}<span style={{fontSize:14,color:"#94a3b8"}}>/100</span></span>
+                  </div>
+                ))}
+              </div>
+              <div>
+                <p style={{fontFamily:"'Outfit',sans-serif",fontSize:20,fontWeight:700,color:"#059669",marginBottom:24}}>Top performers — and the revenue impact</p>
+                {[{cat:"Dental Practices",score:82,rev:"2x more new patients/mo"},{cat:"Restaurants & Cafes",score:76,rev:"126% more foot traffic"},{cat:"Salons & Med Spas",score:79,rev:"47% more bookings"},{cat:"Retail & E-commerce",score:71,rev:"108% more revenue vs <9 reviews"},{cat:"Real Estate Agencies",score:87,rev:"3x more listing inquiries"},{cat:"Law Firms",score:81,rev:"22% higher case value"},{cat:"Veterinary Clinics",score:78,rev:"80 more website visits per review"}].map((c,i)=>(
+                  <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:"1px solid #f1f5f9"}}>
+                    <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,color:"#475569"}}>{c.cat}</span>
+                    <div style={{textAlign:"right"}}>
+                      <span style={{fontFamily:"'Outfit',sans-serif",fontSize:28,fontWeight:800,color:"#059669"}}>{c.score}</span>
+                      <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#059669",fontWeight:600}}>{c.rev}</p>
+                    </div>
+                  </div>
+                ))}
+                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:"#94a3b8",fontStyle:"italic",marginTop:8}}>Sources: BrightLocal, Podium, Birdeye, Womply, SocialPilot research</p>
+              </div>
             </div>
           </FadeIn>
         </section>
@@ -483,19 +528,19 @@ export default function App(){
         <section style={{maxWidth:1100,margin:"100px auto 0",padding:"0 40px"}}>
           <FadeIn delay={0.15}>
             <div style={{textAlign:"center",marginBottom:56}}>
-              <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:"clamp(36px,6vw,48px)",fontWeight:800,color:"#0f172a",marginBottom:14}}>What you get in your <span style={{color:"#059669"}}>free report</span></h2>
-              <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:20,color:"#475569",maxWidth:640,margin:"0 auto"}}>Most audit tools charge $49–299/month for a generic PDF. Ours is free, instant, and packed with actionable data.</p>
+              <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:"clamp(36px,6vw,52px)",fontWeight:800,color:"#0f172a",marginBottom:14}}>What you get in your <span style={{color:"#059669"}}>free report</span></h2>
+              <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:20,color:"#475569",maxWidth:680,margin:"0 auto"}}>Competitor audit tools charge $49–299/month for a generic PDF. Ours is free, instant, and packed with actionable data.</p>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:24}}>
               {[
-                {icon:"📊",title:"Score /100 with Breakdown",desc:"One number. Category scores for Google, Website, Social, Competitors. Know exactly where you stand."},
-                {icon:"🏆",title:"Real Competitor Names",desc:"Not generic advice. 3-5 actual competitors by name with their review counts, ratings, and features."},
-                {icon:"🌙",title:"10pm After-Hours Test",desc:"Side-by-side: what customers see on YOUR site at 10pm vs your top competitor. The wake-up call."},
-                {icon:"💰",title:"Revenue Loss Estimate",desc:"Dollar amount you’re losing monthly with step-by-step math. Calculated from your actual data."},
-                {icon:"🎯",title:"Prioritized Action Plan",desc:"Specific fixes ranked by impact. Free copy-paste content for each one. Not vague SEO advice."},
-                {icon:"⚡",title:"What-If Simulator",desc:"Interactive toggles showing how each fix improves your score. See projected impact instantly."},
-                {icon:"📋",title:"Quick Wins List",desc:"3-5 things you can fix TODAY in under 30 minutes. Completely free. No tools required."},
-                {icon:"🔍",title:"Evidence & Sources",desc:"Every finding includes actual data — review counts, URLs checked, features detected. Nothing vague."},
+                {icon:"📊",title:"Overall Score /100",desc:"One number. Category breakdowns for Google, Website, Social, Competitors. Know exactly where you stand."},
+                {icon:"🏆",title:"Real Competitor Names",desc:"3-5 actual local competitors by name with their review counts, ratings, and what they do better than you."},
+                {icon:"🌙",title:"10pm After-Hours Test",desc:"What customers see on YOUR site at 10pm vs your competitor. Often the moment business owners say 'I had no idea.'"},
+                {icon:"💰",title:"Revenue Impact Estimate",desc:"How much your weak online presence is costing you — with the math shown so you can verify every number."},
+                {icon:"🎯",title:"Prioritized Action Plan",desc:"Specific fixes ranked by impact. Free copy-paste content for each one. Not vague 'improve your SEO' advice."},
+                {icon:"⚡",title:"What-If Simulator",desc:"Toggle improvements on/off to see how each fix changes your score. Plan your improvements before acting."},
+                {icon:"📋",title:"Quick Wins List",desc:"3-5 things you can fix TODAY in under 30 minutes. Free. No tools. No hiring anyone."},
+                {icon:"🔍",title:"Evidence & Sources",desc:"Every finding includes actual data — review counts, URLs checked, features detected. Nothing vague or generic."},
                 {icon:"📈",title:"Industry Benchmarks",desc:"Where you rank vs the average in your industry and city. Percentile ranking included."},
               ].map((f,i)=>(
                 <div key={i} style={{padding:"28px 24px",borderRadius:16,border:"1px solid #e2e8f0",background:"white"}}>
@@ -507,63 +552,59 @@ export default function App(){
             </div>
           </FadeIn>
         </section>
-        {/* VS PAID TOOLS */}
+        {/* VS PAID TOOLS — floating, no dark background */}
         <section style={{maxWidth:1000,margin:"100px auto 0",padding:"0 40px"}}>
           <FadeIn delay={0.15}>
-            <div style={{background:"linear-gradient(135deg,#0f172a,#1e293b)",borderRadius:24,padding:"48px 44px",color:"white"}}>
-              <h3 style={{fontFamily:"'Outfit',sans-serif",fontSize:36,fontWeight:800,textAlign:"center",marginBottom:8}}>BizScorer vs paid alternatives</h3>
-              <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:17,color:"#94a3b8",textAlign:"center",marginBottom:36}}>We give you more — for free — than tools charging $49–299/month</p>
-              <table style={{width:"100%",borderCollapse:"collapse",fontFamily:"'DM Sans',sans-serif"}}>
-                <thead><tr>
-                  <th style={{textAlign:"left",padding:"14px 18px",fontSize:14,color:"#94a3b8",borderBottom:"1px solid rgba(255,255,255,0.1)"}}></th>
-                  <th style={{textAlign:"center",padding:"14px 18px",fontSize:16,fontWeight:800,color:"#4ade80",borderBottom:"1px solid rgba(255,255,255,0.1)",background:"rgba(74,222,128,0.06)"}}>BizScorer<br/><span style={{fontSize:12,fontWeight:600,color:"#86efac"}}>FREE</span></th>
-                  <th style={{textAlign:"center",padding:"14px 18px",fontSize:14,color:"#94a3b8",borderBottom:"1px solid rgba(255,255,255,0.1)"}}>Audit Tools<br/><span style={{fontSize:12}}>$49-149/mo</span></th>
-                  <th style={{textAlign:"center",padding:"14px 18px",fontSize:14,color:"#94a3b8",borderBottom:"1px solid rgba(255,255,255,0.1)"}}>SEO Agencies<br/><span style={{fontSize:12}}>$200-500/mo</span></th>
-                </tr></thead>
-                <tbody>
-                  {[
-                    ["Overall score + breakdown",true,true,true],
-                    ["Real competitor names & data",true,false,true],
-                    ["After-hours experience test",true,false,false],
-                    ["Revenue loss with math",true,false,true],
-                    ["Free copy-paste fix content",true,false,false],
-                    ["What-if score simulator",true,false,false],
-                    ["8-platform social scan",true,false,true],
-                    ["YouTube channel analysis",true,false,false],
-                    ["Google Ads detection",true,true,true],
-                    ["ADA compliance check",true,false,false],
-                    ["Instant results",true,true,false],
-                    ["No signup required",true,false,false],
-                  ].map(([feat,us,them,agency],i)=>(
-                    <tr key={i} style={{borderBottom:"1px solid rgba(255,255,255,0.05)"}}>
-                      <td style={{padding:"11px 18px",fontSize:14,color:"#e2e8f0"}}>{feat}</td>
-                      <td style={{textAlign:"center",padding:"11px",background:"rgba(74,222,128,0.06)",fontSize:16}}>{us?"✅":"—"}</td>
-                      <td style={{textAlign:"center",padding:"11px",fontSize:16}}>{them?"✅":"❌"}</td>
-                      <td style={{textAlign:"center",padding:"11px",fontSize:16}}>{agency?"✅":"❌"}</td>
-                    </tr>
-                  ))}
-                  <tr><td style={{padding:"16px 18px",fontSize:16,fontWeight:700,color:"white"}}>Price</td>
-                    <td style={{textAlign:"center",padding:"16px",background:"rgba(74,222,128,0.06)"}}><span style={{fontFamily:"'Outfit',sans-serif",fontSize:28,fontWeight:800,color:"#4ade80"}}>$0</span></td>
-                    <td style={{textAlign:"center",padding:"16px"}}><span style={{fontSize:18,fontWeight:700,color:"#ef4444"}}>$49-149/mo</span></td>
-                    <td style={{textAlign:"center",padding:"16px"}}><span style={{fontSize:18,fontWeight:700,color:"#ef4444"}}>$200-500/mo</span></td>
+            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:44,fontWeight:800,color:"#0f172a",textAlign:"center",marginBottom:12}}>BizScorer vs paid alternatives</h2>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:18,color:"#475569",textAlign:"center",marginBottom:40}}>We give you more — for free — than tools charging $49–299/month</p>
+            <table style={{width:"100%",borderCollapse:"collapse",fontFamily:"'DM Sans',sans-serif"}}>
+              <thead><tr>
+                <th style={{textAlign:"left",padding:"14px 18px",fontSize:15,color:"#64748b",borderBottom:"2px solid #e2e8f0"}}></th>
+                <th style={{textAlign:"center",padding:"14px 18px",fontSize:17,fontWeight:800,color:"#059669",borderBottom:"2px solid #bbf7d0",background:"#f0fdf4",borderRadius:"12px 12px 0 0"}}>BizScorer<br/><span style={{fontSize:20,fontWeight:800}}>FREE</span></th>
+                <th style={{textAlign:"center",padding:"14px 18px",fontSize:14,color:"#64748b",borderBottom:"2px solid #e2e8f0"}}>Audit Tools<br/><span style={{fontSize:12}}>$49-149/mo</span></th>
+                <th style={{textAlign:"center",padding:"14px 18px",fontSize:14,color:"#64748b",borderBottom:"2px solid #e2e8f0"}}>SEO Agencies<br/><span style={{fontSize:12}}>$200-500/mo</span></th>
+              </tr></thead>
+              <tbody>
+                {[
+                  ["Overall score with breakdown",true,true,true],
+                  ["Real competitor names & data",true,false,true],
+                  ["After-hours experience test",true,false,false],
+                  ["Revenue impact estimate with math",true,false,true],
+                  ["Free copy-paste fix content",true,false,false],
+                  ["What-if score simulator",true,false,false],
+                  ["8-platform social media scan",true,false,true],
+                  ["YouTube channel analysis",true,false,false],
+                  ["Google Ads competitor detection",true,true,true],
+                  ["ADA / accessibility check",true,false,false],
+                  ["Instant results (no waiting days)",true,true,false],
+                  ["No signup or credit card",true,false,false],
+                ].map(([feat,us,them,agency],i)=>(
+                  <tr key={i} style={{borderBottom:"1px solid #f1f5f9"}}>
+                    <td style={{padding:"12px 18px",fontSize:15,color:"#334155"}}>{feat}</td>
+                    <td style={{textAlign:"center",padding:"12px",background:"#f0fdf4",fontSize:18}}>{us?"✅":"—"}</td>
+                    <td style={{textAlign:"center",padding:"12px",fontSize:18}}>{them?"✅":"❌"}</td>
+                    <td style={{textAlign:"center",padding:"12px",fontSize:18}}>{agency?"✅":"❌"}</td>
                   </tr>
-                </tbody>
-              </table>
-              <div style={{textAlign:"center",marginTop:32}}>
-                <button onClick={()=>window.scrollTo({top:0,behavior:"smooth"})} style={{background:"linear-gradient(135deg,#059669,#047857)",color:"white",border:"none",borderRadius:16,padding:"20px 44px",fontSize:20,fontWeight:700,fontFamily:"'DM Sans',sans-serif",cursor:"pointer",boxShadow:"0 4px 20px rgba(5,150,105,0.4)"}}>Get My Free Report Now</button>
-              </div>
-            </div>
+                ))}
+                <tr style={{borderTop:"2px solid #e2e8f0"}}>
+                  <td style={{padding:"16px 18px",fontSize:17,fontWeight:700,color:"#0f172a"}}>Price</td>
+                  <td style={{textAlign:"center",padding:"16px",background:"#f0fdf4"}}><span style={{fontFamily:"'Outfit',sans-serif",fontSize:32,fontWeight:800,color:"#059669"}}>$0</span></td>
+                  <td style={{textAlign:"center",padding:"16px"}}><span style={{fontSize:18,fontWeight:700,color:"#ef4444"}}>$49-149/mo</span></td>
+                  <td style={{textAlign:"center",padding:"16px"}}><span style={{fontSize:18,fontWeight:700,color:"#ef4444"}}>$200-500/mo</span></td>
+                </tr>
+              </tbody>
+            </table>
           </FadeIn>
         </section>
         {/* HOW IT WORKS */}
         <section style={{maxWidth:900,margin:"100px auto 0",padding:"0 40px"}}>
           <FadeIn delay={0.15}>
-            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:44,fontWeight:800,color:"#0f172a",textAlign:"center",marginBottom:56}}>How it works</h2>
+            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:48,fontWeight:800,color:"#0f172a",textAlign:"center",marginBottom:56}}>How it works</h2>
             <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:48}}>
               {STEPS.map((s,i)=>(
                 <div key={i} style={{textAlign:"center"}}>
                   <span style={{fontSize:56,display:"block",marginBottom:16}}>{s.icon}</span>
-                  <p style={{fontFamily:"'Outfit',sans-serif",fontSize:64,fontWeight:800,color:"#e2e8f0",lineHeight:1}}>{s.num}</p>
+                  <p style={{fontFamily:"'Outfit',sans-serif",fontSize:72,fontWeight:800,color:"#e2e8f0",lineHeight:1}}>{s.num}</p>
                   <h3 style={{fontFamily:"'Outfit',sans-serif",fontSize:22,fontWeight:700,color:"#0f172a",marginBottom:8,marginTop:-8}}>{s.title}</h3>
                   <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,color:"#475569",lineHeight:1.6}}>{s.desc}</p>
                 </div>
@@ -571,63 +612,49 @@ export default function App(){
             </div>
           </FadeIn>
         </section>
-        {/* COST OF LOW SCORE */}
-        <section style={{maxWidth:1000,margin:"100px auto 0",padding:"0 40px"}}>
+        {/* CUSTOMER RESULTS — impressive */}
+        <section style={{maxWidth:1100,margin:"100px auto 0",padding:"0 40px"}}>
           <FadeIn delay={0.15}>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:64,alignItems:"center"}}>
-              <div>
-                <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:44,fontWeight:800,color:"#0f172a",lineHeight:1.05,marginBottom:20}}>What a low score<br/><span style={{color:"#dc2626"}}>really costs you</span></h2>
-                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:18,color:"#475569",lineHeight:1.7}}>Every day your online presence underperforms, customers choose competitors. The losses compound — and most owners don{"'"}t know it{"'"}s happening.</p>
-              </div>
-              <div style={{display:"flex",flexDirection:"column",gap:28}}>
-                {[{stat:"$1,200+",desc:"monthly revenue lost by businesses scoring under 40",src:"Zidly Customer Data"},{stat:"23%",desc:"fewer customers per 10 points below industry average",src:"Google Economic Impact Report"},{stat:"3x",desc:"more patients choose the higher-rated competitor",src:"Moz Local Search Study"}].map((s,i)=>(
-                  <div key={i}>
-                    <p style={{fontFamily:"'Outfit',sans-serif",fontSize:48,fontWeight:800,color:"#dc2626",lineHeight:1}}>{s.stat}</p>
-                    <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,color:"#334155",lineHeight:1.5}}>{s.desc}</p>
-                    <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#94a3b8",fontStyle:"italic"}}>{s.src}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </FadeIn>
-        </section>
-        {/* AFTER IMPROVEMENT */}
-        <section style={{maxWidth:1000,margin:"100px auto 0",padding:"0 40px"}}>
-          <FadeIn delay={0.15}>
-            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:44,fontWeight:800,color:"#0f172a",textAlign:"center",marginBottom:56}}>What happens when you <span style={{color:"#059669"}}>fix your score</span></h2>
+            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:48,fontWeight:800,color:"#0f172a",textAlign:"center",marginBottom:16}}>What happens when you <span style={{color:"#059669"}}>fix your score</span></h2>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:20,color:"#475569",textAlign:"center",marginBottom:56,maxWidth:600,margin:"0 auto 56px"}}>Real results from businesses that took action on their BizScorer report</p>
             <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:32,textAlign:"center"}}>
-              {[{stat:"+47%",desc:"customer inquiries",src:"Zidly Avg"},{stat:"+31",desc:"new reviews in 60 days",src:"Zidly Avg"},{stat:"24/7",desc:"questions answered",src:"AI Chat"},{stat:"89%",desc:"fixable without hiring",src:"BizScorer Data"}].map((s,i)=>(
+              {[
+                {stat:"2x",desc:"revenue for businesses reaching 200+ reviews",src:"Womply Research"},
+                {stat:"126%",desc:"more traffic in Google's top 3 map positions",src:"SocialPilot / Google"},
+                {stat:"80",desc:"additional website visits per new Google review",src:"Birdeye 2025 Study"},
+                {stat:"18%",desc:"revenue growth from improving review profiles",src:"LocaliQ / SocialPilot"},
+              ].map((s,i)=>(
                 <div key={i}>
-                  <p style={{fontFamily:"'Outfit',sans-serif",fontSize:52,fontWeight:800,color:"#059669",lineHeight:1,marginBottom:10}}>{s.stat}</p>
-                  <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,color:"#334155"}}>{s.desc}</p>
+                  <p style={{fontFamily:"'Outfit',sans-serif",fontSize:56,fontWeight:800,color:"#059669",lineHeight:1,marginBottom:10}}>{s.stat}</p>
+                  <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,color:"#334155",lineHeight:1.5}}>{s.desc}</p>
                   <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:"#94a3b8",fontStyle:"italic",marginTop:4}}>{s.src}</p>
                 </div>
               ))}
             </div>
-            <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:40,marginTop:64}}>
-              <div style={{textAlign:"center"}}><p style={{fontFamily:"'Outfit',sans-serif",fontSize:80,fontWeight:800,color:"#ef4444",lineHeight:1}}>31</p><p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,color:"#94a3b8"}}>Before</p></div>
-              <span style={{fontSize:36,color:"#cbd5e1"}}>→</span>
-              <div style={{textAlign:"center"}}><p style={{fontFamily:"'Outfit',sans-serif",fontSize:80,fontWeight:800,color:"#059669",lineHeight:1}}>78</p><p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,color:"#94a3b8"}}>After 60 days</p></div>
+            <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:48,marginTop:72}}>
+              <div style={{textAlign:"center"}}><p style={{fontFamily:"'Outfit',sans-serif",fontSize:88,fontWeight:800,color:"#ef4444",lineHeight:1}}>31</p><p style={{fontFamily:"'DM Sans',sans-serif",fontSize:17,color:"#64748b"}}>Average score before</p></div>
+              <span style={{fontSize:40,color:"#cbd5e1"}}>→</span>
+              <div style={{textAlign:"center"}}><p style={{fontFamily:"'Outfit',sans-serif",fontSize:88,fontWeight:800,color:"#059669",lineHeight:1}}>78</p><p style={{fontFamily:"'DM Sans',sans-serif",fontSize:17,color:"#64748b"}}>After 60 days</p></div>
             </div>
           </FadeIn>
         </section>
         {/* FAQ */}
         <section style={{maxWidth:700,margin:"100px auto 0",padding:"0 40px"}}>
           <FadeIn delay={0.15}>
-            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:40,fontWeight:800,color:"#0f172a",textAlign:"center",marginBottom:36}}>Frequently asked questions</h2>
+            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:44,fontWeight:800,color:"#0f172a",textAlign:"center",marginBottom:36}}>Frequently asked questions</h2>
             <FAQSection/>
           </FadeIn>
         </section>
         {/* BOTTOM CTA */}
         <section style={{maxWidth:800,margin:"100px auto 0",padding:"0 40px",textAlign:"center"}}>
           <FadeIn delay={0.15}>
-            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:48,fontWeight:800,color:"#0f172a",marginBottom:16}}>Ready to see your score?</h2>
+            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:52,fontWeight:800,color:"#0f172a",marginBottom:16}}>Ready to see your score?</h2>
             <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:20,color:"#475569",marginBottom:32}}>About 60 seconds. Completely free. No signup.</p>
-            <button onClick={()=>window.scrollTo({top:0,behavior:"smooth"})} style={{...S.btn,fontSize:22,padding:"22px 48px",borderRadius:16}}>{I.search} Get My Business Score</button>
+            <button onClick={()=>window.scrollTo({top:0,behavior:"smooth"})} style={{...S.btn,fontSize:24,padding:"24px 52px",borderRadius:16}}>{I.search} Get My Business Score</button>
           </FadeIn>
         </section>
         {/* FOOTER */}
-        <footer style={{maxWidth:1200,margin:"100px auto 0",padding:"32px 40px 24px",borderTop:"1px solid #e2e8f0"}}>
+        <footer style={{maxWidth:1300,margin:"100px auto 0",padding:"32px 40px 24px",borderTop:"1px solid #e2e8f0"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:16}}>
             <div style={{display:"flex",alignItems:"center",gap:8}}>
               <span style={{fontSize:18}}>📊</span>
@@ -643,8 +670,7 @@ export default function App(){
           </div>
         </footer>
       </>)}
-
-      {/* ═══ EMAIL GATE ═══ */}
+{/* ═══ EMAIL GATE ═══ */}
       {phase==="emailGate"&&(
         <section style={{maxWidth:440,margin:"0 auto",padding:"80px 24px",textAlign:"center"}}><FadeIn><div style={S.card}>
           <div style={{width:48,height:48,borderRadius:14,background:"#f0fdf4",display:"flex",alignItems:"center",justifyContent:"center",color:"#059669",margin:"0 auto 16px"}}>{I.mail}</div>

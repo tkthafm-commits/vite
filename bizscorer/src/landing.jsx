@@ -17,10 +17,10 @@ export const REVIEWS = [
 
 /* ═══ FLOATING STATS ═══ */
 export const HERO_STATS = [
-  { number: "97%", text: "of consumers search online before choosing a local business", source: "BrightLocal Consumer Survey 2024" },
-  { number: "5-9%", text: "revenue increase for every 1-star improvement on Google", source: "Harvard Business School Research" },
-  { number: "266%", text: "more clicks for businesses with 50+ Google reviews", source: "Search Engine Journal" },
-  { number: "67%", text: "of calls to local businesses go unanswered after hours", source: "Forbes Small Business Report" },
+  { number: "98%", text: "of consumers research businesses online before visiting", source: "BrightLocal Consumer Survey 2025" },
+  { number: "88%", text: "read Google reviews before choosing a local business", source: "BrightLocal / WiserNotify 2025" },
+  { number: "31%", text: "more money spent at businesses with excellent reviews", source: "Podium Consumer Study" },
+  { number: "94%", text: "of consumers avoid businesses after reading a bad review", source: "ReviewTrackers 2025" },
 ];
 
 /* ═══ HOW IT WORKS STEPS ═══ */
