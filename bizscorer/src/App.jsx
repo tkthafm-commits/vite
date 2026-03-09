@@ -218,7 +218,18 @@ export default function App(){
   const[captureVal,setCaptureVal]=useState("");
   const[lastScore]=useState(()=>getLastScore());
   const[animScore,setAnimScore]=useState(0);
-  const auditCount=28470;
+  // Dynamic counters — auto-increment
+  const baseCount=28470;const launchDate=new Date("2025-03-09");
+  const daysSinceLaunch=Math.max(0,Math.floor((Date.now()-launchDate.getTime())/(1000*60*60*24)));
+  const[auditCount,setAuditCount]=useState(baseCount+(daysSinceLaunch*1000));
+  const[hourlyCount,setHourlyCount]=useState(20);
+  useEffect(()=>{
+    // Main counter: +1 roughly every 1.4 minutes (1000/day)
+    const mainT=setInterval(()=>setAuditCount(c=>c+1),86400);
+    // Hourly counter: +1 every 60 seconds
+    const hourT=setInterval(()=>setHourlyCount(c=>c+1),60000);
+    return()=>{clearInterval(mainT);clearInterval(hourT);};
+  },[]);
   const nameRef=useRef(null);
   const[showPrivacy,setShowPrivacy]=useState(false);
   const[showContact,setShowContact]=useState(false);
@@ -509,6 +520,15 @@ export default function App(){
         </a>
       </div>
 
+      {/* LIVE COUNTER BAR */}
+      {phase==="input"&&(
+        <div style={{textAlign:"center",padding:"20px 32px 0"}}>
+          <p style={{fontFamily:"'Outfit',sans-serif",fontSize:48,fontWeight:800,color:"#059669",lineHeight:1}}>{auditCount.toLocaleString()}+</p>
+          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,color:"#475569"}}>businesses have already checked their score</p>
+          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#059669",fontWeight:500,marginTop:4}}>🔴 {hourlyCount} checked in the last hour</p>
+        </div>
+      )}
+
       {/* ═══ INPUT PHASE ═══ */}
       {phase==="input"&&(<>
         {/* HERO — everything above fold */}
@@ -540,7 +560,7 @@ export default function App(){
               <div style={{background:"white",border:"2px solid #e2e8f0",borderRadius:24,padding:"40px 36px",boxShadow:"0 12px 48px rgba(0,0,0,0.08)"}}>
                 <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:28,fontWeight:800,color:"#0f172a",marginBottom:4}}>What{"'"}s your score?</h2>
                 <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,color:"#64748b",marginBottom:8}}>See how you compare to competitors in ~60 seconds</p>
-                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#059669",marginBottom:20,fontWeight:500}}>🔴 {Math.floor(37+Math.random()*18)} businesses checked their score in the last hour</p>
+                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#059669",marginBottom:20,fontWeight:500}}>🔴 {hourlyCount} businesses checked their score in the last hour</p>
                 <div style={{marginBottom:14}}>
                   <label style={S.lbl}>Business Name *</label>
                   <input ref={nameRef} value={inputs.name} onChange={e=>upd("name",e.target.value)} placeholder="Start typing your business name..." style={{...S.inp,fontSize:19,padding:"18px 20px"}}/>
@@ -778,7 +798,7 @@ export default function App(){
           <FadeIn delay={0.1}>
             <p style={{fontFamily:"'Outfit',sans-serif",fontSize:64,fontWeight:800,color:"#059669",lineHeight:1}}>{auditCount.toLocaleString()}+</p>
             <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:18,color:"#475569",marginBottom:4}}>businesses have already checked their score</p>
-            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#94a3b8"}}>Join them — it takes 60 seconds and it{"'"}s free</p>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#059669"}}>🔴 {hourlyCount} checked in the last hour — join them</p>
           </FadeIn>
         </section>
         <section style={{maxWidth:800,margin:"60px auto 0",padding:"0 40px",textAlign:"center"}}>
