@@ -360,7 +360,8 @@ export default function App(){
   },[]);
 
   const callAPI=async(prompt)=>{
-    const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2000,tools:[{type:"web_search_20250305",name:"web_search"}],messages:[{role:"user",content:prompt}]})});
+    const ac=new AbortController();const t=setTimeout(()=>ac.abort(),45000);
+    const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2000,tools:[{type:"web_search_20250305",name:"web_search"}],messages:[{role:"user",content:prompt}]}),signal:ac.signal}).finally(()=>clearTimeout(t));
     if(!r.ok){const err=await r.json().catch(()=>({}));throw new Error(err.error?.message||err.error||`API returned ${r.status}`);}
     const d=await r.json();if(d.error){throw new Error(typeof d.error==="string"?d.error:d.error.message||"API error");}
     const t=d.content?.filter(b=>b.type==="text")?.map(b=>b.text)?.join("")||"";
@@ -453,14 +454,14 @@ export default function App(){
     };
     setReport(rData);saveLastScore(rData);
     // Email report if we have the user's email
-    if(captureVal&&captureVal.includes("@")){sendReportEmail(captureVal,rData);}
+    if(captureVal&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(captureVal)){sendReportEmail(captureVal,rData);}
     setPhase("scoreReveal");
     let count=0;const target=rData.overall;
     const interval=setInterval(()=>{count+=2;if(count>=target){setAnimScore(target);clearInterval(interval);}else setAnimScore(count);},30);
     setTimeout(()=>setPhase("report"),3000);
   };
 
-  const handleCapture=v=>{setCaptured(true);setHasEmail();setCaptureVal(v);setShowCapture(false);if(report&&v.includes('@'))sendReportEmail(v,report);
+  const handleCapture=v=>{setCaptured(true);setHasEmail();setCaptureVal(v);setShowCapture(false);if(report&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v))sendReportEmail(v,report);
     fetch("https://formspree.io/f/mzdjddjj",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"lead",contact:v,business:inputs.name,city:inputs.city,country:inputs.country})}).catch(()=>{});
 };
   const sendReportEmail=async(email,reportData)=>{
@@ -1224,7 +1225,7 @@ export default function App(){
               <div><label style={S.lbl}>Your Name</label><input value={contactMsg.name} onChange={e=>setContactMsg(p=>({...p,name:e.target.value}))} placeholder="John Smith" style={S.inp}/></div>
               <div><label style={S.lbl}>Your Email</label><input type="email" value={contactMsg.email} onChange={e=>setContactMsg(p=>({...p,email:e.target.value}))} placeholder="you@email.com" style={S.inp}/></div>
               <div><label style={S.lbl}>Message</label><textarea value={contactMsg.msg} onChange={e=>setContactMsg(p=>({...p,msg:e.target.value}))} placeholder="How can we help?" rows={4} style={{...S.inp,resize:"vertical",minHeight:100}}/></div>
-              <button onClick={()=>{if(contactMsg.name&&contactMsg.email&&contactMsg.msg){fetch("https://formspree.io/f/mzdjddjj",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"contact",name:contactMsg.name,email:contactMsg.email,message:contactMsg.msg})}).catch(()=>{});setContactSent(true);}}} disabled={!contactMsg.name||!contactMsg.email||!contactMsg.msg} style={{...S.btn,justifyContent:"center",opacity:contactMsg.name&&contactMsg.email&&contactMsg.msg?1:0.4}}>Send Message</button>
+              <button onClick={()=>{if(contactMsg.name&&contactMsg.email&&contactMsg.msg){fetch("https://formspree.io/f/mzdjddjj",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"contact",name:contactMsg.name,email:contactMsg.email,message:contactMsg.msg})}).catch(()=>{});setContactSent(true);setContactMsg({name:"",email:"",msg:""});}}} disabled={!contactMsg.name||!contactMsg.email||!contactMsg.msg} style={{...S.btn,justifyContent:"center",opacity:contactMsg.name&&contactMsg.email&&contactMsg.msg?1:0.4}}>Send Message</button>
             </div>
           )}
         </div>

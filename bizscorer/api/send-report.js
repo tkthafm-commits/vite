@@ -149,7 +149,7 @@ export default async function handler(req, res) {
       method: "POST",
       headers: { "Authorization": `Bearer ${RESEND_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        from: "BizScorer <report@zidly.ai>",
+        from: "BizScorer <report@bizscorer.com>",
         to: [to],
         subject: `Your BizScorer Report: ${report.name} scored ${report.overall}/100`,
         html: html,
