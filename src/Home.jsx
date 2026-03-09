@@ -106,10 +106,7 @@ export default function Home(){
   const params=new URLSearchParams(window.location.search);
   const fromBizScorer=params.get("from")==="bizscorer";
   const bizName=params.get("biz")||"";
-  // Dynamic counters matching BizScorer
-  const baseCount=28470;const launchDate=new Date("2025-03-09");
-  const daysSinceLaunch=Math.max(0,Math.floor((Date.now()-launchDate.getTime())/(1000*60*60*24)));
-  const auditCount=baseCount+(daysSinceLaunch*1000);
+  const auditCount=70000;
   // Rotating reviews
   const[revIdx,setRevIdx]=useState(0);
   useEffect(()=>{const t=setInterval(()=>setRevIdx(i=>(i+3)%REVIEWS.length),4000);return()=>clearInterval(t);},[]);
