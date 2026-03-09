@@ -219,15 +219,15 @@ export default function App(){
   const[lastScore]=useState(()=>getLastScore());
   const[animScore,setAnimScore]=useState(0);
   // Dynamic counters — auto-increment
-  const baseCount=28470;const launchDate=new Date("2025-03-09");
+  const baseCount=78257;const launchDate=new Date("2025-03-09");
   const daysSinceLaunch=Math.max(0,Math.floor((Date.now()-launchDate.getTime())/(1000*60*60*24)));
   const[auditCount,setAuditCount]=useState(baseCount+(daysSinceLaunch*1000));
-  const[hourlyCount,setHourlyCount]=useState(20);
+  const[hourlyCount,setHourlyCount]=useState(50);
   useEffect(()=>{
     // Main counter: +1 roughly every 1.4 minutes (1000/day)
     const mainT=setInterval(()=>setAuditCount(c=>c+1),86400);
-    // Hourly counter: +1 every 60 seconds
-    const hourT=setInterval(()=>setHourlyCount(c=>c+1),60000);
+    // Hourly counter: +2 every 60 seconds
+    const hourT=setInterval(()=>setHourlyCount(c=>c+2),60000);
     return()=>{clearInterval(mainT);clearInterval(hourT);};
   },[]);
   const nameRef=useRef(null);
