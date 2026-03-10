@@ -1,9 +1,0 @@
-<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
-  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#059669"/><stop offset="100%" stop-color="#047857"/></linearGradient></defs>
-  <rect width="1200" height="630" fill="url(#bg)"/>
-  <text x="600" y="220" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="800" font-size="80" fill="white">⚡ Zidly</text>
-  <text x="600" y="310" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="700" font-size="40" fill="rgba(255,255,255,0.9)">AI Growth Platform</text>
-  <text x="600" y="380" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="500" font-size="28" fill="rgba(255,255,255,0.75)">Supercharge your business with AI</text>
-  <text x="600" y="450" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="600" font-size="22" fill="rgba(255,255,255,0.6)">AI Chatbot · Review Manager · Content Engine · WhatsApp · Voice AI</text>
-  <text x="600" y="560" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="700" font-size="24" fill="white">Try free demo → zidly.ai</text>
-</svg>
