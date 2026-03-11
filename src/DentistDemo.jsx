@@ -854,6 +854,47 @@ export default function DentistDemo(){
         </div></FadeIn></section>
       )}
 
+      {/* ═══ DETECTING PHASE ═══ */}
+      {phase==="detecting"&&(
+        <section style={{maxWidth:480,margin:"0 auto",padding:"80px 24px",textAlign:"center"}}><FadeIn>
+          <div style={S.card}>
+            <div style={{width:56,height:56,borderRadius:16,background:"#f0fdf4",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px"}}>
+              <div style={{width:24,height:24,border:"3px solid #059669",borderTopColor:"transparent",borderRadius:"50%",animation:"spin 1s linear infinite"}}/>
+            </div>
+            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:22,fontWeight:700,color:"#1e293b",marginBottom:6}}>Finding {inputs.name}...</h2>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#64748b"}}>Detecting your business type, website, and social profiles...</p>
+          </div>
+        </FadeIn></section>
+      )}
+
+      {/* ═══ CONFIRM PHASE ═══ */}
+      {phase==="confirm"&&(
+        <section style={{maxWidth:520,margin:"0 auto",padding:"60px 24px"}}><FadeIn>
+          <div style={S.card}>
+            <h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:22,fontWeight:700,color:"#1e293b",marginBottom:6}}>Confirm your details</h2>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:"#64748b",marginBottom:20}}>We found the following. Edit anything that{"'"}s wrong before scanning.</p>
+            {bizType&&<p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#059669",fontWeight:600,marginBottom:16}}>Detected: {bizType}</p>}
+            <div style={{marginBottom:12}}>
+              <label style={S.lbl}>Business Name</label>
+              <input value={inputs.name} onChange={e=>upd("name",e.target.value)} style={{...S.inp,fontSize:16,padding:"14px 16px"}}/>
+            </div>
+            <div style={{marginBottom:12}}>
+              <label style={S.lbl}>Website</label>
+              <input value={inputs.website} onChange={e=>upd("website",e.target.value)} placeholder="yoursite.com" style={{...S.inp,fontSize:16,padding:"14px 16px"}}/>
+            </div>
+            {Object.entries(detectedProfiles).filter(([k,v])=>v&&k!=="website").map(([k,v])=>(
+              <div key={k} style={{marginBottom:10}}>
+                <label style={S.lbl}>{k.charAt(0).toUpperCase()+k.slice(1)}</label>
+                <input value={inputs[k]||v} onChange={e=>upd(k,e.target.value)} style={{...S.inp,fontSize:14,padding:"12px 16px"}}/>
+              </div>
+            ))}
+            <button onClick={afterConfirm} style={{...S.btn,width:"100%",justifyContent:"center",fontSize:18,padding:"18px 32px",borderRadius:14,marginTop:16}}>
+              {I.search} Start Full Scan →
+            </button>
+          </div>
+        </FadeIn></section>
+      )}
+
       {/* ═══ SCANNING PHASE ═══ */}
       {phase==="scanning"&&(
         <section style={{maxWidth:520,margin:"0 auto",padding:"60px 24px"}}><FadeIn>
