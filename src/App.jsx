@@ -1,9 +1,25 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, Component } from "react";
 // Redirects to external URLs (bizscore.com etc.)
 function ExternalRedirect({ to }) {
   useEffect(() => { window.location.href = to; }, [to]);
   return null;
+}
+
+class ErrorBoundary extends Component {
+  constructor(props) { super(props); this.state = { error: null }; }
+  static getDerivedStateFromError(error) { return { error }; }
+  componentDidCatch(error, info) { console.error("React Error:", error, info); }
+  render() {
+    if (this.state.error) {
+      return <div style={{ padding: 40, fontFamily: "monospace", color: "red" }}>
+        <h1>Something went wrong</h1>
+        <pre>{this.state.error.message}</pre>
+        <pre>{this.state.error.stack}</pre>
+      </div>;
+    }
+    return this.props.children;
+  }
 }
 
 import Home from "./Home.jsx";
@@ -21,6 +37,7 @@ import EgyptLanding from "./pages/EgyptLanding.jsx";
 
 export default function App() {
   return (
+    <ErrorBoundary>
     <BrowserRouter>
       <Routes>
         {/* ── Core ── */}
@@ -59,5 +76,6 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
+    </ErrorBoundary>
   );
 }
