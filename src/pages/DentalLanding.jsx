@@ -131,7 +131,7 @@ export default function DentalLanding() {
         <h2 style={{ fontSize: 34, fontWeight: 800, letterSpacing: -0.8 }}>You're losing patients right now.<br />Here's exactly how much.</h2>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
-        {PAIN_POINTS.map((p, i) => <div key={i} id={`pain-${i}`} data-anim className={anim(`pain-${i}`)} style={{ display: "grid", gridTemplateColumns: i % 2 === 0 ? "1fr 200px" : "200px 1fr", gap: 32, alignItems: "center", padding: 32, background: "#FAFBFC", borderRadius: 16, border: "1px solid #E2E8F0" }} className={`zd-grid-2 ${anim(`pain-${i}`)}`}>
+        {PAIN_POINTS.map((p, i) => <div key={i} id={`pain-${i}`} data-anim className={`zd-grid-2 ${anim(`pain-${i}`)}`} style={{ display: "grid", gridTemplateColumns: i % 2 === 0 ? "1fr 200px" : "200px 1fr", gap: 32, alignItems: "center", padding: 32, background: "#FAFBFC", borderRadius: 16, border: "1px solid #E2E8F0" }}>
           {i % 2 !== 0 && <div style={{ textAlign: "center" }}>
             <div style={{ fontSize: 48, fontWeight: 900, color: "#DC2626" }}>{p.stat}</div>
             <div style={{ fontSize: 13, color: "#64748B" }}>{p.statLabel}</div>

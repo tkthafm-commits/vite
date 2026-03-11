@@ -1,7 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect } from "react";
-import ErrorBoundary from "./ErrorBoundary.jsx";
-
 // Redirects to external URLs (bizscore.com etc.)
 function ExternalRedirect({ to }) {
   useEffect(() => { window.location.href = to; }, [to]);
