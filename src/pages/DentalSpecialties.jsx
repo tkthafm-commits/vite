@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import useSEO from "../useSEO.js";
 
 // zidly.ai/implant-dentists | /cosmetic-dentists | /invisalign-providers
 // Same product, different emotional framing per specialty
@@ -89,6 +90,12 @@ export default function DentalSpecialties() {
   const location = useLocation();
   const slugMap = { "/implant-dentists": "implant", "/cosmetic-dentists": "cosmetic", "/invisalign-providers": "invisalign" };
   const [active, setActive] = useState(slugMap[location.pathname] || "implant");
+  const seoMap = {
+    implant: { title: "AI for Implant Dentists — Capture $3K-$50K Cases 24/7", description: "AI chatbot answers implant questions at 10pm. Capture All-on-4 and single implant cases while you sleep. From $97/mo.", canonical: "/implant-dentists" },
+    cosmetic: { title: "AI for Cosmetic Dentists — Win the Visual Comparison", description: "AI assistant showcases veneers, whitening, and smile makeover results 24/7. Automated before/after galleries and review collection.", canonical: "/cosmetic-dentists" },
+    invisalign: { title: "AI for Invisalign Providers — Convert Comparison Shoppers", description: "AI chatbot answers Invisalign cost, timeline, and eligibility questions instantly. Capture leads comparing clear aligner options 24/7.", canonical: "/invisalign-providers" },
+  };
+  useSEO(seoMap[active] || seoMap.implant);
   useEffect(() => {
     const key = slugMap[location.pathname];
     if (key) setActive(key);

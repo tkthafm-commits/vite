@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import useSEO from "../useSEO.js";
 
 // Vertical Landing Page Template — zidly.ai/medspa, /lawyers, /homeservices
 // Same structure as dental, different copy/pain points/pricing emphasis per vertical
@@ -87,6 +88,14 @@ export default function VerticalLanding() {
   const location = useLocation();
   const pathKey = location.pathname.replace("/", "");
   const [vertical, setVertical] = useState(VERTICALS[pathKey] ? pathKey : "medspa");
+  const seoMap = {
+    medspa: { title: "AI for Med Spas — Capture Botox & Filler Leads 24/7", description: "AI chatbot answers treatment questions, pricing, and booking for med spas after hours. Automated review collection. From $97/mo.", canonical: "/medspa" },
+    lawyers: { title: "AI for Law Firms — Capture Legal Leads After Hours", description: "AI assistant qualifies personal injury, family law, and criminal defense leads 24/7. Automated review management for attorneys.", canonical: "/lawyers" },
+    homeservices: { title: "AI for Home Services — HVAC, Plumbing, Electrical Leads 24/7", description: "AI chatbot captures emergency service requests at 2am. Automated reviews for contractors. From $97/mo.", canonical: "/homeservices" },
+    restaurants: { title: "AI for Restaurants — Answer Menu, Hours & Reservation Questions 24/7", description: "AI assistant handles menu questions, delivery zones, catering orders, and reservations automatically. Boost Google reviews.", canonical: "/restaurants" },
+    realestate: { title: "AI for Real Estate — Answer Property Questions 24/7", description: "AI chatbot handles property inquiries, financing questions, and showing requests after hours. Automated review collection for agents.", canonical: "/realestate" },
+  };
+  useSEO(seoMap[vertical] || seoMap.medspa);
   useEffect(() => {
     const key = location.pathname.replace("/", "");
     if (VERTICALS[key]) setVertical(key);

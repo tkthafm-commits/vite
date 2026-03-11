@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import useSEO from "../useSEO.js";
 
 // Dental Landing Page — zidly.ai/dentists
 // Design: Clean, trust-forward, conversion-optimized
@@ -39,6 +40,7 @@ const SOCIAL_PROOF = [
 ];
 
 export default function DentalLanding() {
+  useSEO({ title: "AI Growth Platform for Dental Practices", description: "AI chatbot, automated reviews, SEO, and competitor tracking for dentists. Replace Podium + Birdeye for $97/mo. 24/7 patient assistant trained on your practice.", canonical: "/dentists" });
   const [scanUrl, setScanUrl] = useState("");
   const [email, setEmail] = useState("");
   const [openFaq, setOpenFaq] = useState(null);

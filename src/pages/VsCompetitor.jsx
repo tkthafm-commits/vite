@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import useSEO from "../useSEO.js";
 
 // ===== /vs/[slug] — Dynamic competitor comparison pages =====
 // Production (Next.js): /pages/vs/[slug].jsx with getStaticPaths + getStaticProps
@@ -393,11 +394,16 @@ function VsPage({ comp }) {
 export default function VsCompetitorPage() {
   const { slug: urlSlug } = useParams();
   const [slug, setSlug] = useState(urlSlug && COMPETITORS[urlSlug] ? urlSlug : "podium");
+  const comp = COMPETITORS[slug];
+  useSEO({
+    title: comp ? `Zidly vs ${comp.name} — Better Alternative for Dental Practices` : "Zidly vs Competitors",
+    description: comp ? `Compare Zidly vs ${comp.name}. More features, no contracts, 1/3 the price. AI chatbot, reviews, SEO, competitor tracking — all for $97/mo.` : "Compare Zidly to dental marketing competitors.",
+    canonical: `/vs/${slug}`,
+  });
   useEffect(() => {
     if (urlSlug && COMPETITORS[urlSlug]) setSlug(urlSlug);
   }, [urlSlug]);
 
-  const comp = COMPETITORS[slug];
   if (!comp) return null;
 
   return <div style={{ fontFamily: "'Outfit', system-ui, sans-serif", color: "#0F172A", background: "#fff", minHeight: "100vh" }}>

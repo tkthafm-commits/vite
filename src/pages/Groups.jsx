@@ -1,4 +1,5 @@
 import { useState } from "react";
+import useSEO from "../useSEO.js";
 
 // zidly.ai/groups — DSO & Multi-Location Dental Group landing page
 // Target: mid-market dental groups (5-50 locations)
@@ -56,6 +57,7 @@ const TESTIMONIAL_QUOTES = [
 ];
 
 export default function GroupsLanding() {
+  useSEO({ title: "AI for Dental Groups & DSOs — One Platform, All Locations", description: "Manage AI chatbots, reviews, and SEO across 5-500+ dental locations. Consolidated reporting. 1/5 the cost of Podium. Volume pricing from $67/location.", canonical: "/groups" });
   const [locs, setLocs] = useState(10);
   const [tier, setTier] = useState("plus");
   const calc = PRICING_CALC(locs, tier);

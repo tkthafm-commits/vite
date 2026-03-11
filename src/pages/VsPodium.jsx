@@ -1,4 +1,5 @@
 import { useState } from "react";
+import useSEO from "../useSEO.js";
 
 // zidly.ai/vs/podium — Comparison page targeting "Podium alternative" searches
 // Also works as template for /vs/birdeye, /vs/thryv, /vs/broadly, /vs/nicejob
@@ -65,6 +66,7 @@ const REAL_COMPLAINTS = [
 ];
 
 export default function VsPodium() {
+  useSEO({ title: "Zidly vs Podium — Best Podium Alternative for Dentists", description: "Compare Zidly vs Podium side-by-side. AI chatbot, review management, SEO, competitor tracking — all for $97/mo vs Podium's $249-599/mo. No contracts.", canonical: "/vs/podium" });
   const [openFaq, setOpenFaq] = useState(null);
   const zCount = COMPARISON.filter(c => c.zidly === true).length;
   const tCount = COMPARISON.filter(c => c.them === true).length;

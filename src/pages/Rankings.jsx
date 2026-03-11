@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import useSEO from "../useSEO.js";
 
 // Public BizScorer Rankings — zidly.ai/rankings/{vertical}/{city-state}
 // Individual profiles — zidly.ai/score/{city-state}/{business-slug}
@@ -161,6 +162,7 @@ function BusinessProfile() {
 
 // ===== MAIN COMPONENT (shows both page types) =====
 export default function PublicRankings() {
+  useSEO({ title: "Dental Practice Rankings — See How You Compare", description: "Free public rankings for dental practices. See BizScorer ratings, Google reviews, and competitive position for dentists in your city.", canonical: "/rankings" });
   const [view, setView] = useState("leaderboard");
 
   return <div style={{ fontFamily: "'Outfit', system-ui, sans-serif", color: "#0F172A", background: "#fff", minHeight: "100vh" }}>

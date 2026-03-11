@@ -1,4 +1,5 @@
 import { useState } from "react";
+import useSEO from "../useSEO.js";
 
 // zidly.ai/switch — Migration page for businesses switching from competitors
 const T = "#0D9488", TD = "#0F766E", TL = "#14B8A6";
@@ -31,6 +32,7 @@ const TRANSFERS = [
 ];
 
 export default function SwitchPage() {
+  useSEO({ title: "Switch to Zidly — Migration Guide from Podium, Birdeye, Thryv", description: "Step-by-step guide to switching from Podium, Birdeye, Broadly, or Thryv. Save $150-500/mo. No contracts. Live in 5 minutes.", canonical: "/switch" });
   const [selected, setSelected] = useState(null);
 
   return <div style={{ fontFamily: "'Outfit', system-ui, sans-serif", color: "#0F172A", background: "#fff" }}>
