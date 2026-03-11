@@ -17,6 +17,7 @@ import Verticals from "./pages/Verticals.jsx";
 import VsCompetitor from "./pages/VsCompetitor.jsx";
 import VsPodium from "./pages/VsPodium.jsx";
 import Rankings from "./pages/Rankings.jsx";
+import EgyptLanding from "./pages/EgyptLanding.jsx";
 
 export default function App() {
   return (
@@ -50,6 +51,9 @@ export default function App() {
         <Route path="/groups" element={<Groups />} />
         <Route path="/rankings" element={<Rankings />} />
         <Route path="/rankings/:vertical/:city" element={<Rankings />} />
+
+        {/* ── Regional ── */}
+        <Route path="/eg" element={<EgyptLanding />} />
 
         {/* ── Fallback ── */}
         <Route path="*" element={<Navigate to="/" replace />} />
