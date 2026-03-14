@@ -1,507 +1,785 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import useSEO from "./useSEO.js";
-const T = "#0D9488", TD = "#0F766E", TL = "#14B8A6";
-const SOLUTIONS = [
-  { label: "Dental Practices", href: "/dentists", desc: "Solo practices, 1-4 locations" },
-  { label: "Dental Groups & DSOs", href: "/groups", desc: "5-500+ locations, one dashboard" },
-  { label: "Implant Dentists", href: "/implant-dentists", desc: "Capture $3K-50K cases 24/7" },
-  { label: "Cosmetic Dentists", href: "/cosmetic-dentists", desc: "Win the visual comparison" },
-  { label: "Invisalign Providers", href: "/invisalign-providers", desc: "Convert comparison shoppers" },
-];
-const TOOLS = [
-  { label: "Dental Practice Audit", href: "/dental-bizscorer", desc: "Free 60-second revenue leak audit" },
-  { label: "Public Rankings", href: "/rankings", desc: "See how practices rank in your city" },
-  { label: "Free Tools", href: "#freetools", desc: "Review link gen, QR codes, email sig" },
-];
-const COMPARE = [
-  { label: "vs Podium", href: "/vs/podium" }, { label: "vs Birdeye", href: "/vs/birdeye" },
-  { label: "vs Thryv", href: "/vs/thryv" }, { label: "vs Broadly", href: "/vs/broadly" },
-  { label: "vs Weave", href: "/vs/weave" }, { label: "vs NiceJob", href: "/vs/nicejob" },
-  { label: "vs GatherUp", href: "/vs/gatherup" }, { label: "vs BrightLocal", href: "/vs/brightlocal" },
-  { label: "Switch Guide", href: "/switch" },
-];
-const LEAKS = [
-  { icon: "🌙", name: "After-Hours Lost Patients", cost: "$2K-8K/mo", fix: "AI assistant answers at 10pm" },
-  { icon: "⭐", name: "Review Gap vs Competitors", cost: "$1K-5K/mo", fix: "Automated review collection" },
-  { icon: "🚫", name: "No-Shows & Cancellations", cost: "$3K-6K/mo", fix: "Smart reminders cut no-shows 50%" },
-  { icon: "📋", name: "Unaccepted Treatment Plans", cost: "$5K-20K/mo", fix: "Follow-up recovers 20% of cases" },
-  { icon: "📉", name: "Lapsed Patient Recalls", cost: "$2K-10K/mo", fix: "Reactivation brings patients back" },
-];
-const ENGINES = [
-  { icon: "🤖", name: "AI Patient Assistant", desc: "Answers insurance, pricing, procedures 24/7. Trained on YOUR practice. Captures inquiries while you sleep." },
-  { icon: "⭐", name: "Reputation Shield", desc: "Automated review requests. Smart routing. AI responses. Negative review SMS alerts." },
-  { icon: "🔍", name: "Practice SEO & AI Visibility", desc: "Schema markup, rank tracking, 20+ checks. AI Visibility scoring for Google Gemini." },
-  { icon: "📱", name: "Patient Content Engine", desc: "AI social posts, blog articles, email campaigns. Education content that ranks on Google." },
-  { icon: "🎯", name: "Competitive Intelligence", desc: "Track competitor reviews, ratings, activity. Find weaknesses. Win their patients." },
-  { icon: "📊", name: "Command Center", desc: "Revenue leak dashboard. BizScorer. Lead inbox. Production impact. Dollars, not vanity." },
-];
-const VERTICALS = [
-  { icon: "🦷", label: "General Dentistry", on: true },
-  { icon: "🔩", label: "Implant Dentists", on: true },
-  { icon: "✨", label: "Cosmetic Dentists", on: true },
-  { icon: "😁", label: "Invisalign Providers", on: true },
-  { icon: "🏢", label: "Groups & DSOs", on: true },
-  { icon: "💆", label: "Med Spas", on: false },
-  { icon: "🔧", label: "Home Services", on: false },
-  { icon: "⚖️", label: "Law Firms", on: false },
-];
-const PLANS = [
-  { name: "Core", sub: "Get Found", price: 97, pop: false, features: ["AI Patient Assistant (24/7)", "Reputation Shield", "BizScorer Audit", "Lead Inbox", "Schema Generator", "QR Review Kit"] },
-  { name: "Plus", sub: "Get Patients", price: 197, pop: true, features: ["Everything in Core", "Content Engine", "Ad Studio", "Revenue Radar", "Maps Rank Tracker", "Patient Reactivation"] },
-  { name: "Pro", sub: "Get Efficient", price: 347, pop: false, features: ["Everything in Plus", "Competitor Deep Analysis", "Health Dashboard", "Case Follow-Up", "Proposal Studio", "Remove branding"] },
-  { name: "Elite", sub: "Get Ahead", price: 697, pop: false, features: ["Everything in Pro", "Crisis Intelligence", "Strategy Simulator", "Staff Planner", "Priority Support", "Custom Integrations"] },
-];
-const COMP_NAMES = ["Podium", "Birdeye", "Thryv", "Broadly", "Weave", "NiceJob", "GatherUp", "BrightLocal"];
-
-function NavLink({ href, children, ...props }) {
-  if (href.startsWith("#")) return <a href={href} {...props}>{children}</a>;
-  return <Link to={href} {...props}>{children}</Link>;
+import { useState, useEffect, useRef } from "react";
+// ─── CONFIG ─────────────────────────────────────────────────────
+const BRAND = {
+  name: "Zidly",
+  tagline: "The AI That Watches Your Business While You Sleep",
+  phone: null, // never exposed
+  contact: "Mike",
+  site: "zidly.ai",
+  price: 497,
+  setup: 500,
+  annualSave: "2 months free",
+};
+const TEAL = {
+  50: "#f0fdfa", 100: "#ccfbf1", 200: "#99f6e4", 300: "#5eead4",
+  400: "#2dd4bf", 500: "#14b8a6", 600: "#0d9488", 700: "#0f766e",
+  800: "#115e59", 900: "#134e4a", 950: "#042f2e",
+};
+// ─── ICONS (inline SVG components) ──────────────────────────────
+const Icon = ({ d, size = 24, className = "" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d={d} />
+  </svg>
+);
+const PhoneIcon = ({ size, className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size || 24} height={size || 24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+  </svg>
+);
+const StarIcon = ({ size, className, filled }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size || 24} height={size || 24} viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
+  </svg>
+);
+const BotIcon = (p) => <svg xmlns="http://www.w3.org/2000/svg" width={p.size||24} height={p.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={p.className}><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>;
+const GlobeIcon = (p) => <svg xmlns="http://www.w3.org/2000/svg" width={p.size||24} height={p.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={p.className}><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>;
+const CalendarIcon = (p) => <svg xmlns="http://www.w3.org/2000/svg" width={p.size||24} height={p.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={p.className}><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>;
+const ShieldIcon = (p) => <svg xmlns="http://www.w3.org/2000/svg" width={p.size||24} height={p.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={p.className}><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>;
+const ZapIcon = (p) => <svg xmlns="http://www.w3.org/2000/svg" width={p.size||24} height={p.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={p.className}><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>;
+const MessageIcon = (p) => <svg xmlns="http://www.w3.org/2000/svg" width={p.size||24} height={p.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={p.className}><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></svg>;
+const CheckIcon = (p) => <svg xmlns="http://www.w3.org/2000/svg" width={p.size||24} height={p.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={p.className}><path d="M20 6 9 17l-5-5"/></svg>;
+const ArrowRightIcon = (p) => <svg xmlns="http://www.w3.org/2000/svg" width={p.size||24} height={p.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={p.className}><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>;
+const MenuIcon = (p) => <svg xmlns="http://www.w3.org/2000/svg" width={p.size||24} height={p.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={p.className}><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>;
+const XIcon = (p) => <svg xmlns="http://www.w3.org/2000/svg" width={p.size||24} height={p.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={p.className}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>;
+const ClockIcon = (p) => <svg xmlns="http://www.w3.org/2000/svg" width={p.size||24} height={p.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={p.className}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
+const BarChartIcon = (p) => <svg xmlns="http://www.w3.org/2000/svg" width={p.size||24} height={p.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={p.className}><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>;
+const UsersIcon = (p) => <svg xmlns="http://www.w3.org/2000/svg" width={p.size||24} height={p.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={p.className}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;
+// ─── ANIMATION HOOK ─────────────────────────────────────────────
+function useInView(threshold = 0.15) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } }, { threshold });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return [ref, visible];
 }
-
-function DropMenu({ label, items, isOpen, onToggle, light }) {
+const Fade = ({ children, delay = 0, direction = "up", className = "", style = {} }) => {
+  const [ref, visible] = useInView();
+  const dirs = { up: "translateY(40px)", down: "translateY(-40px)", left: "translateX(40px)", right: "translateX(-40px)", none: "none" };
   return (
-    <div style={{ position: "relative" }}>
-      <button
-        onClick={e => { e.stopPropagation(); onToggle(); }}
-        aria-expanded={isOpen}
-        aria-haspopup="true"
-        style={{ background: "none", border: "none", color: light ? "#374151" : "#D1D5DB", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", padding: "6px 0", display: "flex", alignItems: "center", gap: 4 }}
-      >
-        {label} <span style={{ fontSize: 9, opacity: 0.5 }} aria-hidden="true">▼</span>
-      </button>
-      {isOpen && (
-        <div
-          role="menu"
-          onClick={e => e.stopPropagation()}
-          style={{ position: "absolute", top: "calc(100% + 8px)", left: -8, background: "#fff", borderRadius: 12, boxShadow: "0 12px 40px rgba(0,0,0,0.12)", border: "1px solid #E2E8F0", padding: 8, minWidth: 250, zIndex: 200 }}
-        >
-          {items.map(it => (
-            <NavLink
-              key={it.label}
-              href={it.href}
-              role="menuitem"
-              style={{ display: "block", padding: "9px 12px", borderRadius: 8, textDecoration: "none", color: "#0F172A" }}
-              onMouseEnter={e => { e.currentTarget.style.background = "#F0FDFA"; }}
-              onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
-            >
-              <div style={{ fontSize: 13, fontWeight: 600 }}>{it.label}</div>
-              {it.desc && <div style={{ fontSize: 11, color: "#94A3B8", marginTop: 1 }}>{it.desc}</div>}
-            </NavLink>
-          ))}
-        </div>
-      )}
+    <div ref={ref} className={className} style={{
+      ...style,
+      opacity: visible ? 1 : 0,
+      transform: visible ? "none" : dirs[direction],
+      transition: `opacity 0.7s ease ${delay}s, transform 0.7s ease ${delay}s`,
+    }}>
+      {children}
     </div>
   );
-}
-export default function ZidlyHomepage() {
-  useSEO({
-    title: "AI Growth Platform for Dental Practices",
-    description: "Zidly's AI answers insurance questions, captures patient inquiries, collects reviews, and tracks competitors 24/7. Replace Podium + Birdeye + BrightLocal for $97/month.",
-    canonical: "/",
-  });
-  const [scan, setScan] = useState("");
-  const [openMenu, setOpenMenu] = useState(null);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
+};
+// ─── STYLES ─────────────────────────────────────────────────────
+const css = `
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap');
+  :root {
+    --teal-400: ${TEAL[400]};
+    --teal-500: ${TEAL[500]};
+    --teal-600: ${TEAL[600]};
+    --bg: #0a0a0f;
+    --bg-card: rgba(255,255,255,0.03);
+    --bg-card-hover: rgba(255,255,255,0.06);
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.15);
+    --text: #f0f0f5;
+    --text-muted: #8a8a9a;
+    --glass: rgba(255,255,255,0.04);
+    --glass-strong: rgba(255,255,255,0.08);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body, #root { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; }
+  .font-display { font-family: 'Outfit', sans-serif; }
+  .gradient-text {
+    background: linear-gradient(135deg, ${TEAL[300]}, ${TEAL[500]}, ${TEAL[300]});
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .glass {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  .glass-strong {
+    background: var(--glass-strong);
+    border: 1px solid var(--border-hover);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+  }
+  .glow-teal {
+    box-shadow: 0 0 60px rgba(13,148,136,0.15), 0 0 120px rgba(13,148,136,0.05);
+  }
+  .glow-teal-strong {
+    box-shadow: 0 0 40px rgba(13,148,136,0.3), 0 0 80px rgba(13,148,136,0.1);
+  }
+  .card-hover {
+    transition: all 0.4s ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-6px);
+    border-color: var(--border-hover);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 40px rgba(13,148,136,0.08);
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, ${TEAL[600]}, ${TEAL[500]});
+    color: white;
+    border: none;
+    padding: 14px 32px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'DM Sans', sans-serif;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-primary:hover {
+    box-shadow: 0 0 30px rgba(13,148,136,0.4), 0 0 60px rgba(13,148,136,0.15);
+    transform: translateY(-2px);
+  }
+  .btn-outline {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border-hover);
+    padding: 14px 32px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'DM Sans', sans-serif;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-outline:hover {
+    background: rgba(255,255,255,0.05);
+    border-color: var(--teal-500);
+    box-shadow: 0 0 20px rgba(13,148,136,0.15);
+  }
+  .pulse-dot {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(13,148,136,0.6); }
+    50% { opacity: 0.6; box-shadow: 0 0 20px rgba(13,148,136,0.8); }
+  }
+  .float {
+    animation: float 6s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); }
+  }
+  .scroll-line {
+    animation: scroll-down 2s ease-in-out infinite;
+  }
+  @keyframes scroll-down {
+    0% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(10px); }
+  }
+  @media (max-width: 768px) {
+    .hero-grid { flex-direction: column !important; }
+    .hero-stats { flex-direction: column !important; gap: 16px !important; }
+    .nav-links { display: none !important; }
+    .mobile-menu-btn { display: flex !important; }
+    .services-grid { grid-template-columns: 1fr !important; }
+    .features-grid { grid-template-columns: 1fr !important; }
+    .pricing-grid { grid-template-columns: 1fr !important; }
+    .testimonials-grid { grid-template-columns: 1fr !important; }
+    .footer-grid { grid-template-columns: 1fr 1fr !important; }
+    .cta-buttons { flex-direction: column !important; }
+  }
+`;
+// ─── NAVBAR ─────────────────────────────────────────────────────
+const NAV_LINKS = ["Services", "How It Works", "Pricing", "Reviews"];
+function Navbar() {
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
-    const h = () => setScrollY(window.scrollY);
-    window.addEventListener("scroll", h, { passive: true });
-    return () => window.removeEventListener("scroll", h);
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-  useEffect(() => {
-    const h = () => setOpenMenu(null);
-    if (openMenu) window.addEventListener("click", h);
-    return () => window.removeEventListener("click", h);
-  }, [openMenu]);
-  const navBg = scrollY > 50;
   return (
-    <div style={{ fontFamily: "'DM Sans', system-ui, sans-serif", color: "#0F172A", background: "#fff", overflowX: "hidden" }}>
+    <nav style={{
+      position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
+      background: scrolled ? "rgba(10,10,15,0.85)" : "transparent",
+      backdropFilter: scrolled ? "blur(20px)" : "none",
+      borderBottom: scrolled ? "1px solid var(--border)" : "none",
+      transition: "all 0.3s ease",
+    }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "16px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <a href="#" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: `linear-gradient(135deg, ${TEAL[600]}, ${TEAL[400]})`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span className="font-display" style={{ color: "white", fontWeight: 800, fontSize: 16 }}>Z</span>
+          </div>
+          <span className="font-display" style={{ fontWeight: 700, fontSize: 22, color: "var(--text)" }}>Zidly</span>
+        </a>
+        <div className="nav-links" style={{ display: "flex", alignItems: "center", gap: 32 }}>
+          {NAV_LINKS.map(l => (
+            <a key={l} href={`#${l.toLowerCase().replace(/ /g, "-")}`} style={{ color: "var(--text-muted)", textDecoration: "none", fontSize: 14, fontWeight: 500, transition: "color 0.3s" }}
+              onMouseEnter={e => e.target.style.color = "var(--text)"}
+              onMouseLeave={e => e.target.style.color = "var(--text-muted)"}>
+              {l}
+            </a>
+          ))}
+        </div>
+        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+          <button className="btn-primary" style={{ padding: "10px 24px", fontSize: 14, display: "none" }} id="nav-cta-desktop"
+            onClick={() => document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" })}>
+            Get Started
+          </button>
+          <button className="btn-primary" style={{ padding: "10px 24px", fontSize: 14 }}
+            onClick={() => document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" })}>
+            Get Started
+          </button>
+          <button className="mobile-menu-btn" onClick={() => setOpen(!open)}
+            style={{ display: "none", background: "none", border: "none", color: "var(--text)", cursor: "pointer", padding: 8 }}>
+            {open ? <XIcon size={24} /> : <MenuIcon size={24} />}
+          </button>
+        </div>
+      </div>
+      {open && (
+        <div style={{ padding: "0 24px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
+          {NAV_LINKS.map(l => (
+            <a key={l} href={`#${l.toLowerCase().replace(/ /g, "-")}`}
+              onClick={() => setOpen(false)}
+              style={{ color: "var(--text-muted)", textDecoration: "none", fontSize: 15, fontWeight: 500, padding: "8px 0" }}>
+              {l}
+            </a>
+          ))}
+          <button className="btn-primary" style={{ width: "fit-content" }}
+            onClick={() => { setOpen(false); document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" }); }}>
+            Get Started
+          </button>
+        </div>
+      )}
+    </nav>
+  );
+}
+// ─── HERO ───────────────────────────────────────────────────────
+function Hero() {
+  return (
+    <section style={{ minHeight: "100vh", display: "flex", alignItems: "center", position: "relative", overflow: "hidden", paddingTop: 80 }}>
+      {/* Background orbs */}
+      <div style={{ position: "absolute", top: "15%", left: "10%", width: 500, height: 500, borderRadius: "50%", background: `radial-gradient(circle, ${TEAL[600]}15, transparent 70%)`, filter: "blur(60px)", animation: "float 8s ease-in-out infinite" }} />
+      <div style={{ position: "absolute", bottom: "10%", right: "5%", width: 400, height: 400, borderRadius: "50%", background: `radial-gradient(circle, ${TEAL[400]}10, transparent 70%)`, filter: "blur(80px)", animation: "float 10s ease-in-out infinite reverse" }} />
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "60px 24px", position: "relative", zIndex: 10, width: "100%" }}>
+        <div className="hero-grid" style={{ display: "flex", gap: 64, alignItems: "center" }}>
+          {/* Left */}
+          <div style={{ flex: 1 }}>
+            <Fade delay={0}>
+              <div className="glass" style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "8px 18px", borderRadius: 50, marginBottom: 24 }}>
+                <span className="pulse-dot" style={{ width: 8, height: 8, borderRadius: "50%", background: TEAL[500] }} />
+                <span style={{ fontSize: 13, color: "var(--text-muted)" }}>Powered by Advanced AI</span>
+              </div>
+            </Fade>
+            <Fade delay={0.1}>
+              <h1 className="font-display" style={{ fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 800, lineHeight: 1.1, marginBottom: 24 }}>
+                Never Miss a{" "}
+                <span className="gradient-text">Customer</span>{" "}
+                Again
+              </h1>
+            </Fade>
+            <Fade delay={0.2}>
+              <p style={{ fontSize: 18, color: "var(--text-muted)", lineHeight: 1.7, maxWidth: 520, marginBottom: 36 }}>
+                AI voice agents that answer every call. 5-star reviews on autopilot. A website that books appointments while you sleep. One platform. ${BRAND.price}/mo.
+              </p>
+            </Fade>
+            <Fade delay={0.3}>
+              <div className="cta-buttons" style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+                <button className="btn-primary" style={{ boxShadow: `0 0 50px rgba(13,148,136,0.35), 0 0 100px rgba(13,148,136,0.1)` }}
+                  onClick={() => document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" })}>
+                  Start Free Demo <ArrowRightIcon size={18} />
+                </button>
+                <button className="btn-outline"
+                  onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}>
+                  <PhoneIcon size={18} /> See How It Works
+                </button>
+              </div>
+            </Fade>
+            <Fade delay={0.4}>
+              <div className="hero-stats" style={{ display: "flex", gap: 40, marginTop: 56 }}>
+                {[
+                  { val: "500+", label: "Businesses Served" },
+                  { val: "24/7", label: "AI Availability" },
+                  { val: "4.9★", label: "Avg. Review Score" },
+                ].map((s, i) => (
+                  <div key={i}>
+                    <div className="font-display" style={{ fontSize: 28, fontWeight: 800, color: "var(--text)" }}>{s.val}</div>
+                    <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 2 }}>{s.label}</div>
+                  </div>
+                ))}
+              </div>
+            </Fade>
+          </div>
+          {/* Right — visual card */}
+          <Fade delay={0.3} direction="left" style={{ flex: 1 }}>
+            <div className="float" style={{ position: "relative" }}>
+              <div className="glass glow-teal" style={{ borderRadius: 20, padding: 2, overflow: "hidden" }}>
+                <div style={{
+                  borderRadius: 18,
+                  background: "linear-gradient(180deg, rgba(13,148,136,0.08) 0%, rgba(10,10,15,0.95) 100%)",
+                  padding: "40px 32px",
+                  minHeight: 420,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                }}>
+                  {/* Mock AI conversation */}
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 32 }}>
+                      <div style={{ width: 44, height: 44, borderRadius: "50%", background: `linear-gradient(135deg, ${TEAL[600]}, ${TEAL[400]})`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <BotIcon size={22} className="" style={{ color: "white" }} />
+                      </div>
+                      <div>
+                        <div className="font-display" style={{ fontWeight: 700, fontSize: 16 }}>Sarah — AI Receptionist</div>
+                        <div style={{ fontSize: 12, color: TEAL[400], display: "flex", alignItems: "center", gap: 6 }}>
+                          <span className="pulse-dot" style={{ width: 6, height: 6, borderRadius: "50%", background: TEAL[400], display: "inline-block" }} />
+                          Active now
+                        </div>
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                      {[
+                        { from: "ai", text: "Hi! Thanks for calling Sunrise Dental. This is Sarah — how can I help you today?" },
+                        { from: "user", text: "I'd like to book a cleaning for next Tuesday." },
+                        { from: "ai", text: "I have 10am and 2pm available Tuesday. Which works better?" },
+                        { from: "user", text: "2pm please!" },
+                        { from: "ai", text: "Done! You're booked for Tuesday at 2pm. You'll get a reminder text 24 hours before. Is there anything else I can help with?" },
+                      ].map((m, i) => (
+                        <div key={i} style={{
+                          alignSelf: m.from === "user" ? "flex-end" : "flex-start",
+                          maxWidth: "80%",
+                          padding: "12px 16px",
+                          borderRadius: m.from === "user" ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
+                          background: m.from === "user" ? `linear-gradient(135deg, ${TEAL[600]}, ${TEAL[500]})` : "var(--glass-strong)",
+                          border: m.from === "user" ? "none" : "1px solid var(--border)",
+                          fontSize: 13,
+                          lineHeight: 1.5,
+                          color: m.from === "user" ? "white" : "var(--text)",
+                          opacity: 0,
+                          animation: `fadeInChat 0.5s ease ${0.5 + i * 0.6}s forwards`,
+                        }}>
+                          {m.text}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="glass" style={{ borderRadius: 14, padding: "14px 18px", marginTop: 24, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text)" }}>47 calls handled today</div>
+                      <div style={{ fontSize: 11, color: "var(--text-muted)" }}>3 appointments booked in the last hour</div>
+                    </div>
+                    <span className="pulse-dot" style={{ width: 10, height: 10, borderRadius: "50%", background: TEAL[500] }} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Fade>
+        </div>
+      </div>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        .zb { display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, ${TD}, ${TL}); color: #fff; border: none; border-radius: 10px; font-weight: 700; font-size: 15px; cursor: pointer; font-family: inherit; text-decoration: none; transition: all 0.2s; }
-        .zb:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(13,148,136,0.35); }
-        .zo { display: inline-block; padding: 14px 32px; background: transparent; color: ${T}; border: 2px solid ${T}; border-radius: 10px; font-weight: 700; font-size: 15px; cursor: pointer; font-family: inherit; text-decoration: none; transition: all 0.15s; }
-        .zo:hover { background: ${T}; color: #fff; }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .anim { animation: fadeUp 0.6s ease both; }
-        .anim-d1 { animation-delay: 0.1s; }
-        .anim-d2 { animation-delay: 0.2s; }
-        .anim-d3 { animation-delay: 0.3s; }
-        @media (max-width: 768px) {
-          .g2 { grid-template-columns: 1fr !important; }
-          .g3 { grid-template-columns: 1fr !important; }
-          .g4 { grid-template-columns: 1fr 1fr !important; }
-          .g5 { grid-template-columns: 1fr !important; }
-          .hero-h { font-size: 32px !important; }
-          .desk-nav { display: none !important; }
-          .mob-btn { display: block !important; }
+        @keyframes fadeInChat {
+          to { opacity: 1; }
         }
       `}</style>
-
-      {/* === NAV === */}
-      <header>
-        <nav aria-label="Main navigation" style={{
-          position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-          background: navBg ? "rgba(255,255,255,0.97)" : "transparent",
-          backdropFilter: navBg ? "blur(14px)" : "none",
-          borderBottom: navBg ? "1px solid #E2E8F0" : "none",
-          transition: "all 0.3s", padding: "12px 24px"
-        }}>
-          <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <Link to="/" aria-label="Zidly homepage" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
-              <div style={{ width: 32, height: 32, borderRadius: 8, background: `linear-gradient(135deg,${T},${TL})`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, color: "#fff", fontSize: 15 }} aria-hidden="true">Z</div>
-              <span style={{ fontWeight: 800, fontSize: 19, color: navBg ? "#0F172A" : "#fff", letterSpacing: -0.5, transition: "color 0.3s" }}>Zidly</span>
-            </Link>
-            <div className="desk-nav" style={{ display: "flex", gap: 20, alignItems: "center" }}>
-              <DropMenu label="Solutions" items={SOLUTIONS} isOpen={openMenu === "sol"} onToggle={() => setOpenMenu(openMenu === "sol" ? null : "sol")} light={navBg} />
-              <DropMenu label="Free Tools" items={TOOLS} isOpen={openMenu === "tools"} onToggle={() => setOpenMenu(openMenu === "tools" ? null : "tools")} light={navBg} />
-              <DropMenu label="Compare" items={COMPARE} isOpen={openMenu === "cmp"} onToggle={() => setOpenMenu(openMenu === "cmp" ? null : "cmp")} light={navBg} />
-              <a href="#pricing" style={{ color: navBg ? "#374151" : "#D1D5DB", textDecoration: "none", fontSize: 14, fontWeight: 500 }}>Pricing</a>
-              <Link to="/dental-bizscorer" className="zb" style={{ padding: "9px 18px", fontSize: 13 }}>Free Audit →</Link>
-            </div>
-            <button className="mob-btn" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle mobile menu" aria-expanded={mobileOpen} style={{ display: "none", background: "none", border: "none", color: navBg ? "#0F172A" : "#fff", fontSize: 22, cursor: "pointer" }}>
-              {mobileOpen ? "✕" : "☰"}
-            </button>
-          </div>
-          {mobileOpen && (
-            <div style={{ background: "#fff", borderTop: "1px solid #E2E8F0", padding: "16px 24px", maxHeight: "70vh", overflowY: "auto" }}>
-              {[["Solutions", SOLUTIONS], ["Free Tools", TOOLS], ["Compare", COMPARE]].map(([title, items]) => (
-                <div key={title} style={{ marginBottom: 14 }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", marginBottom: 6, letterSpacing: 1 }}>{title}</div>
-                  {items.map(it => (
-                    <NavLink key={it.label} href={it.href} onClick={() => setMobileOpen(false)} style={{ display: "block", padding: "7px 0", color: "#0F172A", textDecoration: "none", fontSize: 14, fontWeight: 500 }}>{it.label}</NavLink>
-                  ))}
-                </div>
-              ))}
-              <Link to="/dental-bizscorer" className="zb" style={{ width: "100%", textAlign: "center", marginTop: 8, display: "block" }}>Free Practice Audit →</Link>
-            </div>
-          )}
-        </nav>
-      </header>
-
-      <main>
-        {/* === HERO === */}
-        <section style={{
-          background: "linear-gradient(165deg, #042F2E 0%, #0F172A 50%, #1E293B 100%)",
-          padding: "140px 24px 80px", position: "relative", overflow: "hidden"
-        }}>
-          <div style={{ position: "absolute", top: -100, right: -100, width: 400, height: 400, borderRadius: "50%", background: `radial-gradient(circle, ${T}15, transparent 70%)` }} aria-hidden="true" />
-          <div style={{ position: "absolute", bottom: -200, left: -100, width: 500, height: 500, borderRadius: "50%", background: `radial-gradient(circle, ${TL}08, transparent 70%)` }} aria-hidden="true" />
-          <div style={{ maxWidth: 740, margin: "0 auto", textAlign: "center", position: "relative" }}>
-            <div className="anim" style={{ display: "inline-block", padding: "6px 18px", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, fontSize: 13, color: TL, fontWeight: 600, marginBottom: 22 }}>
-              The AI That Watches Your Practice While You Sleep
-            </div>
-            <h1 className="hero-h anim anim-d1" style={{ fontSize: 48, fontWeight: 900, lineHeight: 1.08, letterSpacing: -2, color: "#fff", marginBottom: 20 }}>
-              Your practice is leaking<br />
-              <span style={{ color: TL }}>$10,000+/month</span><br />
-              in lost patients
-            </h1>
-            <p className="anim anim-d2" style={{ fontSize: 17, color: "#94A3B8", lineHeight: 1.65, maxWidth: 560, margin: "0 auto 32px" }}>
-              97% of patients research you online before scheduling. After 5pm, your website is silent.
-              Zidly's AI answers insurance questions, captures new patient inquiries, collects reviews,
-              and tracks competitors — 24/7. For $97/month.
+    </section>
+  );
+}
+// ─── SERVICES ───────────────────────────────────────────────────
+const SERVICES = [
+  {
+    icon: PhoneIcon,
+    title: "AI Voice Receptionist",
+    desc: "Answer every call 24/7. Book appointments, capture leads, answer FAQs — all in a natural, human-like voice trained on YOUR business.",
+    features: ["24/7 Coverage", "Custom Voice & Gender", "3 Routing Modes", "Lead Capture"],
+  },
+  {
+    icon: StarIcon,
+    title: "Google Review Engine",
+    desc: "Automatically collect 5-star reviews after every appointment. Route unhappy customers to private feedback. Respond to all reviews with AI.",
+    features: ["Auto Review Requests", "Smart Star Routing", "AI Responses", "Review Monitoring"],
+  },
+  {
+    icon: GlobeIcon,
+    title: "Website + AI Chatbot",
+    desc: "We build a premium website that converts — or add our AI chatbot to your existing site. It answers questions and books appointments 24/7.",
+    features: ["High-End Design", "AI Chat Widget", "Mobile Optimized", "Lead Capture"],
+  },
+  {
+    icon: CalendarIcon,
+    title: "Booking + Auto Follow-Up",
+    desc: "Customers book through AI, chatbot, or direct link. Automatic text reminders before appointments. Follow-up and review requests after.",
+    features: ["Online Booking", "Text Reminders", "No-Show Recovery", "Auto Follow-Up"],
+  },
+];
+function Services() {
+  return (
+    <section id="services" style={{ padding: "120px 0", position: "relative" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
+        <Fade>
+          <div style={{ textAlign: "center", marginBottom: 64 }}>
+            <span style={{ color: TEAL[500], fontSize: 13, fontWeight: 600, textTransform: "uppercase", letterSpacing: 2 }}>What You Get</span>
+            <h2 className="font-display" style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 800, marginTop: 16, marginBottom: 20 }}>
+              One Package. <span className="gradient-text">Everything Included.</span>
+            </h2>
+            <p style={{ color: "var(--text-muted)", fontSize: 17, maxWidth: 600, margin: "0 auto", lineHeight: 1.7 }}>
+              No mix-and-match. No hidden fees. You get all four systems working together for ${BRAND.price}/month.
             </p>
-            <div className="anim anim-d3" style={{
-              background: "rgba(255,255,255,0.05)", borderRadius: 16, padding: 22,
-              maxWidth: 480, margin: "0 auto", border: "1px solid rgba(255,255,255,0.08)"
-            }}>
-              <p style={{ fontSize: 14, fontWeight: 700, color: "#fff", marginBottom: 10 }}>
-                See how much production your practice is losing — free
+          </div>
+        </Fade>
+        <div className="services-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20 }}>
+          {SERVICES.map((s, i) => (
+            <Fade key={s.title} delay={i * 0.12}>
+              <div className="glass card-hover" style={{ borderRadius: 20, padding: 32, height: "100%", position: "relative", overflow: "hidden" }}>
+                <div style={{
+                  width: 56, height: 56, borderRadius: 14,
+                  background: `linear-gradient(135deg, ${TEAL[600]}30, ${TEAL[400]}15)`,
+                  display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 24,
+                }}>
+                  <s.icon size={26} className="" style={{ color: TEAL[400] }} />
+                </div>
+                <h3 className="font-display" style={{ fontSize: 20, fontWeight: 700, marginBottom: 12 }}>{s.title}</h3>
+                <p style={{ color: "var(--text-muted)", fontSize: 14, lineHeight: 1.7, marginBottom: 24 }}>{s.desc}</p>
+                <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 10 }}>
+                  {s.features.map(f => (
+                    <li key={f} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "var(--text-muted)" }}>
+                      <span style={{ width: 6, height: 6, borderRadius: "50%", background: TEAL[500], flexShrink: 0 }} />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${TEAL[600]}, ${TEAL[400]})`, opacity: 0, transition: "opacity 0.4s" }}
+                  className="card-bottom-bar" />
+              </div>
+            </Fade>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+// ─── HOW IT WORKS ───────────────────────────────────────────────
+const FEATURES = [
+  { icon: ZapIcon, title: "5-Minute Setup", desc: "Tell us about your business. We configure everything. You're live the same day." },
+  { icon: ShieldIcon, title: "Zero Missed Calls", desc: "Answer all calls, after-hours only, or as backup. You choose. Switch anytime." },
+  { icon: BarChartIcon, title: "Real-Time Dashboard", desc: "Every call, review, booking, and lead — all in one place. Manage from your phone." },
+  { icon: ClockIcon, title: "Always On", desc: "Your AI never sleeps, never takes a break, and never has a bad day. 24/7/365." },
+  { icon: UsersIcon, title: "More 5-Star Reviews", desc: "Automated requests go out after every appointment. Watch your Google rating climb." },
+  { icon: MessageIcon, title: "Smart Follow-Up", desc: "Text reminders, post-visit follow-ups, and no-show recovery — all automated." },
+];
+function HowItWorks() {
+  return (
+    <section id="how-it-works" style={{ padding: "120px 0", position: "relative" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
+        <div style={{ display: "flex", gap: 64, alignItems: "flex-start", flexWrap: "wrap" }}>
+          <div style={{ flex: "1 1 400px" }}>
+            <Fade>
+              <span style={{ color: TEAL[500], fontSize: 13, fontWeight: 600, textTransform: "uppercase", letterSpacing: 2 }}>Why Zidly</span>
+              <h2 className="font-display" style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 800, marginTop: 16, marginBottom: 20 }}>
+                Your Entire Front Office,{" "}
+                <span className="gradient-text">Automated</span>
+              </h2>
+              <p style={{ color: "var(--text-muted)", fontSize: 17, lineHeight: 1.7, marginBottom: 40 }}>
+                Stop juggling five different tools. Zidly replaces your receptionist, review platform, website builder, and appointment system — all for less than a part-time hire.
               </p>
-              <form onSubmit={e => e.preventDefault()} style={{ display: "flex", gap: 8 }} role="search" aria-label="Practice audit search">
-                <label htmlFor="scan-input" className="sr-only" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)" }}>Your practice name or website</label>
-                <input
-                  id="scan-input"
-                  value={scan} onChange={e => setScan(e.target.value)}
-                  placeholder="Your practice name or website..."
-                  style={{
-                    flex: 1, padding: "12px 16px", borderRadius: 10,
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    background: "rgba(255,255,255,0.06)",
-                    fontSize: 14, fontFamily: "inherit", outline: "none", color: "#fff"
-                  }}
-                />
-                <button className="zb" style={{ padding: "12px 20px", fontSize: 13, whiteSpace: "nowrap" }}>
-                  Scan Free →
-                </button>
-              </form>
-              <p style={{ fontSize: 11, color: "#64748B", marginTop: 8 }}>
-                No signup. Scans reviews, website, competitors, and 20 dental-specific factors.
-              </p>
+            </Fade>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              <Fade delay={0.15}>
+                <div className="glass" style={{ borderRadius: 16, padding: 24 }}>
+                  <div className="font-display gradient-text" style={{ fontSize: 32, fontWeight: 800 }}>99.9%</div>
+                  <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 4 }}>Uptime Guarantee</div>
+                </div>
+              </Fade>
+              <Fade delay={0.25}>
+                <div className="glass" style={{ borderRadius: 16, padding: 24 }}>
+                  <div className="font-display gradient-text" style={{ fontSize: 32, fontWeight: 800 }}>&lt;2s</div>
+                  <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 4 }}>AI Response Time</div>
+                </div>
+              </Fade>
             </div>
           </div>
-        </section>
-
-        {/* === PROOF BAR === */}
-        <section aria-label="Key statistics" style={{ padding: "26px 24px", borderBottom: "1px solid #E2E8F0" }}>
-          <div className="g4" style={{ maxWidth: 880, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20, textAlign: "center" }}>
-            {[
-              { s: "97%", l: "of patients research you online first" },
-              { s: "25%", l: "of patient calls missed daily" },
-              { s: "$4,200", l: "lifetime production per patient" },
-              { s: "107x", l: "average ROI on $97/month" },
-            ].map(x => (
-              <div key={x.l}>
-                <div style={{ fontSize: 24, fontWeight: 900, color: T }}>{x.s}</div>
-                <div style={{ fontSize: 11, color: "#64748B", marginTop: 2 }}>{x.l}</div>
-              </div>
+          <div className="features-grid" style={{ flex: "1 1 500px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+            {FEATURES.map((f, i) => (
+              <Fade key={f.title} delay={i * 0.08}>
+                <div className="glass card-hover" style={{ borderRadius: 16, padding: 24 }}>
+                  <div style={{
+                    width: 44, height: 44, borderRadius: 12,
+                    background: `linear-gradient(135deg, ${TEAL[600]}20, ${TEAL[400]}10)`,
+                    display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16,
+                  }}>
+                    <f.icon size={22} style={{ color: TEAL[400] }} />
+                  </div>
+                  <h3 className="font-display" style={{ fontWeight: 700, fontSize: 16, marginBottom: 8 }}>{f.title}</h3>
+                  <p style={{ color: "var(--text-muted)", fontSize: 13, lineHeight: 1.6 }}>{f.desc}</p>
+                </div>
+              </Fade>
             ))}
           </div>
-        </section>
-
-        {/* === REVENUE LEAKS === */}
-        <section aria-labelledby="leaks-heading" style={{ padding: "68px 24px", background: "#FAFBFC" }}>
-          <div style={{ maxWidth: 780, margin: "0 auto" }}>
-            <h2 id="leaks-heading" style={{ fontSize: 32, fontWeight: 900, textAlign: "center", letterSpacing: -1, marginBottom: 8 }}>
-              5 revenue leaks costing your practice<br />
-              <span style={{ color: "#DC2626" }}>$10,000-30,000/month</span>
+        </div>
+      </div>
+    </section>
+  );
+}
+// ─── PRICING ────────────────────────────────────────────────────
+const INCLUDES = [
+  "AI Voice Receptionist (custom voice & gender)",
+  "Google Review Automation & Management",
+  "High-End Website OR Chatbot for Existing Site",
+  "Online Booking System + Calendar Sync",
+  "Automated Text Reminders (customizable timing)",
+  "Post-Appointment Follow-Up Texts",
+  "No-Show Recovery Texts",
+  "AI Review Responses (approve or auto-send)",
+  "Real-Time Dashboard + Mobile App",
+  "Unlimited Calls, Chats & Bookings",
+  "Dedicated Onboarding with Mike",
+];
+function Pricing() {
+  return (
+    <section id="pricing" style={{ padding: "120px 0", position: "relative" }}>
+      <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 24px" }}>
+        <Fade>
+          <div style={{ textAlign: "center", marginBottom: 56 }}>
+            <span style={{ color: TEAL[500], fontSize: 13, fontWeight: 600, textTransform: "uppercase", letterSpacing: 2 }}>Simple Pricing</span>
+            <h2 className="font-display" style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 800, marginTop: 16, marginBottom: 20 }}>
+              One Plan. <span className="gradient-text">Everything Included.</span>
             </h2>
-            <p style={{ textAlign: "center", fontSize: 14, color: "#64748B", marginBottom: 28 }}>
-              Each leak maps to a Zidly tool that plugs it.
+            <p style={{ color: "var(--text-muted)", fontSize: 17, maxWidth: 500, margin: "0 auto", lineHeight: 1.7 }}>
+              No tiers. No upsells. No surprises. Every business gets the full platform.
             </p>
-            <ul style={{ listStyle: "none" }}>
-              {LEAKS.map((l, i) => (
-                <li key={i} style={{
-                  display: "flex", gap: 14, alignItems: "center", padding: "14px 18px",
-                  background: "#fff", borderRadius: 10, border: "1px solid #E2E8F0", marginBottom: 6
-                }}>
-                  <span style={{ fontSize: 24, flexShrink: 0 }} aria-hidden="true">{l.icon}</span>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 14, fontWeight: 700 }}>{l.name}</div>
-                    <div style={{ fontSize: 12, color: "#64748B" }}>{l.fix}</div>
+          </div>
+        </Fade>
+        <Fade delay={0.15}>
+          <div className="glass-strong glow-teal" style={{ borderRadius: 24, padding: "48px 40px", position: "relative", overflow: "hidden" }}>
+            {/* Top accent */}
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg, ${TEAL[600]}, ${TEAL[400]}, ${TEAL[600]})` }} />
+            <div style={{ textAlign: "center", marginBottom: 40 }}>
+              <div className="font-display" style={{ fontSize: 14, fontWeight: 600, color: TEAL[400], marginBottom: 12, textTransform: "uppercase", letterSpacing: 2 }}>The Zidly Plan</div>
+              <div style={{ display: "flex", alignItems: "baseline", justifyContent: "center", gap: 4 }}>
+                <span className="font-display" style={{ fontSize: 64, fontWeight: 900, color: "var(--text)" }}>${BRAND.price}</span>
+                <span style={{ color: "var(--text-muted)", fontSize: 18 }}>/month</span>
+              </div>
+              <div style={{ color: "var(--text-muted)", fontSize: 14, marginTop: 8 }}>
+                + ${BRAND.setup} one-time setup &nbsp;·&nbsp; Annual: <span style={{ color: TEAL[400], fontWeight: 600 }}>2 months free</span>
+              </div>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 14, marginBottom: 40 }}>
+              {INCLUDES.map(item => (
+                <div key={item} style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                  <div style={{ width: 24, height: 24, borderRadius: "50%", background: `${TEAL[600]}20`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <CheckIcon size={14} style={{ color: TEAL[400] }} />
                   </div>
-                  <div style={{ fontSize: 15, fontWeight: 800, color: "#DC2626", whiteSpace: "nowrap" }}>{l.cost}</div>
-                </li>
-              ))}
-            </ul>
-            <div style={{ textAlign: "center", marginTop: 18 }}>
-              <Link to="/dental-bizscorer" className="zb">Free Practice Audit →</Link>
-            </div>
-          </div>
-        </section>
-
-        {/* === 6 ENGINES === */}
-        <section aria-labelledby="engines-heading" style={{ padding: "68px 24px" }}>
-          <div style={{ maxWidth: 880, margin: "0 auto" }}>
-            <h2 id="engines-heading" style={{ fontSize: 32, fontWeight: 900, textAlign: "center", letterSpacing: -1, marginBottom: 8 }}>
-              6 AI engines. One platform.<br />
-              Replaces Podium + Birdeye + BrightLocal.
-            </h2>
-            <p style={{ textAlign: "center", fontSize: 14, color: "#64748B", marginBottom: 32 }}>
-              Practices pay $500-1,500/mo for 3-4 tools. Zidly does it all for $97/month.
-            </p>
-            <div className="g3" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
-              {ENGINES.map(e => (
-                <article key={e.name} style={{
-                  padding: 20, background: "#fff", borderRadius: 12,
-                  border: "1px solid #E2E8F0", transition: "border-color 0.15s"
-                }}
-                  onMouseEnter={ev => { ev.currentTarget.style.borderColor = T; }}
-                  onMouseLeave={ev => { ev.currentTarget.style.borderColor = "#E2E8F0"; }}
-                >
-                  <div style={{ fontSize: 26, marginBottom: 8 }} aria-hidden="true">{e.icon}</div>
-                  <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>{e.name}</h3>
-                  <p style={{ fontSize: 12, color: "#64748B", lineHeight: 1.6 }}>{e.desc}</p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* === VERTICALS === */}
-        <section aria-labelledby="verticals-heading" style={{ padding: "68px 24px", background: "#0F172A" }}>
-          <div style={{ maxWidth: 880, margin: "0 auto" }}>
-            <h2 id="verticals-heading" style={{ fontSize: 28, fontWeight: 800, color: "#fff", textAlign: "center", marginBottom: 28 }}>
-              Built for dental. Expanding everywhere.
-            </h2>
-            <div className="g4" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10 }}>
-              {VERTICALS.map(v => (
-                <div key={v.label} style={{
-                  padding: 16, background: "#1E293B", borderRadius: 10,
-                  border: "1px solid #334155", textAlign: "center",
-                  opacity: v.on ? 1 : 0.45
-                }}>
-                  <div style={{ fontSize: 24, marginBottom: 4 }} aria-hidden="true">{v.icon}</div>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: v.on ? "#fff" : "#64748B" }}>{v.label}</div>
-                  {!v.on && <div style={{ fontSize: 9, color: "#64748B" }}>Soon</div>}
+                  <span style={{ fontSize: 15, color: "var(--text)" }}>{item}</span>
                 </div>
               ))}
             </div>
+            <div style={{ textAlign: "center" }}>
+              <button className="btn-primary" style={{ padding: "16px 48px", fontSize: 16, boxShadow: `0 0 40px rgba(13,148,136,0.3)` }}>
+                Book a Free Demo with Mike <ArrowRightIcon size={18} />
+              </button>
+              <p style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 16 }}>No contracts. Cancel anytime. Setup in under 48 hours.</p>
+            </div>
           </div>
-        </section>
-
-        {/* === COMPARISON TABLE === */}
-        <section aria-labelledby="compare-heading" style={{ padding: "68px 24px" }}>
-          <div style={{ maxWidth: 680, margin: "0 auto" }}>
-            <h2 id="compare-heading" style={{ fontSize: 28, fontWeight: 800, textAlign: "center", marginBottom: 24 }}>
-              Same reviews. 30 more tools. 1/3 the price.
-            </h2>
-            <div style={{ borderRadius: 12, border: "1px solid #E2E8F0", overflow: "hidden" }} role="table" aria-label="Feature comparison: Zidly vs Podium vs Birdeye">
-              <div role="row" style={{ display: "grid", gridTemplateColumns: "1fr 70px 70px 70px", padding: "10px 14px", background: "#F8FAFC", fontWeight: 700, fontSize: 11, color: "#64748B" }}>
-                <div role="columnheader">Feature</div>
-                <div role="columnheader" style={{ textAlign: "center", color: T }}>Zidly</div>
-                <div role="columnheader" style={{ textAlign: "center" }}>Podium</div>
-                <div role="columnheader" style={{ textAlign: "center" }}>Birdeye</div>
-              </div>
+        </Fade>
+        {/* Value comparison */}
+        <Fade delay={0.25}>
+          <div className="glass" style={{ borderRadius: 16, padding: 32, marginTop: 32, textAlign: "center" }}>
+            <p className="font-display" style={{ fontWeight: 700, fontSize: 18, marginBottom: 16 }}>What you'd pay separately:</p>
+            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 24 }}>
               {[
-                ["AI Patient Assistant", true, false, false],
-                ["Review Management", true, true, true],
-                ["SEO + AI Visibility", true, false, false],
-                ["Content Engine", true, false, false],
-                ["Competitor Tracking", true, false, true],
-                ["Revenue Leak Dashboard", true, false, false],
-                ["No Contracts", true, false, false],
-                ["Price", "$97/mo", "$249/mo", "$299/mo"],
-              ].map(([feat, z, p, b], i) => (
-                <div role="row" key={i} style={{ display: "grid", gridTemplateColumns: "1fr 70px 70px 70px", padding: "9px 14px", borderTop: "1px solid #E2E8F0", fontSize: 12, alignItems: "center" }}>
-                  <div role="rowheader" style={{ fontWeight: 500 }}>{feat}</div>
-                  {[z, p, b].map((v, j) => (
-                    <div role="cell" key={j} style={{
-                      textAlign: "center",
-                      color: v === true ? "#22C55E" : typeof v === "string" ? (j === 0 ? T : "#64748B") : "#EF4444",
-                      fontWeight: typeof v === "string" ? 700 : 400,
-                      fontSize: typeof v === "string" ? 11 : 14
-                    }} aria-label={v === true ? "Yes" : v === false ? "No" : v}>
-                      {v === true ? "✓" : v === false ? "✕" : v}
-                    </div>
+                { label: "Part-time receptionist", price: "$1,500+" },
+                { label: "Review software", price: "$200+" },
+                { label: "Website design", price: "$3,000+" },
+                { label: "Booking system", price: "$150+" },
+              ].map(c => (
+                <div key={c.label} style={{ fontSize: 13, color: "var(--text-muted)" }}>
+                  <span style={{ textDecoration: "line-through", color: "#ff6b6b" }}>{c.price}</span>
+                  <span style={{ marginLeft: 6 }}>{c.label}</span>
+                </div>
+              ))}
+            </div>
+            <p style={{ marginTop: 16, color: TEAL[400], fontWeight: 600, fontSize: 15 }}>All replaced by Zidly for ${BRAND.price}/mo</p>
+          </div>
+        </Fade>
+      </div>
+    </section>
+  );
+}
+// ─── TESTIMONIALS ───────────────────────────────────────────────
+const REVIEWS = [
+  { name: "Sarah Mitchell", role: "Owner, Mitchell Dental", text: "We went from missing 30% of calls to capturing every single lead. Our reviews jumped from 3.8 to 4.9 stars in just 3 months.", initials: "SM" },
+  { name: "David Chen", role: "CEO, Premier Auto Group", text: "The ROI speaks for itself. 400% increase in booked appointments and our Google ranking skyrocketed thanks to the review system.", initials: "DC" },
+  { name: "Jessica Williams", role: "Director, Luxe Real Estate", text: "The AI handles our after-hours inquiries perfectly. It's like having a 24/7 sales team that never takes a day off.", initials: "JW" },
+];
+function Testimonials() {
+  return (
+    <section id="reviews" style={{ padding: "120px 0", position: "relative" }}>
+      <div style={{ position: "absolute", inset: 0, background: `linear-gradient(180deg, transparent, ${TEAL[600]}05, transparent)` }} />
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", position: "relative", zIndex: 10 }}>
+        <Fade>
+          <div style={{ textAlign: "center", marginBottom: 56 }}>
+            <span style={{ color: TEAL[500], fontSize: 13, fontWeight: 600, textTransform: "uppercase", letterSpacing: 2 }}>Testimonials</span>
+            <h2 className="font-display" style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 800, marginTop: 16, marginBottom: 20 }}>
+              Trusted by <span className="gradient-text">500+ Businesses</span>
+            </h2>
+          </div>
+        </Fade>
+        <div className="testimonials-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
+          {REVIEWS.map((r, i) => (
+            <Fade key={r.name} delay={i * 0.12}>
+              <div className="glass card-hover" style={{ borderRadius: 20, padding: 32, height: "100%" }}>
+                <div style={{ display: "flex", gap: 4, marginBottom: 20 }}>
+                  {[1,2,3,4,5].map(s => (
+                    <StarIcon key={s} size={18} filled style={{ color: TEAL[400] }} />
                   ))}
                 </div>
-              ))}
-            </div>
-            <nav aria-label="Competitor comparisons" style={{ display: "flex", gap: 6, justifyContent: "center", flexWrap: "wrap", marginTop: 16 }}>
-              {COMP_NAMES.map(c => (
-                <Link key={c} to={`/vs/${c.toLowerCase()}`} style={{ padding: "5px 12px", border: "1px solid #E2E8F0", borderRadius: 6, fontSize: 10, color: "#64748B", fontWeight: 500, textDecoration: "none" }}>
-                  vs {c}
-                </Link>
-              ))}
-            </nav>
-          </div>
-        </section>
-
-        {/* === PRICING === */}
-        <section id="pricing" aria-labelledby="pricing-heading" style={{ padding: "68px 24px", background: "#0F172A" }}>
-          <div style={{ maxWidth: 960, margin: "0 auto" }}>
-            <h2 id="pricing-heading" style={{ fontSize: 28, fontWeight: 800, color: "#fff", textAlign: "center", marginBottom: 6 }}>
-              Transparent pricing. No surprises.
-            </h2>
-            <p style={{ textAlign: "center", fontSize: 13, color: "#94A3B8", marginBottom: 6 }}>
-              Average practice spends $5K-8K/mo on marketing. One implant click costs $15-25. Zidly is less than 4 clicks.
-            </p>
-            <p style={{ textAlign: "center", fontSize: 12, color: "#64748B", marginBottom: 28 }}>
-              Month-to-month. Annual saves 2 months. Multi-location discounts available.
-            </p>
-            <div className="g4" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, alignItems: "start" }}>
-              {PLANS.map(p => (
-                <article key={p.name} style={{
-                  background: p.pop ? `linear-gradient(135deg, ${TD}, ${TL})` : "#1E293B",
-                  borderRadius: 14, padding: 22, position: "relative",
-                  border: p.pop ? "none" : "1px solid #334155"
-                }}>
-                  {p.pop && (
-                    <div style={{ position: "absolute", top: -9, left: "50%", transform: "translateX(-50%)", background: "#fff", color: T, fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 10 }}>
-                      MOST POPULAR
-                    </div>
-                  )}
-                  <h3 style={{ fontSize: 12, fontWeight: 600, color: p.pop ? "rgba(255,255,255,0.8)" : "#94A3B8" }}>{p.name}</h3>
-                  <div style={{ fontSize: 10, color: p.pop ? "rgba(255,255,255,0.5)" : "#64748B", marginBottom: 6 }}>{p.sub}</div>
-                  <div style={{ marginBottom: 14 }}>
-                    <span style={{ fontSize: 30, fontWeight: 900, color: "#fff" }}>${p.price}</span>
-                    <span style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>/mo</span>
-                  </div>
-                  <ul style={{ listStyle: "none" }}>
-                    {p.features.map(f => (
-                      <li key={f} style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", padding: "3px 0", display: "flex", gap: 5, alignItems: "center" }}>
-                        <span style={{ color: TL, fontSize: 10 }} aria-hidden="true">✓</span> {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <button className="zb" style={{
-                    width: "100%", marginTop: 14, padding: 11, fontSize: 12,
-                    background: p.pop ? "#fff" : `linear-gradient(135deg, ${TD}, ${TL})`,
-                    color: p.pop ? T : "#fff"
+                <p style={{ color: "var(--text-muted)", fontSize: 15, lineHeight: 1.7, marginBottom: 28 }}>"{r.text}"</p>
+                <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                  <div style={{
+                    width: 44, height: 44, borderRadius: "50%",
+                    background: `linear-gradient(135deg, ${TEAL[600]}, ${TEAL[400]})`,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontWeight: 700, fontSize: 14, color: "white",
                   }}>
-                    Start Free Trial
-                  </button>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* === FINAL CTA === */}
-        <section aria-labelledby="cta-heading" style={{ padding: "68px 24px", textAlign: "center", background: `linear-gradient(135deg, ${TD}06, ${TL}03)` }}>
-          <h2 id="cta-heading" style={{ fontSize: 32, fontWeight: 900, letterSpacing: -1, marginBottom: 12 }}>
-            Stop losing patients tonight.
-          </h2>
-          <p style={{ fontSize: 15, color: "#64748B", marginBottom: 24 }}>
-            One implant case captured pays for 3 years of Zidly. The math isn't close.
-          </p>
-          <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-            <Link to="/dental-bizscorer" className="zb" style={{ fontSize: 16, padding: "16px 36px" }}>Free Practice Audit →</Link>
-            <a href="#pricing" className="zo" style={{ fontSize: 16, padding: "16px 36px" }}>See Pricing</a>
-          </div>
-        </section>
-      </main>
-
-      {/* === FOOTER === */}
-      <footer style={{ background: "#0F172A", padding: "44px 24px 20px" }}>
-        <div style={{ maxWidth: 880, margin: "0 auto" }}>
-          <div className="g5" style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr 1fr 1fr", gap: 20, marginBottom: 28 }}>
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 10 }}>
-                <div style={{ width: 26, height: 26, borderRadius: 6, background: `linear-gradient(135deg, ${T}, ${TL})`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, color: "#fff", fontSize: 12 }} aria-hidden="true">Z</div>
-                <span style={{ fontWeight: 800, fontSize: 17, color: "#fff" }}>Zidly</span>
+                    {r.initials}
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: 15 }}>{r.name}</div>
+                    <div style={{ fontSize: 13, color: "var(--text-muted)" }}>{r.role}</div>
+                  </div>
+                </div>
               </div>
-              <p style={{ fontSize: 11, color: "#64748B", lineHeight: 1.6 }}>
-                AI-powered practice growth. The AI that watches your practice while you sleep.
+            </Fade>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+// ─── CTA ────────────────────────────────────────────────────────
+function CTA() {
+  return (
+    <section style={{ padding: "80px 0 120px" }}>
+      <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 24px" }}>
+        <Fade>
+          <div style={{
+            borderRadius: 28, position: "relative", overflow: "hidden",
+            background: `linear-gradient(135deg, ${TEAL[600]}15, ${TEAL[400]}08)`,
+            border: `1px solid ${TEAL[600]}30`,
+          }}>
+            <div style={{ position: "absolute", top: 0, right: 0, width: 300, height: 300, borderRadius: "50%", background: `${TEAL[500]}10`, filter: "blur(80px)" }} />
+            <div style={{ position: "absolute", bottom: 0, left: 0, width: 200, height: 200, borderRadius: "50%", background: `${TEAL[400]}08`, filter: "blur(60px)" }} />
+            <div style={{ position: "relative", zIndex: 10, padding: "64px 48px", textAlign: "center" }}>
+              <h2 className="font-display" style={{ fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 800, marginBottom: 20 }}>
+                Ready to <span className="gradient-text">Grow on Autopilot?</span>
+              </h2>
+              <p style={{ color: "var(--text-muted)", fontSize: 17, maxWidth: 520, margin: "0 auto 36px", lineHeight: 1.7 }}>
+                Book a free demo with Mike. He'll show you exactly how Zidly works for YOUR business. No pitch, no pressure — just answers.
               </p>
-            </div>
-            <nav aria-label="Solutions">
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#94A3B8", marginBottom: 10, letterSpacing: 1 }}>SOLUTIONS</div>
-              {[
-                { label: "Dental Practices", to: "/dentists" },
-                { label: "Groups & DSOs", to: "/groups" },
-                { label: "Implant", to: "/implant-dentists" },
-                { label: "Cosmetic", to: "/cosmetic-dentists" },
-                { label: "Invisalign", to: "/invisalign-providers" },
-              ].map(l => (
-                <Link key={l.label} to={l.to} style={{ display: "block", fontSize: 12, color: "#64748B", padding: "2px 0", textDecoration: "none" }}>{l.label}</Link>
-              ))}
-            </nav>
-            <nav aria-label="Free tools">
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#94A3B8", marginBottom: 10, letterSpacing: 1 }}>FREE TOOLS</div>
-              <Link to="/dental-bizscorer" style={{ display: "block", fontSize: 12, color: "#64748B", padding: "2px 0", textDecoration: "none" }}>Practice Audit</Link>
-              <Link to="/rankings" style={{ display: "block", fontSize: 12, color: "#64748B", padding: "2px 0", textDecoration: "none" }}>Rankings</Link>
-            </nav>
-            <nav aria-label="Comparisons">
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#94A3B8", marginBottom: 10, letterSpacing: 1 }}>COMPARE</div>
-              {[
-                { label: "vs Podium", to: "/vs/podium" },
-                { label: "vs Birdeye", to: "/vs/birdeye" },
-                { label: "vs Thryv", to: "/vs/thryv" },
-                { label: "vs Weave", to: "/vs/weave" },
-                { label: "vs BrightLocal", to: "/vs/brightlocal" },
-                { label: "Switch Guide", to: "/switch" },
-              ].map(l => (
-                <Link key={l.label} to={l.to} style={{ display: "block", fontSize: 12, color: "#64748B", padding: "2px 0", textDecoration: "none" }}>{l.label}</Link>
-              ))}
-            </nav>
-            <div>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#94A3B8", marginBottom: 10, letterSpacing: 1 }}>COMPANY</div>
-              <a href="#pricing" style={{ display: "block", fontSize: 12, color: "#64748B", padding: "2px 0", textDecoration: "none" }}>Pricing</a>
-              <div style={{ fontSize: 12, color: "#64748B", padding: "2px 0" }}>Privacy</div>
-              <div style={{ fontSize: 12, color: "#64748B", padding: "2px 0" }}>Terms</div>
-              <a href="mailto:alaa@zidly.ai" style={{ display: "block", fontSize: 12, color: "#64748B", padding: "2px 0", textDecoration: "none" }}>alaa@zidly.ai</a>
+              <div className="cta-buttons" style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
+                <button className="btn-primary" style={{ padding: "16px 40px", fontSize: 16, boxShadow: `0 0 40px rgba(13,148,136,0.3)` }}>
+                  Book Your Free Demo <ArrowRightIcon size={18} />
+                </button>
+              </div>
+              <p style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 20 }}>Free. No obligation. Takes 15 minutes.</p>
             </div>
           </div>
-          <div style={{ borderTop: "1px solid #1E293B", paddingTop: 14, display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 6 }}>
-            <p style={{ fontSize: 10, color: "#475569" }}>© 2026 Zidly. AI-powered practice growth.</p>
-            <p style={{ fontSize: 10, color: "#475569" }}>Built in Cairo. Serving practices worldwide.</p>
+        </Fade>
+      </div>
+    </section>
+  );
+}
+// ─── FOOTER ─────────────────────────────────────────────────────
+function Footer() {
+  return (
+    <footer style={{ borderTop: "1px solid var(--border)", padding: "64px 0 40px" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
+        <div className="footer-grid" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: 48, marginBottom: 48 }}>
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+              <div style={{ width: 32, height: 32, borderRadius: 8, background: `linear-gradient(135deg, ${TEAL[600]}, ${TEAL[400]})`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <span className="font-display" style={{ color: "white", fontWeight: 800, fontSize: 14 }}>Z</span>
+              </div>
+              <span className="font-display" style={{ fontWeight: 700, fontSize: 20 }}>Zidly</span>
+            </div>
+            <p style={{ color: "var(--text-muted)", fontSize: 14, lineHeight: 1.7, maxWidth: 280 }}>
+              AI-powered growth platform for local businesses. Never miss a customer again.
+            </p>
+          </div>
+          {[
+            { title: "Product", links: ["AI Receptionist", "Review Engine", "Website Design", "Booking System"] },
+            { title: "Company", links: ["About", "Contact", "Careers", "Blog"] },
+            { title: "Legal", links: ["Privacy Policy", "Terms of Service"] },
+          ].map(col => (
+            <div key={col.title}>
+              <h4 style={{ fontWeight: 600, fontSize: 14, marginBottom: 16 }}>{col.title}</h4>
+              <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 12 }}>
+                {col.links.map(l => (
+                  <li key={l}>
+                    <a href="#" style={{ color: "var(--text-muted)", textDecoration: "none", fontSize: 14, transition: "color 0.3s" }}
+                      onMouseEnter={e => e.target.style.color = TEAL[400]}
+                      onMouseLeave={e => e.target.style.color = "var(--text-muted)"}>
+                      {l}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+        <div style={{ borderTop: "1px solid var(--border)", paddingTop: 24, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
+          <p style={{ color: "var(--text-muted)", fontSize: 13 }}>© 2026 Zidly. All rights reserved.</p>
+          <div style={{ display: "flex", gap: 24 }}>
+            {["Twitter", "LinkedIn", "Instagram"].map(s => (
+              <a key={s} href="#" style={{ color: "var(--text-muted)", textDecoration: "none", fontSize: 13, transition: "color 0.3s" }}
+                onMouseEnter={e => e.target.style.color = TEAL[400]}
+                onMouseLeave={e => e.target.style.color = "var(--text-muted)"}>
+                {s}
+              </a>
+            ))}
           </div>
         </div>
-      </footer>
-    </div>
+      </div>
+    </footer>
+  );
+}
+// ─── MAIN APP ───────────────────────────────────────────────────
+export default function ZidlyHomepage() {
+  // Load GHL Chat Widget
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://widgets.leadconnectorhq.com/loader.js";
+    script.setAttribute("data-resources-url", "https://widgets.leadconnectorhq.com/chat-widget/loader.js");
+    script.setAttribute("data-widget-id", "69b45c714d840e6bfe368110");
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
+  }, []);
+  return (
+    <>
+      <style>{css}</style>
+      <div style={{ background: "var(--bg)", minHeight: "100vh" }}>
+        <Navbar />
+        <Hero />
+        <Services />
+        <HowItWorks />
+        <Pricing />
+        <Testimonials />
+        <CTA />
+        <Footer />
+      </div>
+    </>
   );
 }
