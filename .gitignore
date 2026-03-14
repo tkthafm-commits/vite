@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
  
 dist
+zidly/dist
+zidly/node_modules
