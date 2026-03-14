@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "cp -r zidly dist",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
