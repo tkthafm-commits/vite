@@ -68,8 +68,10 @@ footer{border-top:1px solid var(--brd);padding:32px 0;text-align:center}footer p
 </main>
 <footer><p>&copy; 2026 All rights reserved.</p><div style="margin-top:12px"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="index.html">Home</a></div></footer>
 <script>
-function unlock(){const n=document.getElementById('d-name').value.trim(),e=document.getElementById('d-email').value.trim();if(!n||!e){alert('Please enter name and email.');return}if(!e.includes('@')){alert('Valid email required.');return}document.getElementById('gate').style.display='none';document.getElementById('demo').style.display='block';const u=document.getElementById('d-url').value.trim();if(u){document.getElementById('ub').style.display='block';document.getElementById('ud').textContent=u}console.log('Demo lead:',{name:n,email:e,biz:document.getElementById('d-biz').value,url:u})}
+function unlock(){const n=document.getElementById('d-name').value.trim(),e=document.getElementById('d-email').value.trim(),b=document.getElementById('d-biz').value.trim(),u=document.getElementById('d-url').value.trim();if(!n||!e){alert('Please enter name and email.');return}if(!e.includes('@')){alert('Valid email required.');return}
+fetch('https://api.web3forms.com/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({access_key:'5ffab8e4-ec9c-43fa-ae4d-c9591eb17ad0',subject:'New Demo Lead',from_name:'Demo Page',name:n,email:e,business_name:b,website_url:u||'Not provided'})}).catch(()=>{});
+document.getElementById('gate').style.display='none';document.getElementById('demo').style.display='block';if(u){document.getElementById('ub').style.display='block';document.getElementById('ud').textContent=u}}
 </script>
-<script src="https://widgets.leadconnectorhq.com/loader.js" data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js" data-widget-id="69b45c714d840e6bfe368110"></script>
+<script src="https://widgets.leadconnectorhq.com/loader.js" data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js" data-widget-id="69b536eb2e317633c36a8b36"></script>
 </body>
 </html>
