@@ -46,12 +46,12 @@ footer{border-top:1px solid var(--brd);padding:32px 0;text-align:center}footer p
 <footer><p>&copy; 2026 All rights reserved.</p><div style="margin-top:12px"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="index.html">Home</a></div></footer>
 <script>
 function submitContact(){
-const n=document.getElementById('c-name').value.trim(),e=document.getElementById('c-email').value.trim();
+const n=document.getElementById('c-name').value.trim(),e=document.getElementById('c-email').value.trim(),p=document.getElementById('c-phone').value.trim(),m=document.getElementById('c-msg').value.trim();
 if(!n||!e){alert('Please enter your name and email.');return}
 if(!e.includes('@')){alert('Please enter a valid email.');return}
+fetch('https://api.web3forms.com/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({access_key:'a8282501-1f6a-45b0-aa6d-340d68f7b8b9',subject:'New Contact Inquiry',from_name:'Contact Page',name:n,email:e,phone:p||'Not provided',message:m||'No message'})}).catch(()=>{});
 document.getElementById('form-wrap').style.display='none';
 document.getElementById('form-success').style.display='block';
-console.log('Contact:',{name:n,email:e,phone:document.getElementById('c-phone').value,msg:document.getElementById('c-msg').value});
 }
 </script>
 <script src="https://widgets.leadconnectorhq.com/loader.js" data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js" data-widget-id="69b45c714d840e6bfe368110"></script>
